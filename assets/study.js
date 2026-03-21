@@ -1,12 +1,19 @@
-
 (() => {
   const frame = document.getElementById('study-frame');
-  const rootList = document.getElementById('study-root-list');
   const scenarioSelect = document.getElementById('study-scenario-select');
   const titleNode = document.getElementById('study-viewer-title');
   const breadcrumbNode = document.getElementById('study-breadcrumb');
+  const submenuGroupsNode = document.getElementById('study-submenu-groups');
+  const quickChipsNode = document.getElementById('study-quick-chips');
+  const currentGroupNode = document.getElementById('study-current-group');
+  const totalCountNode = document.getElementById('study-total-count');
+  const groupCountNode = document.getElementById('study-group-count');
+  const currentIndexNode = document.getElementById('study-current-index');
+  const currentDescriptionNode = document.getElementById('study-current-description');
+  const submenuPanel = document.getElementById('study-top-submenu');
+  const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !rootList || !scenarioSelect) return;
+  if (!frame || !scenarioSelect || !submenuGroupsNode || !quickChipsNode) return;
 
   const studyTree = [
     {
@@ -17,6 +24,7 @@
         {
           key: 'sorting',
           label: '정렬',
+          description: '대표 정렬 알고리즘의 비교, 교환, 분할 과정을 단계별로 따라갑니다.',
           items: [
             { id: 'bubble-sort', label: '버블 정렬' },
             { id: 'insertion-sort', label: '삽입 정렬' },
@@ -29,6 +37,7 @@
         {
           key: 'structures',
           label: '스택·큐',
+          description: '자료구조 내부 상태가 push/pop, enqueue/dequeue에 따라 어떻게 바뀌는지 확인합니다.',
           items: [
             { id: 'stack-basic', label: '스택' },
             { id: 'queue-basic', label: '큐' },
@@ -37,6 +46,7 @@
         {
           key: 'graph',
           label: '그래프 탐색',
+          description: '탐색 순서와 방문 상태가 그래프 위에서 어떻게 확장되는지 살펴봅니다.',
           items: [
             { id: 'dfs', label: '깊이 우선 탐색' },
             { id: 'bfs', label: '너비 우선 탐색' },
@@ -45,6 +55,7 @@
         {
           key: 'tree-search',
           label: '트리 탐색',
+          description: 'BST에서 탐색 경로가 조건문과 함께 어떻게 결정되는지 보여줍니다.',
           items: [
             { id: 'bst-search', label: 'BST 탐색' },
           ],
@@ -52,6 +63,7 @@
         {
           key: 'tree-traversal',
           label: '트리 순회',
+          description: '전위·중위·후위 순회가 재귀 호출 스택과 함께 어떻게 이동하는지 설명합니다.',
           items: [
             { id: 'preorder', label: '전위 순회' },
             { id: 'inorder', label: '중위 순회' },
@@ -61,6 +73,7 @@
         {
           key: 'dynamic',
           label: '동적 계획법·백트래킹',
+          description: '가지치기와 상태 전이를 시각적으로 비교하며 문제 해결 흐름을 따라갑니다.',
           items: [
             { id: 'n-queen', label: 'N-Queen' },
             { id: 'subset-sum-pruning', label: '부분집합 합 가지치기' },
@@ -69,6 +82,7 @@
         {
           key: 'recursion',
           label: '재귀',
+          description: '재귀 호출의 전개와 복귀 시점이 코드 흐름에 맞춰 어떻게 변하는지 확인합니다.',
           items: [
             { id: 'factorial', label: '팩토리얼' },
             { id: 'fibonacci', label: '피보나치' },
@@ -78,6 +92,11 @@
       ],
     },
   ];
+
+  const totalScenarioCount = studyTree.reduce(
+    (sum, root) => sum + root.groups.reduce((groupSum, group) => groupSum + group.items.length, 0),
+    0,
+  );
 
   let currentRootKey = 'visualizer';
   let currentScenarioId = 'bubble-sort';
@@ -106,24 +125,37 @@
     return `${root.path}?embed=1&scenario=${encodeURIComponent(scenarioId)}`;
   }
 
-  function renderRootMenu() {
-    rootList.innerHTML = studyTree.map((root) => `
-      <button type="button" class="study-root-button ${root.key === currentRootKey ? 'is-active' : ''}" data-root="${root.key}">
-        ${root.label}
-      </button>
+  function setScenario(nextScenarioId, forceReload = false) {
+    if (!nextScenarioId || nextScenarioId === currentScenarioId && !forceReload) return;
+    currentScenarioId = nextScenarioId;
+    renderScenarioSelect();
+    renderSubmenu();
+    renderQuickChips();
+    updateViewerHeader();
+    loadScenario(forceReload);
+  }
+
+  function renderSubmenu() {
+    const root = getCurrentRoot();
+    submenuGroupsNode.innerHTML = root.groups.map((group) => `
+      <section class="study-submenu-group">
+        <h3>${group.label}</h3>
+        <div class="study-submenu-buttons">
+          ${group.items.map((item) => `
+            <button
+              type="button"
+              class="study-submenu-button ${item.id === currentScenarioId ? 'is-active' : ''}"
+              data-scenario="${item.id}"
+            >
+              ${item.label}
+            </button>
+          `).join('')}
+        </div>
+      </section>
     `).join('');
 
-    rootList.querySelectorAll('[data-root]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const nextRootKey = button.dataset.root;
-        if (nextRootKey === currentRootKey) return;
-        currentRootKey = nextRootKey;
-        const root = getCurrentRoot();
-        currentScenarioId = root.groups[0].items[0].id;
-        renderRootMenu();
-        renderScenarioSelect();
-        loadScenario(true);
-      });
+    submenuGroupsNode.querySelectorAll('[data-scenario]').forEach((button) => {
+      button.addEventListener('click', () => setScenario(button.dataset.scenario));
     });
   }
 
@@ -140,11 +172,39 @@
     scenarioSelect.value = currentScenarioId;
   }
 
+  function renderQuickChips() {
+    const info = findScenarioInfo(currentScenarioId);
+    if (!info) return;
+
+    quickChipsNode.innerHTML = info.group.items.map((item) => `
+      <button
+        type="button"
+        class="study-quick-chip ${item.id === currentScenarioId ? 'is-active' : ''}"
+        data-scenario="${item.id}"
+      >
+        ${item.label}
+      </button>
+    `).join('');
+
+    quickChipsNode.querySelectorAll('[data-scenario]').forEach((button) => {
+      button.addEventListener('click', () => setScenario(button.dataset.scenario));
+    });
+  }
+
   function updateViewerHeader() {
     const info = findScenarioInfo(currentScenarioId);
     if (!info) return;
+
+    const itemIndex = info.group.items.findIndex((item) => item.id === currentScenarioId) + 1;
+
     breadcrumbNode.textContent = `${info.root.label} · ${info.group.label}`;
     titleNode.textContent = info.item.label;
+
+    if (currentGroupNode) currentGroupNode.textContent = info.group.label;
+    if (totalCountNode) totalCountNode.textContent = `${totalScenarioCount}개`;
+    if (groupCountNode) groupCountNode.textContent = `${info.group.items.length}개 시나리오`;
+    if (currentIndexNode) currentIndexNode.textContent = `${itemIndex} / ${info.group.items.length}`;
+    if (currentDescriptionNode) currentDescriptionNode.textContent = info.group.description;
   }
 
   function injectViewerTheme() {
@@ -338,8 +398,6 @@
 
   function loadScenario(forceReload) {
     const root = getCurrentRoot();
-    updateViewerHeader();
-
     const samePageLoaded = frame.dataset.loadedRoot === root.key;
     if (forceReload || !samePageLoaded) {
       frame.src = buildFrameUrl(root, currentScenarioId);
@@ -359,13 +417,37 @@
     }
   }
 
+  function toggleSubmenu(forceOpen) {
+    if (!submenuPanel || !submenuToggle) return;
+    const shouldOpen = typeof forceOpen === 'boolean'
+      ? forceOpen
+      : submenuToggle.getAttribute('aria-expanded') !== 'true';
+
+    submenuToggle.setAttribute('aria-expanded', String(shouldOpen));
+    submenuPanel.hidden = !shouldOpen;
+  }
+
   scenarioSelect.addEventListener('change', () => {
     const nextScenarioId = scenarioSelect.value;
-    if (!nextScenarioId || nextScenarioId === currentScenarioId) return;
-    currentScenarioId = nextScenarioId;
-    renderScenarioSelect();
-    loadScenario(false);
+    if (!nextScenarioId) return;
+    setScenario(nextScenarioId);
   });
+
+  if (submenuToggle && submenuPanel) {
+    submenuToggle.addEventListener('click', () => toggleSubmenu());
+
+    document.addEventListener('click', (event) => {
+      if (submenuPanel.hidden) return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (submenuPanel.contains(target) || submenuToggle.contains(target)) return;
+      toggleSubmenu(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') toggleSubmenu(false);
+    });
+  }
 
   frame.addEventListener('load', () => {
     injectViewerTheme();
@@ -388,8 +470,10 @@
     }
   });
 
-  renderRootMenu();
+  renderSubmenu();
   renderScenarioSelect();
+  renderQuickChips();
   updateViewerHeader();
+  toggleSubmenu(true);
   loadScenario(true);
 })();

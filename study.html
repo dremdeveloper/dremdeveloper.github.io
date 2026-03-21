@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>공부자료 | 박경록</title>
-  <meta name="description" content="박경록 공부자료 페이지. 공부자료 페이지에서 시나리오를 우측 콤보박스로 빠르게 바꿔 볼 수 있습니다." />
+  <meta name="description" content="박경록 공부자료 페이지. 공부자료 상단 서브메뉴와 넓어진 코드 시각화 영역에서 시나리오를 빠르게 바꿔 볼 수 있습니다." />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <div class="site-shell">
-    <header class="topbar">
+    <header class="topbar study-topbar">
       <a class="brand" href="index.html" aria-label="홈으로 이동">
         <span class="brand-mark">KP</span>
         <span class="brand-text">
@@ -25,9 +25,31 @@
       <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
         <a href="index.html">Home</a>
         <a href="lectures.html">강의</a>
-        <a class="is-active" href="study.html">공부자료</a>
+        <div class="site-nav-study is-active">
+          <button
+            id="study-nav-toggle"
+            class="site-nav-study-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-controls="study-top-submenu"
+          >
+            공부자료
+            <span aria-hidden="true">▾</span>
+          </button>
+        </div>
       </nav>
     </header>
+
+    <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴">
+      <div class="study-top-submenu-head">
+        <div>
+          <p class="eyebrow no-margin">Study Submenu</p>
+          <h2>공부자료 바로가기</h2>
+        </div>
+        <p>상단에서 원하는 주제를 열고 시나리오를 바로 선택한 뒤, 아래의 넓어진 시각화 화면에서 전체 흐름을 한눈에 볼 수 있게 구성했습니다.</p>
+      </div>
+      <div id="study-submenu-groups" class="study-submenu-groups"></div>
+    </section>
 
     <main class="page-shell section-tight">
       <section class="page-header card panel-pad-lg study-page-header">
@@ -35,37 +57,64 @@
           <p class="eyebrow">Study Material</p>
           <h1>공부자료</h1>
         </div>
-        <p class="study-page-lead">애니메이션, 단계 설명, 상태 변수를 한눈에 빠르게 보고 시나리오는 우측 콤보박스에서 바로 바꿀 수 있게 정리했습니다.</p>
+        <p class="study-page-lead">왼쪽 서브메뉴를 없애고 상단 드롭다운형 서브메뉴로 정리했습니다. 덕분에 코드 시각화 영역을 넓혀 애니메이션, 단계 설명, 상태 변수를 더 크게 확인할 수 있습니다.</p>
       </section>
 
-      <section class="browser-layout study-browser-layout">
-        <aside class="browser-sidebar card panel-pad-md study-sidebar">
-          <div class="sidebar-meta">
-            <h2>자료 메뉴</h2>
-            <p>좌측은 자료 분류만 간단히 두고, 시나리오 전환은 우측 콤보박스에서 바로 할 수 있게 정리했습니다.</p>
+      <section class="study-focus-layout">
+        <article class="card panel-pad-md study-overview-card">
+          <div class="study-overview-head">
+            <div>
+              <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
+              <h2 id="study-viewer-title">버블 정렬</h2>
+            </div>
+            <div class="study-viewer-controls">
+              <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
+              <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
+            </div>
           </div>
 
-          <div class="study-root-list" id="study-root-list"></div>
-        </aside>
-
-        <section class="browser-main">
-          <article class="card study-viewer-card study-viewer-shell">
-            <div class="study-viewer-head">
-              <div class="study-viewer-copy">
-                <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
-                <h2 id="study-viewer-title">버블 정렬</h2>
-              </div>
-              <div class="study-viewer-controls">
-                <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
-                <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
-              </div>
+          <div class="study-overview-grid">
+            <div class="study-highlight-card">
+              <span>현재 주제</span>
+              <strong id="study-current-group">정렬</strong>
+              <p id="study-current-description">선택한 알고리즘의 핵심 흐름과 코드 실행 순서를 넓은 화면에서 바로 확인할 수 있습니다.</p>
             </div>
-
-            <div class="study-frame-wrap study-frame-wrap-embedded">
-              <iframe id="study-frame" title="공부자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
+            <div class="study-stat-card">
+              <span>전체 시나리오</span>
+              <strong id="study-total-count">0개</strong>
             </div>
-          </article>
-        </section>
+            <div class="study-stat-card">
+              <span>현재 카테고리</span>
+              <strong id="study-group-count">0개 시나리오</strong>
+            </div>
+            <div class="study-stat-card">
+              <span>현재 순서</span>
+              <strong id="study-current-index">0 / 0</strong>
+            </div>
+          </div>
+
+          <div class="study-chip-panel">
+            <div class="study-chip-panel-head">
+              <h3>빠른 이동</h3>
+              <p>상단 서브메뉴와 동일하게 현재 카테고리의 시나리오를 버튼으로 바로 전환할 수 있습니다.</p>
+            </div>
+            <div id="study-quick-chips" class="study-quick-chips"></div>
+          </div>
+        </article>
+
+        <article class="card study-viewer-card study-viewer-shell">
+          <div class="study-visual-head panel-pad-md">
+            <div>
+              <p class="eyebrow no-margin">Code Visualization</p>
+              <h3>넓어진 시각화 화면</h3>
+            </div>
+            <p>좌측 공간을 시각화 영역에 재할당해 구조, 상태 변화, 코드 흐름을 더 크게 볼 수 있도록 조정했습니다.</p>
+          </div>
+
+          <div class="study-frame-wrap study-frame-wrap-embedded study-frame-wrap-expanded">
+            <iframe id="study-frame" title="공부자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
+          </div>
+        </article>
       </section>
     </main>
 
