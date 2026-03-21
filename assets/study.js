@@ -252,15 +252,16 @@
       return Array.isArray(file.lessons) && file.lessons.length ? `
         <section class="study-plan-group">
           <div class="study-plan-list">
-            ${file.lessons.map((group) => {
+            ${file.lessons.map((group, index) => {
               const isExpandedWeek = group.group === expandedPlanWeek;
               const weekCountLabel = `${group.items.length}개 과제`;
               return `
                 <section class="study-plan-group-block">
                   <button
-                    class="study-plan-link ${isExpandedWeek ? 'is-active' : ''}"
+                    class="study-plan-link study-plan-link-week-${index + 1} ${isExpandedWeek ? 'is-active' : ''}"
                     type="button"
                     data-plan-week="${escapeHtml(group.group)}"
+                    data-plan-week-order="${index + 1}"
                     role="tab"
                     aria-selected="${String(isExpandedWeek)}"
                     aria-expanded="${String(isExpandedWeek)}"
