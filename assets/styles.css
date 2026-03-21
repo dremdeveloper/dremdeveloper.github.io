@@ -573,6 +573,10 @@ p { line-height: 1.75; color: var(--muted); }
   gap: 18px;
 }
 
+.study-focus-layout[hidden] {
+  display: none;
+}
+
 .study-selector-card {
   display: grid;
   gap: 16px;
