@@ -22,7 +22,7 @@ articles/
 ├── AI 논문/
 │   └── 2026-03-22-another-paper-review.md
 ├── 트러블 슈팅/
-├── 코딩 테스트 팁/
+├── 유용한 지식 및 팁/
 └── 생각정리/
     └── 2026-03-21-sample-article.md
 ```
