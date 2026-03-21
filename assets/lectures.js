@@ -192,7 +192,6 @@
         <span class="menu-item-index">${String(index + 1).padStart(2, '0')}</span>
         <span class="menu-item-copy">
           <strong>${item.title}</strong>
-          <span>${item.summary}</span>
         </span>
       `;
       button.addEventListener('click', () => {
