@@ -1420,6 +1420,29 @@ p { line-height: 1.75; color: var(--muted); }
   gap: 10px;
 }
 
+.article-category-group {
+  display: grid;
+  gap: 8px;
+}
+
+.article-category-title {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.article-category-items {
+  display: grid;
+  gap: 8px;
+}
+
+.article-category-empty {
+  margin: 0;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
 .browser-main {
   min-width: 0;
 }

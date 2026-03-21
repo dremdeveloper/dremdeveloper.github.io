@@ -10,16 +10,17 @@
   if (!listNode || !countNode || !statusNode || !viewerNode) return;
 
   const searchParams = new URLSearchParams(window.location.search);
-  const requestedFile = searchParams.get('file');
+  const requestedFile = decodeURIComponent(searchParams.get('file') || '');
   const owner = config.owner;
   const repo = config.repo;
   const branch = config.branch || 'main';
   const articlesPath = config.articlesPath || 'articles';
   const defaultFile = config.defaultFile || '';
   const configuredFiles = Array.isArray(config.files) ? config.files : [];
+  const configuredCategoryOrder = Array.isArray(config.categoryOrder) ? config.categoryOrder : [];
 
-  const contentsApiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(articlesPath)}?ref=${encodeURIComponent(branch)}`;
-  const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}/${articlesPath}`;
+  const contentsApiBaseUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
+  const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}`;
   const mathJaxSrc = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
   let articleFiles = [];
   let currentFile = '';
@@ -60,16 +61,34 @@
     return heading?.[1]?.trim() || slugToTitle(fileName);
   }
 
+  function encodePath(path) {
+    return String(path || '')
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+  }
+
+  function normalizeFileKey(value) {
+    return String(value || '')
+      .replace(/^\/+|\/+$/g, '')
+      .trim();
+  }
+
   function buildArticleEntry(item) {
-    const fileName = item.name || item.file || '';
-    const safeFileName = fileName.split('/').pop() || '';
-    const encodedFileName = encodeURIComponent(safeFileName);
-    const localPath = item.localPath || `${articlesPath}/${encodedFileName}`;
-    const githubRawUrl = item.githubRawUrl || item.download_url || `${rawBaseUrl}/${encodedFileName}`;
+    const fileKey = normalizeFileKey(item.path || item.name || item.file || '');
+    const safeFileName = fileKey.split('/').pop() || '';
+    const categoryParts = fileKey.split('/').slice(1, -1);
+    const category = item.category || categoryParts.join(' / ') || '미분류';
+    const encodedPath = encodePath(fileKey);
+    const localPath = item.localPath || encodeURI(fileKey);
+    const githubRawUrl = item.githubRawUrl || item.download_url || `${rawBaseUrl}/${encodedPath}`;
 
     return {
-      name: safeFileName,
+      name: fileKey,
+      fileName: safeFileName,
       title: item.title || slugToTitle(safeFileName),
+      category,
       localPath,
       downloadUrl: githubRawUrl
     };
@@ -77,7 +96,7 @@
 
   function setArticleFiles(files) {
     articleFiles = files
-      .filter((item) => item?.name)
+      .filter((item) => normalizeFileKey(item?.path || item?.name))
       .map(buildArticleEntry)
       .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
 
@@ -89,12 +108,40 @@
     const merged = new Map();
 
     [...primaryFiles, ...secondaryFiles].forEach((item) => {
-      if (!item?.name) return;
-      const existing = merged.get(item.name) || {};
-      merged.set(item.name, { ...item, ...existing });
+      const key = normalizeFileKey(item?.path || item?.name);
+      if (!key) return;
+      const existing = merged.get(key) || {};
+      merged.set(key, { ...item, ...existing, path: key, name: key });
     });
 
     return Array.from(merged.values());
+  }
+
+  async function fetchDirectoryEntries(path = articlesPath) {
+    const encodedPath = encodePath(path);
+    const response = await fetch(`${contentsApiBaseUrl}/${encodedPath}?ref=${encodeURIComponent(branch)}`, {
+      headers: {
+        Accept: 'application/vnd.github+json'
+      }
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const items = await response.json();
+    const files = [];
+
+    for (const item of items) {
+      if (item.type === 'dir') {
+        files.push(...await fetchDirectoryEntries(item.path));
+        continue;
+      }
+
+      if (item.type === 'file' && /\.md$/i.test(item.name)) {
+        files.push(item);
+      }
+    }
+
+    return files;
   }
 
   function setStatus(message, isError = false) {
@@ -311,20 +358,59 @@
   function renderList() {
     listNode.innerHTML = '';
 
-    articleFiles.forEach((file, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `menu-item${file.name === currentFile ? ' is-active' : ''}`;
-      button.innerHTML = `
-        <span class="menu-item-index">${String(index + 1).padStart(2, '0')}</span>
-        <span class="menu-item-copy">
-          <strong>${escapeHtml(file.title)}</strong>
-        </span>
-      `;
-      button.addEventListener('click', () => {
-        loadArticle(file.name);
+    const groupedFiles = articleFiles.reduce((groups, file) => {
+      const key = file.category || '미분류';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(file);
+      return groups;
+    }, new Map());
+
+    const orderedCategories = [
+      ...configuredCategoryOrder,
+      ...Array.from(groupedFiles.keys()).filter((category) => !configuredCategoryOrder.includes(category))
+    ];
+
+    let articleIndex = 0;
+
+    orderedCategories.forEach((category) => {
+      const files = groupedFiles.get(category) || [];
+      const section = document.createElement('section');
+      section.className = 'article-category-group';
+
+      const heading = document.createElement('h3');
+      heading.className = 'article-category-title';
+      heading.textContent = category;
+      section.appendChild(heading);
+
+      const groupList = document.createElement('div');
+      groupList.className = 'article-category-items';
+
+      files.forEach((file) => {
+        articleIndex += 1;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `menu-item${file.name === currentFile ? ' is-active' : ''}`;
+        button.innerHTML = `
+          <span class="menu-item-index">${String(articleIndex).padStart(2, '0')}</span>
+          <span class="menu-item-copy">
+            <strong>${escapeHtml(file.title)}</strong>
+          </span>
+        `;
+        button.addEventListener('click', () => {
+          loadArticle(file.name);
+        });
+        groupList.appendChild(button);
       });
-      listNode.appendChild(button);
+
+      if (!files.length) {
+        const emptyState = document.createElement('p');
+        emptyState.className = 'article-category-empty';
+        emptyState.textContent = '문서 없음';
+        groupList.appendChild(emptyState);
+      }
+
+      section.appendChild(groupList);
+      listNode.appendChild(section);
     });
   }
 
@@ -357,7 +443,7 @@
     try {
       const markdown = await fetchMarkdown(file);
       const sanitizedMarkdown = sanitizeMarkdown(markdown);
-      const renderedTitle = extractTitle(sanitizedMarkdown, file.name);
+      const renderedTitle = extractTitle(sanitizedMarkdown, file.fileName || file.name);
       file.title = renderedTitle;
       renderList();
       showViewer(renderMarkdown(sanitizedMarkdown));
@@ -373,17 +459,11 @@
     setStatus('GitHub 저장소에서 article 목록을 불러오는 중입니다.');
 
     try {
-      const response = await fetch(contentsApiUrl, {
-        headers: {
-          Accept: 'application/vnd.github+json'
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const items = await response.json();
+      const items = await fetchDirectoryEntries();
       setArticleFiles(
         mergeArticleFiles(
           configuredFiles,
-          items.filter((item) => item.type === 'file' && /\.md$/i.test(item.name))
+          items
         )
       );
 
