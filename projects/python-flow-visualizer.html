@@ -992,17 +992,17 @@ svg {
   font-size: 14px;
 }
 
-@keyframes pulseRing {
-  0% { box-shadow: 0 0 0 0 rgba(99, 164, 255, 0.26); }
-  70% { box-shadow: 0 0 0 12px rgba(99, 164, 255, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(99, 164, 255, 0); }
-}
-
 .graph-node.current circle,
 .tree-node.current circle,
-.call-node.current circle,
+.call-node.current circle {
+  filter: drop-shadow(0 0 10px rgba(255, 191, 95, 0.22));
+}
+
 .board-cell.candidate {
-  animation: pulseRing 1.6s ease-out infinite;
+  box-shadow:
+    inset 0 0 0 100vmax rgba(255, 191, 95, 0.16),
+    0 0 0 3px rgba(255, 191, 95, 0.12);
+  border-color: rgba(255, 191, 95, 0.46);
 }
 
 @media (max-width: 1400px) {
@@ -1573,7 +1573,10 @@ body {
 
 .stack-slot.focus-slot,
 .queue-slot.focus-slot {
-  animation: pulseRing 1.6s ease-out infinite;
+  background: linear-gradient(180deg, rgba(99, 164, 255, 0.1), rgba(255, 255, 255, 0.06));
+  box-shadow:
+    inset 0 0 0 1px rgba(99, 164, 255, 0.16),
+    0 0 0 3px rgba(99, 164, 255, 0.08);
 }
 
 .stack-slot.empty,
@@ -1857,8 +1860,10 @@ body {
 
 .factorial-card.current {
   border-color: rgba(255, 191, 95, 0.55);
-  box-shadow: 0 0 0 1px rgba(255, 191, 95, 0.16) inset;
-  animation: pulseRing 1.6s ease-out infinite;
+  background: linear-gradient(180deg, rgba(255, 191, 95, 0.12), rgba(255, 255, 255, 0.04));
+  box-shadow:
+    0 0 0 1px rgba(255, 191, 95, 0.16) inset,
+    0 0 0 3px rgba(255, 191, 95, 0.08);
 }
 
 .factorial-card.waiting {
@@ -5353,9 +5358,7 @@ function exposePublicApi() {
     return `
       <g class="motion-group ${tone}">
         <path class="${className}" d="M ${x1} ${y1} L ${x2} ${y2}" marker-end="url(#${markerId})"></path>
-        <circle class="motion-dot ${tone}" r="5">
-          <animateMotion dur="1.2s" repeatCount="indefinite" path="M ${x1} ${y1} L ${x2} ${y2}"></animateMotion>
-        </circle>
+        <circle class="motion-dot ${tone}" cx="${x2}" cy="${y2}" r="5"></circle>
       </g>
     `;
   }
@@ -6063,9 +6066,7 @@ function renderMotionArrow(className, fromId, toId, nodesById, markerId, tone = 
   return `
     <g class="motion-group ${tone}">
       <path class="${className}" d="M ${x1} ${y1} L ${x2} ${y2}" marker-end="url(#${markerId})"></path>
-      <circle class="motion-dot ${tone}" r="3.6">
-        <animateMotion dur="1.15s" repeatCount="indefinite" path="M ${x1} ${y1} L ${x2} ${y2}"></animateMotion>
-      </circle>
+      <circle class="motion-dot ${tone}" cx="${x2}" cy="${y2}" r="3.6"></circle>
     </g>
   `;
 }
