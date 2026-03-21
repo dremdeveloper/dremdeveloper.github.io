@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="340" viewBox="0 0 500 340" role="img" aria-labelledby="title desc">
+  <title id="title">KakaoTalk Open Chat</title>
+  <desc id="desc">Yellow KakaoTalk-style icon used as an open chat link.</desc>
+  <rect width="500" height="340" rx="20" fill="#FEE500"/>
+  <g transform="translate(68 36)">
+    <path d="M300 0C171 0 66 76 66 170c0 45 24 86 63 116l-24 53c-2 4 3 8 7 6l83-45c27 7 56 11 87 11 129 0 234-76 234-170S429 0 300 0Z" fill="#3C1E1E"/>
+    <g fill="#FEE500">
+      <rect x="92" y="103" width="18" height="95" rx="9"/>
+      <rect x="71" y="103" width="60" height="18" rx="9"/>
+      <path d="M171 103h22l42 95h-22l-8-20h-46l-8 20h-21l41-95Zm-5 57h32l-16-39-16 39Z"/>
+      <rect x="250" y="103" width="18" height="95" rx="9"/>
+      <rect x="228" y="103" width="62" height="18" rx="9"/>
+      <rect x="312" y="103" width="18" height="95" rx="9"/>
+      <path d="M356 103h18v77h43v18h-61v-95Z"/>
+    </g>
+  </g>
+</svg>
