@@ -3,8 +3,10 @@
   const scenarioSelect = document.getElementById('study-scenario-select');
   const titleNode = document.getElementById('study-viewer-title');
   const breadcrumbNode = document.getElementById('study-breadcrumb');
-  const submenuGroupsNode = document.getElementById('study-submenu-groups');
-  const quickChipsNode = document.getElementById('study-quick-chips');
+  const submenuRootsNode = document.getElementById('study-submenu-roots');
+  const submenuSelectorNode = document.getElementById('study-submenu-selector');
+  const selectorTitleNode = document.getElementById('study-selector-title');
+  const selectorDescriptionNode = document.getElementById('study-selector-description');
   const currentGroupNode = document.getElementById('study-current-group');
   const totalCountNode = document.getElementById('study-total-count');
   const groupCountNode = document.getElementById('study-group-count');
@@ -13,7 +15,7 @@
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !scenarioSelect || !submenuGroupsNode || !quickChipsNode) return;
+  if (!frame || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode) return;
 
   const studyTree = [
     {
@@ -100,6 +102,7 @@
 
   let currentRootKey = 'visualizer';
   let currentScenarioId = 'bubble-sort';
+  let isRootSelectorVisible = false;
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
@@ -126,41 +129,52 @@
   }
 
   function setScenario(nextScenarioId, forceReload = false) {
-    if (!nextScenarioId || nextScenarioId === currentScenarioId && !forceReload) return;
+    if (!nextScenarioId) return;
+    const nextInfo = findScenarioInfo(nextScenarioId);
+    if (!nextInfo) return;
+    currentRootKey = nextInfo.root.key;
+    if (nextScenarioId === currentScenarioId && !forceReload) return;
     currentScenarioId = nextScenarioId;
     renderScenarioSelect();
     renderSubmenu();
-    renderQuickChips();
     updateViewerHeader();
     loadScenario(forceReload);
   }
 
   function renderSubmenu() {
-    const root = getCurrentRoot();
-    submenuGroupsNode.innerHTML = root.groups.map((group) => `
-      <section class="study-submenu-group">
-        <h3>${group.label}</h3>
-        <div class="study-submenu-buttons">
-          ${group.items.map((item) => `
-            <button
-              type="button"
-              class="study-submenu-button ${item.id === currentScenarioId ? 'is-active' : ''}"
-              data-scenario="${item.id}"
-            >
-              ${item.label}
-            </button>
-          `).join('')}
-        </div>
-      </section>
+    submenuRootsNode.innerHTML = studyTree.map((root) => `
+      <button
+        type="button"
+        class="study-submenu-root ${root.key === currentRootKey ? 'is-active' : ''}"
+        data-root="${root.key}"
+        aria-pressed="${root.key === currentRootKey && isRootSelectorVisible ? 'true' : 'false'}"
+      >
+        <span class="study-submenu-root-label">${root.label}</span>
+        <span class="study-submenu-root-meta">${root.groups.length}개 카테고리</span>
+      </button>
     `).join('');
 
-    submenuGroupsNode.querySelectorAll('[data-scenario]').forEach((button) => {
-      button.addEventListener('click', () => setScenario(button.dataset.scenario));
+    submenuRootsNode.querySelectorAll('[data-root]').forEach((button) => {
+      button.addEventListener('click', () => {
+        currentRootKey = button.dataset.root;
+        isRootSelectorVisible = true;
+        renderSubmenu();
+        renderScenarioSelect();
+      });
     });
+
+    if (submenuSelectorNode) {
+      submenuSelectorNode.hidden = !isRootSelectorVisible;
+    }
   }
 
   function renderScenarioSelect() {
     const root = getCurrentRoot();
+    if (selectorTitleNode) selectorTitleNode.textContent = root.label;
+    if (selectorDescriptionNode) {
+      const scenarioCount = root.groups.reduce((sum, group) => sum + group.items.length, 0);
+      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오 중 하나를 골라 바로 확인할 수 있습니다.`;
+    }
     scenarioSelect.innerHTML = root.groups.map((group) => `
       <optgroup label="${group.label}">
         ${group.items.map((item) => `
@@ -170,25 +184,6 @@
     `).join('');
 
     scenarioSelect.value = currentScenarioId;
-  }
-
-  function renderQuickChips() {
-    const info = findScenarioInfo(currentScenarioId);
-    if (!info) return;
-
-    quickChipsNode.innerHTML = info.group.items.map((item) => `
-      <button
-        type="button"
-        class="study-quick-chip ${item.id === currentScenarioId ? 'is-active' : ''}"
-        data-scenario="${item.id}"
-      >
-        ${item.label}
-      </button>
-    `).join('');
-
-    quickChipsNode.querySelectorAll('[data-scenario]').forEach((button) => {
-      button.addEventListener('click', () => setScenario(button.dataset.scenario));
-    });
   }
 
   function updateViewerHeader() {
@@ -423,6 +418,9 @@
       ? forceOpen
       : submenuToggle.getAttribute('aria-expanded') !== 'true';
 
+    isRootSelectorVisible = false;
+    renderSubmenu();
+
     submenuToggle.setAttribute('aria-expanded', String(shouldOpen));
     submenuPanel.hidden = !shouldOpen;
   }
@@ -472,8 +470,6 @@
 
   renderSubmenu();
   renderScenarioSelect();
-  renderQuickChips();
   updateViewerHeader();
-  toggleSubmenu(true);
   loadScenario(true);
 })();
