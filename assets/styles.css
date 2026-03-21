@@ -339,6 +339,17 @@ p { line-height: 1.75; color: var(--muted); }
   background: var(--panel-soft);
 }
 
+.bottom-links-card {
+  margin-top: auto;
+}
+
+.bottom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .section-header {
   margin-bottom: 18px;
 }
