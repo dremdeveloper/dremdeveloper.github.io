@@ -257,14 +257,15 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .social-logo-inline {
-  width: 112px;
+  width: 148px;
 }
 .social-logo-gmail {
-  width: 72px;
+  width: 96px;
 }
 
 .hero-links {
   align-items: center;
+  gap: 18px;
 }
 
 .hero-links .social-logo-link {
@@ -274,8 +275,8 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .social-logo-kakao {
-  width: 112px;
-  border-radius: 10px;
+  width: 132px;
+  border-radius: 12px;
 }
 
 .social-logo-stack {
@@ -1091,6 +1092,18 @@ p { line-height: 1.75; color: var(--muted); }
 
   .panel-pad-lg { padding: 20px; }
   .book-card { grid-template-columns: 96px 1fr; }
+  .hero-links {
+    gap: 14px;
+  }
+  .social-logo-inline {
+    width: 126px;
+  }
+  .social-logo-gmail {
+    width: 84px;
+  }
+  .social-logo-kakao {
+    width: 118px;
+  }
   .summary-topline,
   .timeline-head,
   .study-overview-head,
