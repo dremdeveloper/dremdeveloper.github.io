@@ -15,7 +15,7 @@
   const durationNode = document.getElementById('lecture-duration');
 
   let currentTrack = 'python';
-  let currentValue = 'playlist';
+  let currentValue = data[currentTrack]?.items[0]?.value || '';
   let ytPlayer;
   let playerReady = false;
   let pendingSelection = null;
@@ -96,13 +96,13 @@
     syncTimer = null;
   };
 
-  const cueSelection = ({ track, item, index }) => {
+  const cueSelection = ({ track, index }) => {
     if (!ytPlayer?.cuePlaylist) return;
 
     ytPlayer.cuePlaylist({
       listType: 'playlist',
       list: track.playlistId,
-      index: item.type === 'playlist' ? 0 : Math.max(index - 1, 0)
+      index: Math.max(index, 0)
     });
   };
 
@@ -189,10 +189,10 @@
       button.className = `menu-item${item.value === currentValue ? ' is-active' : ''}`;
       button.dataset.value = item.value;
       button.innerHTML = `
-        <span class="menu-item-index">${String(index).padStart(2, '0')}</span>
+        <span class="menu-item-index">${String(index + 1).padStart(2, '0')}</span>
         <span class="menu-item-copy">
           <strong>${item.title}</strong>
-          <span>${item.topic}</span>
+          <span>${item.summary}</span>
         </span>
       `;
       button.addEventListener('click', () => {
@@ -212,10 +212,10 @@
     bookLink.href = track.bookUrl;
 
     detailGrid.innerHTML = `
-      <div class="meta-card"><span>Playlist</span><strong>${track.label}</strong></div>
-      <div class="meta-card"><span>Order</span><strong>${String(index).padStart(2, '0')}</strong></div>
-      <div class="meta-card"><span>Topic</span><strong>${item.topic}</strong></div>
-      <div class="meta-card"><span>Summary</span><strong>${item.note}</strong></div>
+      <div class="meta-card wide lecture-summary-card">
+        <span>Summary</span>
+        <strong>${item.summary}</strong>
+      </div>
     `;
 
     setControlState({ ready: playerReady, playing: false, currentTime: 0, duration: 0 });
@@ -224,7 +224,7 @@
 
   const switchTrack = (trackKey) => {
     currentTrack = trackKey;
-    currentValue = 'playlist';
+    currentValue = data[trackKey]?.items[0]?.value || '';
     trackButtons.forEach((button) => {
       button.classList.toggle('is-active', button.dataset.track === trackKey);
     });
@@ -269,18 +269,14 @@
     updateProgress();
   });
 
-  progressInput.addEventListener('pointerdown', () => {
-    isSeeking = true;
-  });
-
-  progressInput.addEventListener('pointerup', () => {
-    isSeeking = false;
-  });
-
   trackButtons.forEach((button) => {
-    button.addEventListener('click', () => switchTrack(button.dataset.track));
+    button.addEventListener('click', () => {
+      if (button.dataset.track === currentTrack) return;
+      switchTrack(button.dataset.track);
+    });
   });
 
-  syncProgressVisual();
-  switchTrack('python');
+  renderTrackMeta(data[currentTrack]);
+  renderList();
+  renderPlayer();
 })();
