@@ -2435,13 +2435,13 @@ body {
             <div id="descriptionArea"></div>
           </article>
 
-          <article class="panel-card glass">
+          <article class="panel-card glass panel-card-code" id="codePanel">
             <div class="panel-title">실행 중인 Python 코드</div>
             <div id="codeArea"></div>
           </article>
 
-          <article class="panel-card glass">
-            <div class="panel-title">상태</div>
+          <article class="panel-card glass panel-card-state" id="statePanel">
+            <div class="panel-title">상태 변수</div>
             <div id="stateArea"></div>
           </article>
         </div>
@@ -4814,13 +4814,79 @@ function installEmbedMode() {
     .algorithm-tabs { display: none !important; }
     .workspace {
       margin-top: 14px !important;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.95fr) !important;
+      gap: 18px !important;
+      align-items: start !important;
+    }
+    .visual-panel {
+      padding: 22px !important;
+      min-height: 0 !important;
+    }
+    .visual-area {
+      min-height: clamp(420px, 58vh, 760px) !important;
       gap: 16px !important;
+    }
+    .panel-card {
+      padding: 18px !important;
+    }
+    .side-stack {
+      gap: 14px !important;
+      position: sticky !important;
+      top: 12px !important;
+    }
+    .panel-card-code {
+      display: none !important;
+    }
+    .panel-card-state {
+      order: -1 !important;
+    }
+    .panel-title {
+      font-size: 16px !important;
+      margin-bottom: 10px !important;
+    }
+    .description-card {
+      padding: 18px !important;
+      gap: 12px !important;
+      border-radius: 18px !important;
+    }
+    .description-title {
+      font-size: 20px !important;
+      line-height: 1.35 !important;
+    }
+    .description-summary,
+    .description-detail {
+      font-size: 14px !important;
+      line-height: 1.7 !important;
+    }
+    .state-grid {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+      gap: 12px !important;
+    }
+    .state-card {
+      min-height: 0 !important;
+      padding: 14px !important;
+      border-radius: 16px !important;
+    }
+    .state-label {
+      font-size: 11px !important;
+      margin-bottom: 8px !important;
+    }
+    .state-value {
+      font-size: 15px !important;
+      line-height: 1.7 !important;
+    }
+    .legend {
+      gap: 8px !important;
     }
     .panel-card, .visual-panel, .hero, .toolbar {
       box-shadow: 0 1px 2px rgba(31, 35, 40, 0.08) !important;
     }
     @media (max-width: 1200px) {
       .workspace { grid-template-columns: 1fr !important; }
+      .side-stack {
+        position: static !important;
+        grid-template-columns: 1fr !important;
+      }
     }
   `;
 }
