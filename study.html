@@ -40,26 +40,17 @@
     </header>
 
     <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴" hidden>
-      <div class="study-top-submenu-head">
-        <div>
-          <p class="eyebrow no-margin">Study Submenu</p>
-          <h2>주제 선택</h2>
-        </div>
-        <p>공부자료를 한 번에 훑고 바로 실행할 수 있게 주제, 카테고리, 시나리오 선택 동선을 짧고 선명하게 정리했습니다.</p>
-      </div>
       <div id="study-submenu-roots" class="study-submenu-roots" role="list"></div>
       <div id="study-submenu-selector" class="study-submenu-selector" hidden>
-        <div>
-          <p class="eyebrow no-margin">Selected Topic</p>
-          <h3 id="study-selector-title">시각화</h3>
-          <p id="study-selector-description">선택한 주제에서 보고 싶은 시나리오를 콤보박스로 골라 바로 실행할 수 있습니다.</p>
+        <div class="study-viewer-controls">
+          <label class="study-select-label" for="study-group-select">알고리즘 종류</label>
+          <select id="study-group-select" class="study-scenario-select" aria-label="알고리즘 종류 선택"></select>
         </div>
         <div class="study-viewer-controls">
-          <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
-          <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
+          <label class="study-select-label" for="study-scenario-select">세부 알고리즘</label>
+          <select id="study-scenario-select" class="study-scenario-select" aria-label="세부 알고리즘 선택"></select>
         </div>
       </div>
-      <div id="study-submenu-groups" class="study-submenu-groups" hidden aria-hidden="true"></div>
     </section>
 
     <main class="page-shell section-tight">
@@ -94,6 +85,7 @@
   </div>
 
   <script src="assets/site.js"></script>
+  <script src="assets/data.js"></script>
   <script src="assets/study.js"></script>
 </body>
 </html>

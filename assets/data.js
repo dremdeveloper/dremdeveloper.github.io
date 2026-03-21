@@ -68,7 +68,7 @@ window.siteData = {
   studyMaterials: [
     {
       key: 'python-flow-visualizer',
-      label: '파이썬 알고리즘 실행 흐름 시각화',
+      label: '시각화',
       typeLabel: 'Interactive HTML',
       title: '파이썬 알고리즘 실행 흐름 시각화',
       summary: '강의 페이지의 기존 서브메뉴는 유지한 채, 공부자료에서만 정렬, 그래프 탐색, 트리 탐색, 트리 순회, 재귀, 스택, 큐, 힙 정렬, N-Queen을 단계별로 볼 수 있게 구성한 자료입니다.',
@@ -76,7 +76,77 @@ window.siteData = {
       valueA: 'HTML / CSS / JavaScript',
       detailB: '주제',
       valueB: '정렬 · 탐색 · 순회 · 재귀 · 힙',
-      path: 'projects/python-flow-visualizer.html'
+      path: 'projects/python-flow-visualizer.html',
+      groups: [
+        {
+          key: 'sorting',
+          label: '정렬',
+          description: '대표 정렬 알고리즘의 비교, 교환, 분할 과정을 단계별로 따라갑니다.',
+          items: [
+            { id: 'bubble-sort', label: '버블 정렬' },
+            { id: 'insertion-sort', label: '삽입 정렬' },
+            { id: 'merge-sort', label: '머지 정렬' },
+            { id: 'quick-sort', label: '퀵 정렬' },
+            { id: 'counting-sort', label: '계수 정렬' },
+            { id: 'heap-sort', label: '힙 정렬' }
+          ]
+        },
+        {
+          key: 'structures',
+          label: '스택·큐',
+          description: '자료구조 내부 상태가 push/pop, enqueue/dequeue에 따라 어떻게 바뀌는지 확인합니다.',
+          items: [
+            { id: 'stack-basic', label: '스택' },
+            { id: 'queue-basic', label: '큐' }
+          ]
+        },
+        {
+          key: 'graph',
+          label: '그래프 탐색',
+          description: '탐색 순서와 방문 상태가 그래프 위에서 어떻게 확장되는지 살펴봅니다.',
+          items: [
+            { id: 'dfs', label: '깊이 우선 탐색' },
+            { id: 'bfs', label: '너비 우선 탐색' }
+          ]
+        },
+        {
+          key: 'tree-search',
+          label: '트리 탐색',
+          description: 'BST에서 탐색 경로가 조건문과 함께 어떻게 결정되는지 보여줍니다.',
+          items: [
+            { id: 'bst-search', label: 'BST 탐색' }
+          ]
+        },
+        {
+          key: 'tree-traversal',
+          label: '트리 순회',
+          description: '전위·중위·후위 순회가 재귀 호출 스택과 함께 어떻게 이동하는지 설명합니다.',
+          items: [
+            { id: 'preorder', label: '전위 순회' },
+            { id: 'inorder', label: '중위 순회' },
+            { id: 'postorder', label: '후위 순회' }
+          ]
+        },
+        {
+          key: 'dynamic',
+          label: '동적 계획법·백트래킹',
+          description: '가지치기와 상태 전이를 시각적으로 비교하며 문제 해결 흐름을 따라갑니다.',
+          items: [
+            { id: 'n-queen', label: 'N-Queen' },
+            { id: 'subset-sum-pruning', label: '부분집합 합 가지치기' }
+          ]
+        },
+        {
+          key: 'recursion',
+          label: '재귀',
+          description: '재귀 호출의 전개와 복귀 시점이 코드 흐름에 맞춰 어떻게 변하는지 확인합니다.',
+          items: [
+            { id: 'factorial', label: '팩토리얼' },
+            { id: 'fibonacci', label: '피보나치' },
+            { id: 'combination', label: '조합' }
+          ]
+        }
+      ]
     }
   ]
 };
