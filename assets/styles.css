@@ -94,9 +94,14 @@ button, iframe { font: inherit; }
   gap: 4px;
 }
 .site-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
   padding: 9px 12px;
   border-radius: 8px;
   color: var(--muted);
+  line-height: 1.2;
   transition: background var(--ease), color var(--ease);
 }
 .site-nav a:hover,
@@ -428,13 +433,15 @@ p { line-height: 1.75; color: var(--muted); }
 .site-nav-study-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 40px;
   padding: 9px 12px;
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: inherit;
   font: inherit;
-  line-height: 1.4;
+  line-height: 1.2;
   cursor: pointer;
   transition: background var(--ease), color var(--ease);
 }
