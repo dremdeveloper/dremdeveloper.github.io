@@ -33,6 +33,8 @@
       word-break: keep-all;
     }
     body.embed { background: transparent; }
+    body.embed .app { grid-template-columns: minmax(0, 1fr); }
+    body.embed .sidebar { display: none; }
     a { color: var(--primary); text-decoration: none; }
     a:hover { text-decoration: underline; }
     button { font: inherit; }
@@ -320,7 +322,8 @@
     const viewerBody = document.getElementById('viewerBody');
 
     const params = new URLSearchParams(window.location.search);
-    if (params.get('embed') === '1') document.body.classList.add('embed');
+    const isEmbed = params.get('embed') === '1';
+    if (isEmbed) document.body.classList.add('embed');
 
     const groups = Array.from(new Map(
       lessons.map((item) => [item.weekOrder, {
@@ -586,7 +589,7 @@
       window.scrollTo?.({ top: 0, behavior: 'auto' });
       if (updateUrl) {
         const url = new URL(window.location.href);
-        url.searchParams.set('scenario', lesson.id);
+        url.searchParams.set(isEmbed ? 'lesson' : 'scenario', lesson.id);
         history.replaceState(null, '', url.toString());
       }
       notifySelection(lesson.id);
@@ -598,7 +601,7 @@
       button.addEventListener('click', () => selectLesson(button.dataset.lessonBtn));
     });
 
-    const initialId = params.get('scenario');
+    const initialId = params.get('lesson') || params.get('scenario');
     selectLesson(lessonMap.has(initialId) ? initialId : lessons[0].id, false);
     window.addEventListener('load', notifyHeight);
     window.addEventListener('resize', notifyHeight);

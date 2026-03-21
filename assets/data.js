@@ -78,7 +78,44 @@ window.siteData = {
           label: '파이썬 주차별 문서',
           description: '1주차부터 4주차까지 이어지는 파이썬 코딩 테스트 학습 플랜 문서를 주차별 메뉴와 함께 볼 수 있습니다.',
           path: 'python-weekly-docs.html?embed=1',
-          metaLabel: '학습 플랜 · HTML 문서'
+          metaLabel: '학습 플랜 · HTML 문서',
+          lessons: [
+            {
+              group: '1주차',
+              items: [
+                { id: 'w1-a01', metaLabel: '1주차 · 과제 01', label: '01. 코테 기본기 세팅 문서' },
+                { id: 'w1-a02', metaLabel: '1주차 · 과제 02', label: '02. 배열 패턴 노트' },
+                { id: 'w1-a03', metaLabel: '1주차 · 과제 03', label: '03. 스택 템플릿 과제' },
+                { id: 'w1-a04', metaLabel: '1주차 · 과제 04', label: '04. 큐 덱 선택 기준 과제' },
+                { id: 'w1-a05', metaLabel: '1주차 · 과제 05', label: '05. 해시 문자열 해싱 과제' }
+              ]
+            },
+            {
+              group: '2주차',
+              items: [
+                { id: 'w2-a06', metaLabel: '2주차 · 과제 06', label: '06. 트리 재귀 패턴 과제' },
+                { id: 'w2-a07', metaLabel: '2주차 · 과제 07', label: '07. 유니온-파인드 MST 과제' },
+                { id: 'w2-a08', metaLabel: '2주차 · 과제 08', label: '08. 그래프 템플릿 과제' },
+                { id: 'w2-a09', metaLabel: '2주차 · 과제 09', label: '09. 힙 이분탐색 보충 과제' }
+              ]
+            },
+            {
+              group: '3주차',
+              items: [
+                { id: 'w3-a10', metaLabel: '3주차 · 과제 10', label: '10. 백트래킹 완전탐색 과제' },
+                { id: 'w3-a11', metaLabel: '3주차 · 과제 11', label: '11. 정렬 커스텀 정렬 과제' },
+                { id: 'w3-a12', metaLabel: '3주차 · 과제 12', label: '12. 시뮬레이션 구현 과제' },
+                { id: 'w3-a13', metaLabel: '3주차 · 과제 13', label: '13. DP 점화식 노트 과제' }
+              ]
+            },
+            {
+              group: '4주차',
+              items: [
+                { id: 'w4-a14', metaLabel: '4주차 · 과제 14', label: '14. DP 심화 + 그리디 판단 과제' },
+                { id: 'w4-a15', metaLabel: '4주차 · 과제 15', label: '15. 최종 모의고사 과제' }
+              ]
+            }
+          ]
         }
       ]
     }

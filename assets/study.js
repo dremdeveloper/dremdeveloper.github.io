@@ -10,12 +10,6 @@
   const selectorCard = document.getElementById('study-selector-card');
   const planMenuRoot = document.getElementById('study-plan-menu');
   const planFrame = document.getElementById('study-plan-frame');
-  const planMetaNode = document.getElementById('study-plan-meta');
-  const planHeadingNode = document.getElementById('study-plan-heading');
-  const planDescriptionNode = document.getElementById('study-plan-description');
-  const planViewerMetaNode = document.getElementById('study-plan-viewer-meta');
-  const planViewerTitleNode = document.getElementById('study-plan-viewer-title');
-  const planViewerSummaryNode = document.getElementById('study-plan-viewer-summary');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
@@ -71,11 +65,12 @@
 
     const defaultPlan = studyPlans[0];
     const defaultFile = defaultPlan?.files[0];
+    const defaultLesson = defaultFile?.lessons?.[0]?.items?.[0];
 
     if (!defaultPlan || !defaultFile) return;
 
     currentPlanKey = defaultPlan.key;
-    currentPlanFileId = defaultFile.id;
+    currentPlanFileId = defaultLesson?.id || defaultFile.id;
   }
 
   function getCurrentPlan() {
@@ -87,7 +82,16 @@
     for (const plan of studyPlans) {
       for (const file of plan.files) {
         if (file.id === fileId) {
-          return { plan, file };
+          return { plan, file, lesson: null };
+        }
+
+        if (Array.isArray(file.lessons)) {
+          for (const group of file.lessons) {
+            const lesson = group.items.find((item) => item.id === fileId);
+            if (lesson) {
+              return { plan, file, lesson };
+            }
+          }
         }
       }
     }
@@ -127,19 +131,6 @@
     toolbarTitleNode.textContent = `${currentInfo.material.label} · ${currentInfo.group.label} · ${currentInfo.item.label}`;
   }
 
-  function updatePlanViewer() {
-    const currentInfo = findPlanFileInfo(currentPlanFileId);
-    if (!currentInfo) return;
-
-    const { plan, file } = currentInfo;
-
-    if (planMetaNode) planMetaNode.textContent = `${plan.label} 파일`;
-    if (planHeadingNode) planHeadingNode.textContent = plan.title;
-    if (planDescriptionNode) planDescriptionNode.textContent = plan.summary;
-    if (planViewerMetaNode) planViewerMetaNode.textContent = file.metaLabel || `${plan.label} 뷰어`;
-    if (planViewerTitleNode) planViewerTitleNode.textContent = file.label;
-    if (planViewerSummaryNode) planViewerSummaryNode.textContent = file.description || plan.summary;
-  }
 
   function setVisualizationExpanded(isExpanded) {
     if (!visualizationToggle || !visualizationPanel) return;
@@ -185,8 +176,6 @@
 
     ensureInitialPlanSelection();
     renderPlanMenu();
-    updatePlanViewer();
-
     if (!hasLoadedPlan) {
       loadPlanFile(true);
       hasLoadedPlan = true;
@@ -215,21 +204,39 @@
 
     planMenuRoot.innerHTML = studyPlans.map((plan) => `
       <section class="study-plan-group">
-        <p class="study-plan-group-label">${escapeHtml(plan.label)}</p>
-        <div class="study-plan-list">
-          ${plan.files.map((file) => `
-            <button
-              class="study-plan-link ${file.id === currentPlanFileId ? 'is-active' : ''}"
-              type="button"
-              data-plan-file="${escapeHtml(file.id)}"
-              role="tab"
-              aria-selected="${String(file.id === currentPlanFileId)}"
-            >
-              <span class="study-plan-link-title">${escapeHtml(file.label)}</span>
-              <span class="study-plan-link-description">${escapeHtml(file.description || plan.summary || '')}</span>
-            </button>
-          `).join('')}
-        </div>
+        <button
+          class="study-plan-link ${plan.files.some((file) => file.id === currentPlanFileId || file.lessons?.some((group) => group.items.some((item) => item.id === currentPlanFileId))) ? 'is-active' : ''}"
+          type="button"
+          data-plan-file="${escapeHtml(plan.files[0].id)}"
+          role="tab"
+          aria-selected="${String(plan.files.some((file) => file.id === currentPlanFileId || file.lessons?.some((group) => group.items.some((item) => item.id === currentPlanFileId))))}"
+        >
+          <span class="study-plan-link-title">${escapeHtml(plan.files[0].label)}</span>
+          <span class="study-plan-link-description">${escapeHtml(plan.files[0].description || plan.summary || '')}</span>
+        </button>
+        ${Array.isArray(plan.files[0].lessons) && plan.files[0].lessons.length ? `
+          <div class="study-plan-submenu">
+            ${plan.files[0].lessons.map((group) => `
+              <section class="study-plan-group-block">
+                <p class="study-plan-group-label">${escapeHtml(group.group)}</p>
+                <div class="study-plan-list study-plan-list-nested">
+                  ${group.items.map((item) => `
+                    <button
+                      class="study-plan-sub-link ${item.id === currentPlanFileId ? 'is-active' : ''}"
+                      type="button"
+                      data-plan-file="${escapeHtml(item.id)}"
+                      role="tab"
+                      aria-selected="${String(item.id === currentPlanFileId)}"
+                    >
+                      <span class="study-plan-link-title">${escapeHtml(item.label)}</span>
+                      <span class="study-plan-link-description">${escapeHtml(item.metaLabel || '')}</span>
+                    </button>
+                  `).join('')}
+                </div>
+              </section>
+            `).join('')}
+          </div>
+        ` : ''}
       </section>
     `).join('');
 
@@ -248,9 +255,14 @@
     const currentInfo = findPlanFileInfo(currentPlanFileId);
     if (!currentInfo) return;
 
-    if (forceReload || planFrame.dataset.loadedFile !== currentInfo.file.id) {
-      planFrame.src = currentInfo.file.path;
-      planFrame.dataset.loadedFile = currentInfo.file.id;
+    const lessonId = currentInfo.file.lessons ? currentPlanFileId : '';
+    const frameUrl = lessonId
+      ? `${currentInfo.file.path}${currentInfo.file.path.includes('?') ? '&' : '?'}lesson=${encodeURIComponent(lessonId)}`
+      : currentInfo.file.path;
+
+    if (forceReload || planFrame.dataset.loadedFile !== currentPlanFileId) {
+      planFrame.src = frameUrl;
+      planFrame.dataset.loadedFile = currentPlanFileId;
     }
   }
 
@@ -261,10 +273,9 @@
     if (!currentInfo) return;
 
     currentPlanKey = currentInfo.plan.key;
-    currentPlanFileId = currentInfo.file.id;
+    currentPlanFileId = currentInfo.lesson?.id || currentInfo.file.id;
 
     renderPlanMenu();
-    updatePlanViewer();
     if (!learningPlanPanel?.hidden) {
       loadPlanFile(forceReload);
     }
