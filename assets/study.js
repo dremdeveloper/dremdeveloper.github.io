@@ -231,6 +231,46 @@
           border-color: #b6c3d1 !important;
           color: #1f2328 !important;
         }
+        .panel-title,
+        .workspace-head,
+        .description-title,
+        .state-value,
+        .bar-fill,
+        .graph-node text,
+        .tree-node text,
+        .call-node text {
+          color: #1f2328 !important;
+        }
+        .description-summary,
+        .description-detail,
+        .state-label,
+        .meta-line,
+        label,
+        .bar-footer,
+        .panel-subtitle {
+          color: #59636e !important;
+        }
+        .description-card {
+          background: linear-gradient(180deg, #f8fbff, #eef4fb) !important;
+          border-color: #c8d7e6 !important;
+        }
+        .state-card,
+        .workspace-card,
+        .graph-stage,
+        .tree-stage,
+        .recursion-stage,
+        .board-frame,
+        .array-table-panel {
+          background: #ffffff !important;
+          border-color: #d0d7de !important;
+        }
+        .bar-track,
+        .stack-column,
+        .queue-lane,
+        .token-row,
+        .board-grid {
+          background: #f6f8fa !important;
+        }
       `;
     } catch (error) {
       // same-origin access only
