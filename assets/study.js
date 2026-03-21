@@ -235,7 +235,6 @@
         .workspace-head,
         .description-title,
         .state-value,
-        .bar-fill,
         .graph-node text,
         .tree-node text,
         .call-node text {
@@ -270,6 +269,25 @@
         .token-row,
         .board-grid {
           background: #f6f8fa !important;
+        }
+        .bar-track {
+          background: #e5e7eb !important;
+          border: 1px solid #c4ccd5 !important;
+        }
+        .bar-fill {
+          color: #ffffff !important;
+          background: linear-gradient(180deg, #111111, #000000) !important;
+          border: 1px solid #000000 !important;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 14px rgba(0, 0, 0, 0.18) !important;
+        }
+        .bar-card.comparing .bar-fill,
+        .bar-card.key .bar-fill,
+        .bar-card.shifted .bar-fill,
+        .bar-card.sorted .bar-fill,
+        .bar-card.fixed .bar-fill,
+        .bar-card.current-write .bar-fill {
+          background: linear-gradient(180deg, #111111, #000000) !important;
+          border-color: #000000 !important;
         }
       `;
     } catch (error) {
