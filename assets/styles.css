@@ -202,6 +202,7 @@ p { line-height: 1.75; color: var(--muted); }
 
 .profile-card dl,
 .profile-card dd { margin: 0; }
+.profile-card h2 { margin-bottom: 16px; }
 .profile-card dt { color: var(--muted); font-size: 0.9rem; }
 .profile-card dd { font-weight: 600; }
 .profile-card dl div {
