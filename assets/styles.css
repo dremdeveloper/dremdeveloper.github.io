@@ -242,19 +242,18 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .openchat-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
   padding: 0;
   border: 0;
   background: transparent;
-  overflow: hidden;
 }
 
 .openchat-link img {
-  width: 120px;
+  width: 126px;
   height: auto;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  transition: transform var(--ease), box-shadow var(--ease);
+  transition: transform var(--ease), filter var(--ease);
 }
 
 .openchat-link:hover,
@@ -266,7 +265,7 @@ p { line-height: 1.75; color: var(--muted); }
 .openchat-link:hover img,
 .openchat-link:focus-visible img {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(31, 35, 40, 0.16);
+  filter: brightness(0.98);
 }
 
 .content-grid {

@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="340" viewBox="0 0 500 340" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="486" height="340" viewBox="0 0 486 340" role="img" aria-labelledby="title desc">
   <title id="title">KakaoTalk Open Chat</title>
-  <desc id="desc">Yellow KakaoTalk-style icon used as an open chat link.</desc>
-  <rect width="500" height="340" rx="20" fill="#FEE500"/>
-  <g transform="translate(68 36)">
-    <path d="M300 0C171 0 66 76 66 170c0 45 24 86 63 116l-24 53c-2 4 3 8 7 6l83-45c27 7 56 11 87 11 129 0 234-76 234-170S429 0 300 0Z" fill="#3C1E1E"/>
+  <desc id="desc">KakaoTalk logo image used for the open chat link.</desc>
+  <rect width="486" height="340" fill="#FEE500"/>
+  <g transform="translate(65 35)">
+    <path d="M179 0C79 0 0 61 0 139c0 48 30 90 75 115l-15 61c-1 5 5 9 10 6l65-42c14 2 28 3 44 3 99 0 179-62 179-143S278 0 179 0Z" fill="#3C1E1E"/>
     <g fill="#FEE500">
-      <rect x="92" y="103" width="18" height="95" rx="9"/>
-      <rect x="71" y="103" width="60" height="18" rx="9"/>
-      <path d="M171 103h22l42 95h-22l-8-20h-46l-8 20h-21l41-95Zm-5 57h32l-16-39-16 39Z"/>
-      <rect x="250" y="103" width="18" height="95" rx="9"/>
-      <rect x="228" y="103" width="62" height="18" rx="9"/>
-      <rect x="312" y="103" width="18" height="95" rx="9"/>
-      <path d="M356 103h18v77h43v18h-61v-95Z"/>
+      <rect x="40" y="92" width="64" height="14" rx="7"/>
+      <rect x="65" y="92" width="14" height="96" rx="7"/>
+      <path d="M121 188h-18l42-96h19l42 96h-18l-10-24h-47l-10 24Zm16-38h35l-17-41-18 41Z"/>
+      <rect x="216" y="92" width="14" height="96" rx="7"/>
+      <rect x="194" y="92" width="58" height="14" rx="7"/>
+      <rect x="272" y="92" width="14" height="96" rx="7"/>
+      <path d="M315 92h14v82h46v14h-60V92Z"/>
     </g>
   </g>
 </svg>
