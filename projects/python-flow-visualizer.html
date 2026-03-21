@@ -3722,17 +3722,22 @@ body {
 
     function push(lines, title, summary, detail, current, neighbor, extra = {}) {
       const currentPath = extra.path || getPath(current);
+      const metrics = [
+        metric('스택', fmtArray(stack)),
+        metric('방문 순서', order.join(' → ') || '아직 없음'),
+      ];
+      if (!extra.hideVisitedMetric && !extra.hideVisitedByDefault) {
+        metrics.splice(1, 0, metric('발견 집합', Array.from(discovered).join(', ') || '비어 있음'));
+      }
+      if (!extra.hidePathMetric && !extra.hidePathByDefault) {
+        metrics.push(metric('탐색 경로', currentPath.join(' → ') || '아직 없음'));
+      }
       steps.push(createStep({
         lines,
         title,
         summary,
         detail,
-        metrics: [
-          metric('스택', fmtArray(stack)),
-          metric('발견 집합', Array.from(discovered).join(', ') || '비어 있음'),
-          metric('방문 순서', order.join(' → ') || '아직 없음'),
-          metric('탐색 경로', currentPath.join(' → ') || '아직 없음'),
-        ],
+        metrics,
         visual: {
           graph: GRAPH_DATA,
           structureType: 'stack',
@@ -3741,6 +3746,8 @@ body {
           visitedLabel: '발견 집합',
           order: order.slice(),
           path: currentPath,
+          hideVisitedPanel: extra.hideVisitedPanel !== undefined ? Boolean(extra.hideVisitedPanel) : true,
+          hidePathPanel: extra.hidePathPanel !== undefined ? Boolean(extra.hidePathPanel) : true,
           current,
           neighbor,
           backtracking: Boolean(extra.backtracking),
@@ -3750,40 +3757,48 @@ body {
       }));
     }
 
-    push([1, 2], 'DFS 시작', '시작 노드 A를 스택에 넣고 발견 집합에 기록합니다.', '이 DFS는 스택에 넣는 순간 discovered 집합에 기록합니다. 그래서 발견 집합은 방문 순서보다 먼저 채워질 수 있습니다.', 'A', null, { currentLabel: '시작' });
+    push([1, 2], 'DFS 시작', '시작 노드 A를 스택에 넣습니다.', 'DFS는 스택에 새 노드를 넣고, 스택 TOP부터 다음 순서를 이어서 확인합니다.', 'A', null, { currentLabel: '시작', hideVisitedByDefault: true, hidePathByDefault: true });
 
     while (stack.length) {
       const node = stack.pop();
       const currentPath = getPath(node);
-      push([3, 4], '스택에서 꺼내기', `스택에서 ${node}를 꺼내 현재 처리할 노드로 잡습니다.`, 'DFS는 가장 나중에 들어간 노드를 먼저 꺼내므로 한 갈래를 깊게 따라갑니다.', node, null, { path: currentPath });
+      push([3, 4], '스택에서 꺼내기', `스택에서 ${node}를 꺼내 현재 처리할 노드로 잡습니다.`, 'DFS는 가장 나중에 들어간 노드를 먼저 꺼내므로 한 갈래를 깊게 따라갑니다.', node, null, { path: currentPath, hideVisitedByDefault: true, hidePathByDefault: true });
       order.push(node);
-      push([5], '방문 순서 기록', `${node}를 방문 순서에 추가했습니다.`, '방문 순서는 실제로 pop되어 처리된 순서이고, 발견 집합은 스택에 넣어 둔 순서라 서로 다를 수 있습니다.', node, null, { path: currentPath });
+      push([5], '방문 순서 기록', `${node}를 방문 순서에 추가했습니다.`, '방문 순서는 실제로 pop되어 처리된 순서입니다.', node, null, { path: currentPath, hideVisitedByDefault: true, hidePathByDefault: true });
 
       const neighbors = graph[node].slice().reverse();
       let foundNewNeighbor = false;
       neighbors.forEach((nextNode) => {
-        push([6, 7], '인접 노드 확인', `${node}와 연결된 ${nextNode}를 확인합니다.`, '화면에서는 왼쪽부터 보이도록 reversed 순서로 확인합니다.', node, nextNode, { path: currentPath, neighborLabel: '확인 중' });
+        push([6, 7], '인접 노드 확인', `${node}와 연결된 ${nextNode}를 확인합니다.`, '화면에서는 왼쪽부터 보이도록 reversed 순서로 확인합니다.', node, nextNode, { path: currentPath, neighborLabel: '확인 중', hideVisitedByDefault: true, hidePathByDefault: true });
         if (!discovered.has(nextNode)) {
           discovered.add(nextNode);
           parent[nextNode] = node;
           stack.push(nextNode);
           foundNewNeighbor = true;
-          push([8, 9], '새 노드 발견', `${nextNode}를 처음 발견해 스택에 넣었습니다.`, '발견 집합은 중복 push를 막기 위한 기록입니다. 이 단계에서는 아직 방문 순서에 들어가지 않았습니다.', node, nextNode, { path: currentPath, neighborLabel: '새로 발견' });
+          push([8, 9], '새 노드 발견', `${nextNode}를 처음 발견해 스택에 넣었습니다.`, '새 후보를 스택에 넣으면 DFS는 가장 위에 있는 노드부터 이어서 확인합니다.', node, nextNode, { path: currentPath, neighborLabel: '새로 발견', hideVisitedByDefault: true, hidePathByDefault: true });
         }
       });
 
       if (stack.length) {
         const nextCandidate = stack[stack.length - 1];
         if (foundNewNeighbor) {
-          push([3, 4], '더 깊이 이동', `${node}에서 새로 발견한 갈래를 따라 다음에는 ${nextCandidate}를 꺼내 봅니다.`, 'DFS는 스택 top에 있는 가장 최근 후보를 먼저 처리하면서 더 깊이 내려갑니다.', node, nextCandidate, { path: currentPath, neighborLabel: '다음 후보' });
+          push([3, 4], '더 깊이 이동', `${node}에서 새로 발견한 갈래를 따라 다음에는 ${nextCandidate}를 꺼내 봅니다.`, 'DFS는 스택 top에 있는 가장 최근 후보를 먼저 처리하면서 더 깊이 내려갑니다.', node, nextCandidate, { path: currentPath, neighborLabel: '다음 후보', hideVisitedByDefault: true, hidePathByDefault: true });
         } else {
-          const parentNode = parent[node];
-          const backtrackPath = parentNode ? getPath(parentNode) : currentPath;
-          push([3, 4], '백트래킹', parentNode
-            ? `${node}에서 더 방문할 노드가 없어 부모 ${parentNode}(으)로 되돌아갑니다.`
-            : `${node}에서 더 방문할 노드가 없어 이전 갈래를 다시 확인합니다.`, parentNode
-            ? `그래프에서는 ${node} → ${parentNode}로 복귀하는 흐름을 보여 주고, 작업 스택에서는 다음 후보 ${nextCandidate}를 꺼낼 준비가 되어 있습니다.`
-            : `남아 있는 작업 스택을 기준으로 다음 후보 ${nextCandidate}를 이어서 확인합니다.`, node, parentNode || nextCandidate, { path: backtrackPath, backtracking: Boolean(parentNode), neighborLabel: parentNode ? '복귀할 부모' : '다음 후보' });
+          push(
+            [3, 4],
+            '백트래킹',
+            `모든 방문을 마쳤으므로 스택의 top에 있는 ${nextCandidate}노드로 갑니다.`,
+            '노란 노드는 지금 스택에서 꺼내 처리하는 노드입니다. 화살표로 가리키는 노드 즉 스택 TOP이 실제 다음 차례입니다.',
+            node,
+            nextCandidate,
+            {
+              path: currentPath,
+              backtracking: true,
+              neighborLabel: '스택 TOP',
+              hideVisitedByDefault: true,
+              hidePathByDefault: true,
+            },
+          );
         }
       }
     }
@@ -3792,10 +3807,9 @@ body {
       lines: [10],
       title: 'DFS 종료',
       summary: '스택이 비어 탐색이 끝났습니다.',
-      detail: '더 이상 확인할 후보가 없어 DFS가 종료되었습니다. 발견 집합과 방문 순서가 모두 완성된 상태입니다.',
+      detail: '더 이상 확인할 후보가 없어 DFS가 종료되었습니다.',
       metrics: [
         metric('스택', '비어 있음'),
-        metric('발견 집합', Array.from(discovered).join(', ')),
         metric('방문 순서', order.join(' → ')),
         metric('탐색 종료', '완료'),
       ],
@@ -3807,6 +3821,8 @@ body {
         visitedLabel: '발견 집합',
         order: order.slice(),
         path: [],
+        hideVisitedPanel: true,
+        hidePathPanel: true,
         current: null,
         neighbor: null,
         backtracking: false,
@@ -6640,6 +6656,9 @@ function visualHint(scenario, step) {
   const visual = step.visual || {};
   const renderer = scenario.renderer;
   if (renderer === 'graph') {
+    if (visual.structureType === 'stack' && visual.backtracking) {
+      return '노란 노드는 지금 스택에서 꺼내 처리하는 노드입니다. 화살표로 가리키는 노드 즉 스택 TOP이 실제 다음 차례입니다.';
+    }
     return visual.structureType === 'stack'
       ? '노란 노드는 지금 스택에서 꺼내 처리하는 노드입니다. 파란 배지는 다음에 확인할 이웃이고, 아래 스택 TOP이 실제 다음 차례입니다.'
       : '노란 노드는 지금 큐 FRONT에서 꺼낸 노드입니다. 파란 배지는 다음에 확인할 이웃이고, 아래 큐 FRONT가 실제 다음 차례입니다.';
@@ -6848,14 +6867,18 @@ function renderGraphVisual(visual, step) {
           <div class="workspace-head">방문 순서</div>
           <div class="token-row">${renderTokens(visual.order)}</div>
         </div>
-        <div class="workspace-card">
-          <div class="workspace-head">${visual.visitedLabel || '방문 집합'}</div>
-          <div class="token-row">${renderTokens(visual.visited)}</div>
-        </div>
-        <div class="workspace-card">
-          <div class="workspace-head">탐색 경로</div>
-          <div class="token-row">${renderTokens(visual.path || [])}</div>
-        </div>
+        ${visual.hideVisitedPanel ? '' : `
+          <div class="workspace-card">
+            <div class="workspace-head">${visual.visitedLabel || '방문 집합'}</div>
+            <div class="token-row">${renderTokens(visual.visited)}</div>
+          </div>
+        `}
+        ${visual.hidePathPanel ? '' : `
+          <div class="workspace-card">
+            <div class="workspace-head">탐색 경로</div>
+            <div class="token-row">${renderTokens(visual.path || [])}</div>
+          </div>
+        `}
       </div>
     </div>
   `;
