@@ -36,6 +36,28 @@
   let pendingScrollAnchorTop = null;
   let pendingScrollAnchorTimeout = null;
   let submenuCloseTimer = null;
+  const requestedView = new URLSearchParams(window.location.search).get('view');
+
+  function normalizeRequestedView(value) {
+    if (!value) return '';
+    const normalizedValue = String(value).trim().toLowerCase();
+    if (['visualization', 'visual', 'viz'].includes(normalizedValue)) return 'visualization';
+    if (['plan', 'learning-plan', 'learning_plan'].includes(normalizedValue)) return 'plan';
+    return '';
+  }
+
+  function updateViewQuery(view) {
+    const normalizedView = normalizeRequestedView(view);
+    const url = new URL(window.location.href);
+
+    if (normalizedView) {
+      url.searchParams.set('view', normalizedView);
+    } else {
+      url.searchParams.delete('view');
+    }
+
+    window.history.replaceState({}, '', url);
+  }
 
   function ensureInitialSelection() {
     if (currentMaterialKey && currentGroupKey && currentScenarioId) return;
@@ -148,6 +170,7 @@
     if (!isExpanded) return;
     if (!studyMaterials.length) return;
 
+    updateViewQuery('visualization');
     ensureInitialSelection();
     renderSelectors();
     updateViewerHeader();
@@ -174,6 +197,7 @@
     if (!isExpanded) return;
     if (!studyPlans.length) return;
 
+    updateViewQuery('plan');
     ensureInitialPlanSelection();
     renderPlanMenu();
     if (!hasLoadedPlan) {
@@ -798,6 +822,18 @@
     learningPlanToggle.hidden = true;
   }
 
-  setVisualizationExpanded(false);
-  setLearningPlanExpanded(false);
+  const initialView = normalizeRequestedView(requestedView);
+  const defaultView = studyMaterials.length ? 'visualization' : (studyPlans.length ? 'plan' : '');
+  const activeInitialView = initialView || defaultView;
+
+  if (activeInitialView === 'plan' && studyPlans.length) {
+    setVisualizationExpanded(false);
+    setLearningPlanExpanded(true);
+  } else if (activeInitialView === 'visualization' && studyMaterials.length) {
+    setLearningPlanExpanded(false);
+    setVisualizationExpanded(true);
+  } else {
+    setVisualizationExpanded(false);
+    setLearningPlanExpanded(false);
+  }
 })();
