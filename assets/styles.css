@@ -81,19 +81,7 @@ button, iframe { font: inherit; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
   min-width: 0;
-}
-.brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: 0.04em;
 }
 .brand-text { display: flex; flex-direction: column; }
 .brand-text strong { font-size: 0.98rem; }
@@ -245,7 +233,25 @@ p { line-height: 1.75; color: var(--muted); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
+  padding: 0;
+  min-height: auto;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.inline-links .social-logo-link,
+.link-stack .social-logo-link {
+  padding: 0;
+  min-height: auto;
+  border: 0;
+  background: transparent;
+}
+
+.inline-links .social-logo-link:hover,
+.link-stack .social-logo-link:hover {
+  border: 0;
+  background: transparent;
 }
 
 .social-logo-link-block {
@@ -261,9 +267,15 @@ p { line-height: 1.75; color: var(--muted); }
   width: 112px;
 }
 
+.social-logo-kakao {
+  width: 112px;
+  border-radius: 10px;
+}
+
 .social-logo-stack {
   width: 136px;
 }
+
 
 .content-grid {
   display: grid;
