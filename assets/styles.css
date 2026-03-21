@@ -456,59 +456,52 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .study-submenu-roots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  gap: 6px;
 }
 
 .study-submenu-root {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 110px;
-  padding: 12px 14px;
-  border: 1px solid #d8dee4;
-  border-radius: 14px;
-  background: #fff;
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 4px;
+  border: 0;
+  border-bottom: 1px solid #e4eaf1;
+  background: transparent;
   color: var(--text);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  text-align: left;
   cursor: pointer;
-  transition: transform var(--ease), background var(--ease), border-color var(--ease), color var(--ease), box-shadow var(--ease);
+  transition: color var(--ease), border-color var(--ease), background var(--ease);
 }
 
 .study-submenu-root:hover {
-  transform: translateY(-1px);
-  background: #f5f8fc;
-  border-color: #b8c4d0;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  color: var(--accent-strong);
+  border-color: #c9d7e6;
+  background: transparent;
+  transform: none;
+  box-shadow: none;
 }
 
 .study-submenu-root.is-active {
-  background: linear-gradient(135deg, #24292f 0%, #353c46 100%);
-  color: #fff;
-  border-color: #24292f;
+  color: var(--accent-strong);
+  border-color: #c9d7e6;
+  background: transparent;
 }
 
 .study-submenu-root::after {
-  content: '▸';
-  margin-top: 6px;
-  font-size: 0.82rem;
-  opacity: 0.7;
-}
-
-.study-submenu-root.is-active::after {
-  content: '▾';
-  opacity: 1;
+  display: none;
 }
 
 .study-submenu-root-label {
   font-weight: 800;
+  font-size: 1rem;
 }
 
 .study-submenu-root-meta {
-  margin-top: 4px;
-  font-size: 0.78rem;
-  opacity: 0.9;
+  margin-top: 0;
+  font-size: 0.84rem;
+  color: #5a6775;
+  opacity: 1;
 }
 
 .study-submenu-selector {
@@ -593,10 +586,25 @@ p { line-height: 1.75; color: var(--muted); }
   gap: 18px;
 }
 
-.study-overview-card {
+.study-selector-card {
   display: grid;
-  gap: 10px;
+  gap: 16px;
   background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+}
+
+.study-selector-card-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.study-selector-card-copy strong {
+  font-size: 1rem;
+}
+
+.study-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .study-overview-head {
@@ -1048,6 +1056,7 @@ p { line-height: 1.75; color: var(--muted); }
   .study-page-header,
   .study-top-submenu-head,
   .study-submenu-selector,
+  .study-selector-grid,
   .study-overview-grid {
     grid-template-columns: 1fr;
   }
