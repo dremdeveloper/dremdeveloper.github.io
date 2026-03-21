@@ -40,7 +40,18 @@
     </header>
 
     <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴" hidden>
-      <div id="study-submenu-roots" class="study-submenu-roots" role="list"></div>
+      <div id="study-submenu-roots" class="study-submenu-roots" role="list">
+        <button
+          id="study-visualization-toggle"
+          class="study-submenu-root"
+          type="button"
+          aria-expanded="false"
+          aria-controls="study-submenu-selector"
+        >
+          <span class="study-submenu-root-label">시각화</span>
+          <span class="study-submenu-root-meta">알고리즘 시뮬레이션 보기</span>
+        </button>
+      </div>
       <div id="study-submenu-selector" class="study-submenu-selector" hidden>
         <div class="study-viewer-controls">
           <label class="study-select-label" for="study-group-select">알고리즘 종류</label>
@@ -66,10 +77,6 @@
           <div class="study-viewer-toolbar">
             <div class="study-viewer-toolbar-copy">
               <strong id="study-toolbar-title">현재 시나리오로 이동 중</strong>
-            </div>
-            <div class="study-viewer-toolbar-actions">
-              <button id="study-prev-button" class="study-nav-button" type="button">← 이전</button>
-              <button id="study-next-button" class="study-nav-button study-nav-button-primary" type="button">다음 →</button>
             </div>
           </div>
           <div class="study-frame-wrap study-frame-wrap-embedded study-frame-wrap-expanded">
