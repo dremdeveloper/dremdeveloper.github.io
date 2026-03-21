@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>강의 | 박경록</title>
+  <meta name="description" content="박경록 강의 페이지. 파이썬과 C++ 재생목록을 좌측 메뉴와 우측 플레이어로 볼 수 있습니다." />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="홈으로 이동">
+        <span class="brand-mark">KP</span>
+        <span class="brand-text">
+          <strong>박경록</strong>
+          <span>Author · ML S/W Developer</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
+        <a href="index.html">Home</a>
+        <a class="is-active" href="lectures.html">강의</a>
+        <a href="study.html">공부자료</a>
+      </nav>
+    </header>
+
+    <main class="page-shell section-tight">
+      <section class="page-header card panel-pad-lg">
+        <p class="eyebrow">Lecture</p>
+        <h1>강의</h1>
+      </section>
+
+      <section class="browser-layout lecture-layout">
+        <aside class="browser-sidebar card panel-pad-md">
+          <div class="track-switch" role="tablist" aria-label="강의 종류 선택">
+            <button class="track-button is-active" type="button" data-track="python">Python</button>
+            <button class="track-button" type="button" data-track="cpp">C++</button>
+          </div>
+
+          <div class="sidebar-meta" id="track-meta"></div>
+          <div class="menu-list" id="lecture-list" aria-label="강의 목록"></div>
+        </aside>
+
+        <section class="browser-main stack-gap">
+          <article class="card panel-pad-lg lecture-summary">
+            <div class="summary-topline">
+              <span class="eyebrow no-margin" id="lecture-course-label">Python</span>
+              <a class="button button-secondary compact-button" id="lecture-book-link" href="#" target="_blank" rel="noopener noreferrer">책 구매하기</a>
+            </div>
+            <h2 id="lecture-title">전체 재생목록</h2>
+            <div class="meta-grid" id="lecture-detail-grid"></div>
+          </article>
+
+          <article class="card video-card">
+            <div class="video-frame-wrap">
+              <iframe
+                id="lecture-player"
+                title="강의 재생 플레이어"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen></iframe>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright © <span id="year"></span> Kyungrok Park (ultrasuperrok@gmail.com)</p>
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+  <script src="assets/lectures.js"></script>
+</body>
+</html>

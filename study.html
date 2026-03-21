@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공부자료 | 박경록</title>
+  <meta name="description" content="박경록 공부자료 페이지. 좌측 메뉴에서 알고리즘 시뮬레이션을 선택하면 우측에서 바로 볼 수 있습니다." />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="홈으로 이동">
+        <span class="brand-mark">KP</span>
+        <span class="brand-text">
+          <strong>박경록</strong>
+          <span>Author · ML S/W Developer</span>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
+        <a href="index.html">Home</a>
+        <a href="lectures.html">강의</a>
+        <a class="is-active" href="study.html">공부자료</a>
+      </nav>
+    </header>
+
+    <main class="page-shell section-tight">
+      <section class="page-header card panel-pad-lg">
+        <p class="eyebrow">Study Material</p>
+        <h1>공부자료</h1>
+      </section>
+
+      <section class="browser-layout study-browser-layout">
+        <aside class="browser-sidebar card panel-pad-md study-sidebar">
+          <div class="sidebar-meta">
+            <h2>자료 메뉴</h2>
+            <p>왼쪽에서 시뮬레이션할 알고리즘을 고르면 오른쪽에서 바로 실행됩니다.</p>
+          </div>
+
+          <div class="study-root-list" id="study-root-list"></div>
+          <div class="study-group-list" id="study-group-list" aria-label="공부자료 세부 메뉴"></div>
+        </aside>
+
+        <section class="browser-main">
+          <article class="card study-viewer-card study-viewer-shell">
+            <div class="study-viewer-head">
+              <div class="study-viewer-copy">
+                <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
+                <h2 id="study-viewer-title">버블 정렬</h2>
+              </div>
+            </div>
+
+            <div class="study-frame-wrap study-frame-wrap-embedded">
+              <iframe id="study-frame" title="공부자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright © <span id="year"></span> Kyungrok Park (ultrasuperrok@gmail.com)</p>
+    </footer>
+  </div>
+
+  <script src="assets/site.js"></script>
+  <script src="assets/study.js"></script>
+</body>
+</html>

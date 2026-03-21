@@ -1,0 +1,17 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="80" y1="56" x2="560" y2="584" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="180" y1="188" x2="468" y2="492" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" rx="180" fill="#0F172A"/>
+  <rect x="32" y="32" width="576" height="576" rx="148" fill="url(#g1)"/>
+  <circle cx="320" cy="252" r="122" fill="url(#g2)"/>
+  <path d="M144 520C160 431.635 232.519 368 320 368C407.481 368 480 431.635 496 520" fill="url(#g2)"/>
+  <text x="320" y="594" text-anchor="middle" fill="white" font-family="Inter, Pretendard, Arial, sans-serif" font-size="84" font-weight="700">KP</text>
+</svg>
