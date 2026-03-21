@@ -647,15 +647,6 @@ p { line-height: 1.75; color: var(--muted); }
   gap: 10px;
 }
 
-.study-plan-group-label {
-  margin: 0;
-  color: #4e5a66;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .study-plan-list {
   display: grid;
   gap: 10px;
@@ -667,8 +658,12 @@ p { line-height: 1.75; color: var(--muted); }
 
 .study-plan-submenu {
   display: grid;
-  gap: 16px;
-  padding-left: 6px;
+  gap: 12px;
+  padding-left: 10px;
+}
+
+.study-plan-submenu[hidden] {
+  display: none;
 }
 
 .study-plan-link,
