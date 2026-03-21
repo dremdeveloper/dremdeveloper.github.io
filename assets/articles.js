@@ -20,8 +20,23 @@
 
   const contentsApiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(articlesPath)}?ref=${encodeURIComponent(branch)}`;
   const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}/${articlesPath}`;
+  const mathJaxSrc = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
   let articleFiles = [];
   let currentFile = '';
+  let mathJaxLoader = null;
+
+  window.MathJax = window.MathJax || {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      tags: 'ams'
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    svg: { fontCache: 'global' }
+  };
 
   function escapeHtml(value) {
     return String(value)
@@ -92,6 +107,64 @@
     viewerNode.innerHTML = html;
     viewerNode.hidden = false;
     statusNode.hidden = true;
+  }
+
+  function stripFrontMatter(markdown) {
+    if (!markdown.startsWith('---')) return markdown;
+    const match = markdown.match(/^---\n[\s\S]*?\n---\n?/);
+    return match ? markdown.slice(match[0].length) : markdown;
+  }
+
+  function stripMathJaxSnippets(markdown) {
+    return markdown
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>\s*/gi, '')
+      .trim();
+  }
+
+  function sanitizeMarkdown(markdown) {
+    return stripMathJaxSnippets(stripFrontMatter(markdown));
+  }
+
+  function ensureMathJax() {
+    if (window.MathJax?.typesetPromise) {
+      return Promise.resolve(window.MathJax);
+    }
+
+    if (mathJaxLoader) return mathJaxLoader;
+
+    mathJaxLoader = new Promise((resolve, reject) => {
+      const existingScript = document.querySelector(`script[src="${mathJaxSrc}"]`);
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve(window.MathJax), { once: true });
+        existingScript.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = mathJaxSrc;
+      script.defer = true;
+      script.addEventListener('load', () => resolve(window.MathJax), { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.head.appendChild(script);
+    }).catch((error) => {
+      mathJaxLoader = null;
+      throw error;
+    });
+
+    return mathJaxLoader;
+  }
+
+  async function typesetMath() {
+    try {
+      const mathJax = await ensureMathJax();
+      if (!mathJax?.typesetPromise) return;
+      if (typeof mathJax.typesetClear === 'function') {
+        mathJax.typesetClear([viewerNode]);
+      }
+      await mathJax.typesetPromise([viewerNode]);
+    } catch (error) {
+      console.error('MathJax failed to load.', error);
+    }
   }
 
   function updateQuery(fileName) {
@@ -283,10 +356,12 @@
 
     try {
       const markdown = await fetchMarkdown(file);
-      const renderedTitle = extractTitle(markdown, file.name);
+      const sanitizedMarkdown = sanitizeMarkdown(markdown);
+      const renderedTitle = extractTitle(sanitizedMarkdown, file.name);
       file.title = renderedTitle;
       renderList();
-      showViewer(renderMarkdown(markdown));
+      showViewer(renderMarkdown(sanitizedMarkdown));
+      await typesetMath();
     } catch (error) {
       setStatus('md 파일을 불러오지 못했습니다. 배포된 articles 경로와 파일명을 확인해 주세요.', true);
       viewerNode.hidden = true;
