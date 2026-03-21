@@ -25,6 +25,8 @@
   let rafId = null;
   let boundFrameWindow = null;
   let hasLoadedVisualization = false;
+  let pendingScrollAnchorTop = null;
+  let pendingScrollAnchorTimeout = null;
 
   function ensureInitialSelection() {
     if (currentMaterialKey && currentGroupKey && currentScenarioId) return;
@@ -372,9 +374,28 @@
       );
       if (nextHeight) {
         frame.style.height = `${nextHeight + 12}px`;
+        restoreScrollAnchor();
       }
     } catch (error) {
       // same-origin access only
+    }
+  }
+
+  function captureScrollAnchor() {
+    if (visualizationPanel.hidden) return;
+    pendingScrollAnchorTop = selectorCard.getBoundingClientRect().top;
+    if (pendingScrollAnchorTimeout) clearTimeout(pendingScrollAnchorTimeout);
+    pendingScrollAnchorTimeout = setTimeout(() => {
+      pendingScrollAnchorTop = null;
+      pendingScrollAnchorTimeout = null;
+    }, 400);
+  }
+
+  function restoreScrollAnchor() {
+    if (pendingScrollAnchorTop === null) return;
+    const delta = selectorCard.getBoundingClientRect().top - pendingScrollAnchorTop;
+    if (Math.abs(delta) > 1) {
+      window.scrollBy(0, delta);
     }
   }
 
@@ -453,12 +474,14 @@
   }
 
   groupSelect.addEventListener('change', () => {
+    captureScrollAnchor();
     setGroup(groupSelect.value);
   });
 
   scenarioSelect.addEventListener('change', () => {
     const nextScenarioId = scenarioSelect.value;
     if (!nextScenarioId) return;
+    captureScrollAnchor();
     setScenario(nextScenarioId);
   });
 
@@ -507,6 +530,7 @@
     if (!data || data.type !== 'kp-visualizer-height') return;
     if (typeof data.height === 'number' && data.height > 0) {
       frame.style.height = `${Math.round(data.height + 12)}px`;
+      restoreScrollAnchor();
     }
   });
 

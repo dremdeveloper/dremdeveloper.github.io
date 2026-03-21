@@ -574,6 +574,7 @@ p { line-height: 1.75; color: var(--muted); }
 .study-focus-layout {
   display: grid;
   gap: 18px;
+  overflow-anchor: none;
 }
 
 .study-focus-layout[hidden] {
@@ -772,6 +773,7 @@ p { line-height: 1.75; color: var(--muted); }
 .study-frame-wrap {
   background:
     linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%);
+  overflow-anchor: none;
 }
 
 .study-frame-wrap-expanded {
