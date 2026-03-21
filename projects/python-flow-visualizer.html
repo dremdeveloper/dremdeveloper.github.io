@@ -998,7 +998,6 @@ svg {
 .graph-node.current circle,
 .tree-node.current circle,
 .call-node.current circle,
-.bar-card.comparing,
 .board-cell.candidate {
   animation: pulseRing 1.6s ease-out infinite;
 }
@@ -1998,6 +1997,7 @@ body {
   min-height: 178px;
   padding: 8px;
   gap: 8px;
+  align-content: start;
 }
 
 .bar-track {
@@ -2005,8 +2005,19 @@ body {
 }
 
 .bar-fill {
-  padding-top: 7px;
+  padding-top: 0;
+  font-size: 0;
+}
+
+.bar-value-label {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
   font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .bar-marker-row {
@@ -2048,25 +2059,45 @@ body {
   align-items: stretch;
 }
 
-.array-row-head,
+.array-column {
+  display: grid;
+  gap: 6px;
+}
+
+.array-index-label,
 .array-cell {
   min-height: 44px;
   border-radius: 12px;
-  border: 1px solid var(--array-cell-border);
-  background: transparent;
   display: grid;
   place-items: center;
   text-align: center;
   padding: 6px 8px;
 }
 
-.array-row-head {
-  background: rgba(255, 255, 255, 0.06);
+.array-index-label {
+  min-height: 24px;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.array-index-label small {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.array-cell {
+  min-height: 52px;
+  border: 1px solid var(--array-cell-border);
+  background: transparent;
 }
 
 .array-cell {
@@ -2138,6 +2169,19 @@ body {
 
 .array-value.muted {
   color: var(--muted);
+}
+
+.array-cell.current,
+.array-cell.comparing,
+.array-cell.key,
+.array-cell.shifted,
+.array-cell.done,
+.array-cell.success,
+.array-cell.candidate,
+.array-cell.danger,
+.array-cell.front,
+.array-cell.rear {
+  transform: none;
 }
 
 .workspace-box .array-table-panel {
@@ -2364,7 +2408,7 @@ body {
     gap: 4px;
   }
 
-  .array-row-head,
+  .array-index-label,
   .array-cell {
     min-height: 38px;
     font-size: 12px;
@@ -5422,10 +5466,9 @@ function exposePublicApi() {
       return `
         <div class="${classes.join(' ')}">
           <div class="bar-marker-row">${markers.join('')}</div>
+          <div class="bar-value-label">${value}</div>
           <div class="bar-track">
-            <div class="bar-fill" style="height:${Math.max(18, (value / maxValue) * 100)}%">
-              ${value}
-            </div>
+            <div class="bar-fill" style="height:${Math.max(18, (value / maxValue) * 100)}%"></div>
           </div>
           <div class="bar-footer">
             <span>index ${index}</span>
@@ -6053,7 +6096,6 @@ function arrayStateClasses(index, options) {
 function renderArrayTable(values, options = {}) {
   const data = Array.isArray(values) ? values : [];
   const indexHeader = options.indexLabel || 'index';
-  const valueHeader = options.valueLabel || 'value';
   const indexLabels = options.indexLabels || data.map((_, index) => index);
   const title = options.title ? `<div class="array-table-title">${escapeHtml(options.title)}</div>` : '';
   if (!data.length) {
@@ -6064,21 +6106,27 @@ function renderArrayTable(values, options = {}) {
       </div>
     `;
   }
-  const gridStyle = `grid-template-columns: 72px repeat(${data.length}, minmax(0, 1fr));`;
-  const valueCells = data.map((value, index) => {
+  const gridStyle = `grid-template-columns: repeat(${data.length}, minmax(56px, 1fr));`;
+  const columns = data.map((value, index) => {
     const showValue = value === '' || value === null || value === undefined ? '·' : String(value);
     const muted = showValue === '·' ? 'muted' : '';
-    return `<div class="${arrayStateClasses(index, options)}"><span class="array-value ${muted}">${escapeHtml(showValue)}</span></div>`;
+    return `
+      <div class="array-column">
+        <div class="array-index-label">
+          <small>${escapeHtml(indexHeader)}</small>
+          <span>${escapeHtml(String(indexLabels[index]))}</span>
+        </div>
+        <div class="${arrayStateClasses(index, options)}">
+          <span class="array-value ${muted}">${escapeHtml(showValue)}</span>
+        </div>
+      </div>
+    `;
   }).join('');
-  const indexCells = indexLabels.map((value, index) => `<div class="${arrayStateClasses(index, options)}"><span class="array-value">${escapeHtml(String(value))}</span></div>`).join('');
   return `
     <div class="array-table-panel ${options.compact ? 'compact' : ''}">
       ${title}
       <div class="array-grid" style="${gridStyle}">
-        <div class="array-row-head">${escapeHtml(indexHeader)}</div>
-        ${indexCells}
-        <div class="array-row-head">${escapeHtml(valueHeader)}</div>
-        ${valueCells}
+        ${columns}
       </div>
     </div>
   `;
