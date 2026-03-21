@@ -415,10 +415,11 @@ p { line-height: 1.75; color: var(--muted); }
 
 .site-nav-study {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 9px 12px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
   color: var(--muted);
 }
 
@@ -440,42 +441,37 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .study-top-submenu {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  min-width: 96px;
-  padding: 2px 0 0;
+  position: static;
+  min-width: 0;
+  padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(-2px);
-  transition: opacity var(--ease), transform var(--ease), visibility var(--ease);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: color var(--ease);
 }
 
 .site-nav-study:hover .study-top-submenu,
 .site-nav-study:focus-within .study-top-submenu,
 .site-nav-study.is-open .study-top-submenu {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
+  color: var(--text);
 }
 
 .study-submenu-roots {
-  display: grid;
-  gap: 2px;
+  display: flex;
+  align-items: center;
 }
 
 .study-submenu-root {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  width: 100%;
-  padding: 0;
+  width: auto;
+  padding: 9px 12px;
   border: 0;
   background: transparent;
   color: var(--muted);
