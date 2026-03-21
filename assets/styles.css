@@ -592,6 +592,28 @@ p { line-height: 1.75; color: var(--muted); }
 .study-frame-wrap-expanded {
   min-height: 980px;
 }
+
+.browser-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.browser-sidebar {
+  position: sticky;
+  top: 104px;
+  max-height: calc(100vh - 132px);
+  overflow: hidden;
+}
+
+.browser-main {
+  min-width: 0;
+}
+
+.lecture-layout {
+  align-items: start;
+}
 .track-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -844,8 +866,14 @@ p { line-height: 1.75; color: var(--muted); }
   .study-page-header,
   .study-top-submenu-head,
   .study-submenu-groups,
-  .study-overview-grid {
+  .study-overview-grid,
+  .browser-layout {
     grid-template-columns: 1fr;
+  }
+
+  .browser-sidebar {
+    position: static;
+    max-height: none;
   }
 
   .video-controls {
