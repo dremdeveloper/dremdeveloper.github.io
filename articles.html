@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article | 박경록</title>
+  <meta name="description" content="논문과 아티클용 마크다운 파일을 articles 폴더에 올리면 자동으로 목록에 표시되는 페이지입니다." />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="홈으로 이동">
+        <span class="brand-text">
+          <strong>Home</strong>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
+        <a class="is-active" href="articles.html">Article</a>
+        <a href="lectures.html">강의</a>
+        <a href="free-posts.html">자유글</a>
+        <div class="site-nav-study" id="study-nav-item">
+          <button
+            id="study-nav-toggle"
+            class="site-nav-study-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="study-top-submenu"
+          >
+            공부자료
+          </button>
+
+          <section id="study-top-submenu" class="study-top-submenu" aria-label="공부자료 서브메뉴">
+            <div class="study-submenu-roots" role="list">
+              <a class="study-submenu-root" href="study.html?view=visualization">
+                <span class="study-submenu-root-label">시각화</span>
+              </a>
+              <a class="study-submenu-root" href="study.html?view=plan">
+                <span class="study-submenu-root-label">학습 플랜</span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </nav>
+    </header>
+
+    <main class="page-shell section-tight stack-gap">
+      <section class="card panel-pad-lg article-hero">
+        <p class="eyebrow">Markdown Article Library</p>
+        <h1>Article</h1>
+        <p class="article-lead">
+          논문, 리뷰, 정리 글을 <code>articles/</code> 폴더에 <code>.md</code> 파일로 올리면
+          이 페이지 왼쪽 메뉴에 자동으로 노출되도록 구성했습니다.
+        </p>
+        <div class="article-hero-grid">
+          <div class="article-hero-card">
+            <strong>올리는 방법</strong>
+            <ol>
+              <li><code>articles/</code> 폴더에 새 <code>.md</code> 파일을 추가합니다.</li>
+              <li>파일 첫 줄에 <code># 제목</code>을 적으면 화면 제목으로 바로 사용됩니다.</li>
+              <li>파일명은 <code>YYYY-MM-DD-title.md</code>처럼 두면 정리하기 편합니다.</li>
+            </ol>
+          </div>
+          <div class="article-hero-card">
+            <strong>자동 처리</strong>
+            <ul>
+              <li>GitHub 저장소의 <code>articles/</code> 폴더를 읽어 목록을 만듭니다.</li>
+              <li>md 파일은 페이지 안에서 바로 렌더링됩니다.</li>
+              <li>원본 md 파일 열기 링크도 함께 제공합니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="browser-layout article-layout">
+        <aside class="browser-sidebar card panel-pad-md article-sidebar">
+          <div class="sidebar-meta article-sidebar-meta">
+            <h2>Articles</h2>
+            <p id="article-count-label">불러오는 중...</p>
+          </div>
+          <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
+        </aside>
+
+        <section class="browser-main stack-gap">
+          <article class="card panel-pad-lg article-summary">
+            <div class="summary-topline article-summary-topline">
+              <span class="eyebrow no-margin" id="article-file-label">Markdown Viewer</span>
+              <div class="article-summary-actions">
+                <a class="button button-secondary compact-button" id="article-open-raw" href="#" target="_blank" rel="noopener noreferrer">원본 MD</a>
+              </div>
+            </div>
+            <h2 id="article-title">Article을 선택하세요</h2>
+            <div class="meta-grid" id="article-detail-grid">
+              <div class="meta-card wide article-summary-card">
+                <span>Guide</span>
+                <strong>왼쪽 목록에서 md 파일을 선택하면 논문/아티클 내용을 바로 읽을 수 있습니다.</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="card panel-pad-lg article-viewer-card">
+            <div id="article-status" class="article-status" aria-live="polite">GitHub 저장소의 articles 폴더를 확인하는 중입니다.</div>
+            <div id="article-viewer" class="article-viewer markdown-body" hidden></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright © <span id="year"></span> Kyungrok Park (ultrasuperrok@gmail.com)</p>
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+  <script src="assets/articles.js"></script>
+</body>
+</html>

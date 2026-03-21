@@ -1,4 +1,11 @@
 window.siteData = {
+  articles: {
+    owner: 'dremdeveloper',
+    repo: 'dremdeveloper.github.io',
+    branch: 'main',
+    articlesPath: 'articles',
+    defaultFile: '2026-03-21-sample-article.md'
+  },
   lectures: {
     python: {
       key: 'python',
