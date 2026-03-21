@@ -2026,7 +2026,7 @@ body {
 .array-table-panel {
   border-radius: 18px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.035);
+  background: transparent;
   padding: 12px;
   overflow: hidden;
 }
@@ -2053,7 +2053,7 @@ body {
   min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--array-cell-border);
-  background: var(--cell-bg);
+  background: transparent;
   display: grid;
   place-items: center;
   text-align: center;
@@ -2444,11 +2444,6 @@ body {
           <article class="panel-card glass panel-card-code" id="codePanel">
             <div class="panel-title">실행 중인 Python 코드</div>
             <div id="codeArea"></div>
-          </article>
-
-          <article class="panel-card glass panel-card-state" id="statePanel">
-            <div class="panel-title">상태 변수</div>
-            <div id="stateArea"></div>
           </article>
         </div>
       </section>
@@ -4749,7 +4744,7 @@ body {
       'algorithmTabs',
       'prevBtn', 'playBtn', 'nextBtn', 'resetBtn', 'stepMeta', 'stepRange',
       'speedLabel', 'speedRange', 'visualArea', 'legendArea',
-      'codeArea', 'stateArea', 'noteArea',
+      'codeArea', 'noteArea',
     ];
     ids.forEach((id) => {
       els[id] = document.getElementById(id);
@@ -5073,7 +5068,6 @@ function exposePublicApi() {
     els.stepMeta.textContent = `${APP.stepIndex + 1} / ${scenario.steps.length} · ${step.title}`;
     els.speedLabel.textContent = speedLabel(APP.speed);
     renderCode(scenario, step);
-    renderState(step);
     renderLegend(scenario);
     renderVisual(scenario, step);
     try {
@@ -5094,19 +5088,6 @@ function exposePublicApi() {
           <div class="code-line ${step.lines.includes(index + 1) ? 'active' : ''}">
             <div class="code-line-num">${index + 1}</div>
             <div class="code-line-text">${escapeHtml(line || ' ')}</div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  function renderState(step) {
-    els.stateArea.innerHTML = `
-      <div class="state-grid">
-        ${step.metrics.map((item) => `
-          <div class="state-card">
-            <div class="state-label">${item.label}</div>
-            <div class="state-value">${escapeHtml(fmtValue(item.value))}</div>
           </div>
         `).join('')}
       </div>
@@ -5246,6 +5227,21 @@ function exposePublicApi() {
         <div class="visual-guide-tag">지금 하는 일</div>
         <div class="visual-guide-title">${escapeHtml(step.summary)}</div>
         <div class="visual-guide-detail">${escapeHtml(visualHint(scenario, step))}</div>
+      </div>
+    `;
+  }
+
+  function renderMetricStrip(step) {
+    if (!step.metrics || !step.metrics.length) return '';
+    const tones = ['highlight', 'warn', 'good', 'range'];
+    return `
+      <div class="direction-strip metric-strip">
+        ${step.metrics.map((item, index) => `
+          <div class="direction-card metric-card ${tones[index % tones.length]}">
+            <div class="direction-label">${escapeHtml(item.label)}</div>
+            <div class="direction-value">${escapeHtml(fmtValue(item.value))}</div>
+          </div>
+        `).join('')}
       </div>
     `;
   }
@@ -5832,7 +5828,7 @@ function exposePublicApi() {
                 </g>
               `;
             }).join('')}
-            ${visual.currentNodeId ? renderSvgBadge(nodesById[visual.currentNodeId], '현재', 'current') : ''}
+            ${visual.currentNodeId ? renderSvgBadge(nodesById[visual.currentNodeId], '현재', 'current', 42, -10) : ''}
           </svg>
         </div>
         <div class="workspace-box">
@@ -6742,7 +6738,7 @@ function renderGraphVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(nodes[visual.current], '현재', 'current', 0, -34) : ''}
+          ${visual.current ? renderSvgBadge(nodes[visual.current], '현재', 'current', 42, -10) : ''}
           ${visual.neighbor ? renderSvgBadge(nodes[visual.neighbor], '다음', 'next', 0, 28) : ''}
         </svg>
       </div>
@@ -6809,7 +6805,7 @@ function renderTreeSearchVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(tree[visual.current], '현재', 'current', 0, -34) : ''}
+          ${visual.current ? renderSvgBadge(tree[visual.current], '현재', 'current', 42, -10) : ''}
           ${visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 28) : ''}
           ${visual.found ? renderSvgBadge(tree[visual.found], '찾음', 'done', 0, 30) : ''}
         </svg>
@@ -6885,7 +6881,7 @@ function renderTreeTraversalVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', 0, -34) : ''}
+          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', visual.backtracking ? 0 : 42, visual.backtracking ? -34 : -10) : ''}
           ${visual.backtracking && visual.returnTarget ? renderSvgBadge(tree[visual.returnTarget], '돌아갈 곳', 'done', 0, 30) : ''}
           ${!visual.backtracking && visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 30) : ''}
         </svg>
@@ -7060,7 +7056,7 @@ function renderPruningTreeVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.currentNodeId && allNodes[visual.currentNodeId] ? renderSvgBadge(allNodes[visual.currentNodeId], '현재', 'current', 0, -34) : ''}
+          ${visual.currentNodeId && allNodes[visual.currentNodeId] ? renderSvgBadge(allNodes[visual.currentNodeId], '현재', 'current', 42, -10) : ''}
           ${visual.edge && visual.edge[1] && allNodes[visual.edge[1]] ? renderSvgBadge(allNodes[visual.edge[1]], '다음', 'next', 0, 28) : ''}
         </svg>
       </div>
@@ -7172,7 +7168,7 @@ function renderHeapVisual(visual, step) {
                 </g>
               `;
             }).join('')}
-            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 0, -34) : ''}
+            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 42, -10) : ''}
           </svg>
         ` : `<div class="empty-text">현재 힙이 비어 있습니다.</div>`}
       </div>
@@ -7220,7 +7216,7 @@ function renderVisual(scenario, step) {
   } else if (scenario.renderer === 'heap-sort') {
     body = renderHeapVisual(step.visual, step);
   }
-  els.visualArea.innerHTML = renderVisualGuide(scenario, step) + body;
+  els.visualArea.innerHTML = renderVisualGuide(scenario, step) + renderMetricStrip(step) + body;
 }
 /* ===== end v6 overrides ===== */
 
