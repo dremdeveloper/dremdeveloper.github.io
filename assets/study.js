@@ -4,11 +4,12 @@
   const scenarioSelect = document.getElementById('study-scenario-select');
   const visualizationToggle = document.getElementById('study-visualization-toggle');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
+  const visualizationPanel = document.getElementById('study-visualization-panel');
   const selectorCard = document.getElementById('study-selector-card');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !groupSelect || !scenarioSelect || !visualizationToggle || !selectorCard) return;
+  if (!frame || !groupSelect || !scenarioSelect || !visualizationToggle || !visualizationPanel || !selectorCard) return;
 
   const studyMaterials = Array.isArray(window.siteData?.studyMaterials)
     ? window.siteData.studyMaterials.filter((material) => Array.isArray(material.groups) && material.groups.length)
@@ -23,6 +24,7 @@
   let mutationObserver = null;
   let rafId = null;
   let boundFrameWindow = null;
+  let hasLoadedVisualization = false;
 
   function getCurrentMaterial() {
     return studyMaterials.find((item) => item.key === currentMaterialKey) || studyMaterials[0];
@@ -82,7 +84,12 @@
   function setVisualizationExpanded(isExpanded) {
     visualizationToggle.classList.toggle('is-active', isExpanded);
     visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
-    selectorCard.hidden = !isExpanded;
+    visualizationPanel.hidden = !isExpanded;
+
+    if (isExpanded && !hasLoadedVisualization) {
+      loadScenario(true);
+      hasLoadedVisualization = true;
+    }
   }
 
   function renderSelectors() {
@@ -113,7 +120,9 @@
 
     renderSelectors();
     updateViewerHeader();
-    loadScenario(forceReload || isSameScenario);
+    if (!visualizationPanel.hidden) {
+      loadScenario(forceReload || isSameScenario);
+    }
   }
 
   function setGroup(nextGroupKey) {
@@ -128,7 +137,9 @@
 
     renderSelectors();
     updateViewerHeader();
-    loadScenario(false);
+    if (!visualizationPanel.hidden) {
+      loadScenario(false);
+    }
   }
 
   function injectViewerTheme() {
@@ -488,9 +499,7 @@
   });
 
   syncCurrentSelection();
-  setVisualizationExpanded(false);
   renderSelectors();
-  renderQuickChips();
   updateViewerHeader();
-  loadScenario(true);
+  setVisualizationExpanded(false);
 })();
