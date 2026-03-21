@@ -3,27 +3,20 @@
   const groupSelect = document.getElementById('study-group-select');
   const scenarioSelect = document.getElementById('study-scenario-select');
   const submenuRootsNode = document.getElementById('study-submenu-roots');
+  const visualizationToggle = document.getElementById('study-visualization-toggle');
   const submenuSelectorNode = document.getElementById('study-submenu-selector');
   const quickChipsNode = document.getElementById('study-quick-chips');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
-  const toolbarDescriptionNode = document.getElementById('study-toolbar-description');
-  const prevButton = document.getElementById('study-prev-button');
-  const nextButton = document.getElementById('study-next-button');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !groupSelect || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode) return;
+  if (!frame || !groupSelect || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode || !visualizationToggle) return;
 
   const studyMaterials = Array.isArray(window.siteData?.studyMaterials)
     ? window.siteData.studyMaterials.filter((material) => Array.isArray(material.groups) && material.groups.length)
     : [];
 
   if (!studyMaterials.length) return;
-
-  const totalScenarioCount = studyMaterials.reduce(
-    (sum, material) => sum + material.groups.reduce((groupSum, group) => groupSum + group.items.length, 0),
-    0,
-  );
 
   let currentMaterialKey = studyMaterials[0].key;
   let currentGroupKey = studyMaterials[0].groups[0]?.key || '';
@@ -41,10 +34,6 @@
     return material.groups.find((group) => group.key === currentGroupKey) || material.groups[0];
   }
 
-  function getMaterialScenarioItems(material = getCurrentMaterial()) {
-    return material.groups.flatMap((group) => group.items.map((item) => ({ ...item, group })));
-  }
-
   function findScenarioInfo(id) {
     for (const material of studyMaterials) {
       for (const group of material.groups) {
@@ -56,11 +45,6 @@
       }
     }
     return null;
-  }
-
-  function getScenarioPosition(material, scenarioId) {
-    const items = getMaterialScenarioItems(material);
-    return items.findIndex((item) => item.id === scenarioId);
   }
 
   function buildFrameUrl(material, scenarioId) {
@@ -122,62 +106,22 @@
     });
   }
 
-  function updateStepperControls() {
-    const material = getCurrentMaterial();
-    const items = getMaterialScenarioItems(material);
-    const currentIndex = items.findIndex((item) => item.id === currentScenarioId);
-    const currentItem = items[currentIndex];
+  function updateViewerHeader() {
+    const currentInfo = findScenarioInfo(currentScenarioId);
+    if (!toolbarTitleNode || !currentInfo) return;
 
-    if (prevButton) prevButton.disabled = currentIndex <= 0;
-    if (nextButton) nextButton.disabled = currentIndex < 0 || currentIndex >= items.length - 1;
-
-    if (toolbarTitleNode && currentItem) {
-      toolbarTitleNode.textContent = `${material.label} · ${currentItem.group.label} · ${currentItem.label}`;
-    }
-
-    if (toolbarDescriptionNode) {
-      const positionLabel = currentIndex >= 0 ? `${currentIndex + 1} / ${items.length}` : '0 / 0';
-      const groupSummary = currentItem?.group?.description || `${totalScenarioCount}개의 공부자료 시나리오를 이동할 수 있습니다.`;
-      toolbarDescriptionNode.textContent = `${groupSummary} 현재 자료 안에서는 ${positionLabel} 순서로 이동하고 있습니다.`;
-    }
+    toolbarTitleNode.textContent = `${currentInfo.material.label} · ${currentInfo.group.label} · ${currentInfo.item.label}`;
   }
 
-  function renderMaterials() {
-    submenuRootsNode.innerHTML = studyMaterials.map((material) => `
-      <button
-        type="button"
-        class="study-submenu-root ${material.key === currentMaterialKey ? 'is-active' : ''}"
-        data-material="${material.key}"
-        aria-pressed="${material.key === currentMaterialKey ? 'true' : 'false'}"
-      >
-        <span class="study-submenu-root-label">${escapeHtml(material.label)}</span>
-        <span class="study-submenu-root-meta">${material.groups.length}개 알고리즘 종류</span>
-      </button>
-    `).join('');
-
-    submenuRootsNode.querySelectorAll('[data-material]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const nextMaterial = studyMaterials.find((material) => material.key === button.dataset.material);
-        if (!nextMaterial) return;
-
-        currentMaterialKey = nextMaterial.key;
-        currentGroupKey = nextMaterial.groups[0]?.key || '';
-        currentScenarioId = nextMaterial.groups[0]?.items[0]?.id || '';
-
-        renderMaterials();
-        renderSelectors();
-        renderQuickChips();
-        updateStepperControls();
-        loadScenario(true);
-      });
-    });
+  function setVisualizationExpanded(isExpanded) {
+    visualizationToggle.classList.toggle('is-active', isExpanded);
+    visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
+    submenuSelectorNode.hidden = !isExpanded;
   }
 
   function renderSelectors() {
     const material = getCurrentMaterial();
     const group = getCurrentGroup(material);
-
-    submenuSelectorNode.hidden = false;
 
     groupSelect.innerHTML = material.groups.map((item) => `
       <option value="${item.key}" ${item.key === currentGroupKey ? 'selected' : ''}>${escapeHtml(item.label)}</option>
@@ -201,10 +145,9 @@
     currentGroupKey = nextInfo.group.key;
     currentScenarioId = nextScenarioId;
 
-    renderMaterials();
     renderSelectors();
     renderQuickChips();
-    updateStepperControls();
+    updateViewerHeader();
     loadScenario(forceReload || isSameScenario);
   }
 
@@ -220,7 +163,7 @@
 
     renderSelectors();
     renderQuickChips();
-    updateStepperControls();
+    updateViewerHeader();
     loadScenario(false);
   }
 
@@ -517,15 +460,6 @@
     }
   }
 
-  function stepScenario(direction) {
-    const material = getCurrentMaterial();
-    const items = getMaterialScenarioItems(material);
-    const currentIndex = getScenarioPosition(material, currentScenarioId);
-    const nextIndex = currentIndex + direction;
-    if (nextIndex < 0 || nextIndex >= items.length) return;
-    setScenario(items[nextIndex].id);
-  }
-
   function toggleSubmenu(forceOpen) {
     if (!submenuPanel || !submenuToggle) return;
     const shouldOpen = typeof forceOpen === 'boolean'
@@ -546,8 +480,10 @@
     setScenario(nextScenarioId);
   });
 
-  prevButton?.addEventListener('click', () => stepScenario(-1));
-  nextButton?.addEventListener('click', () => stepScenario(1));
+  visualizationToggle.addEventListener('click', () => {
+    const shouldExpand = visualizationToggle.getAttribute('aria-expanded') !== 'true';
+    setVisualizationExpanded(shouldExpand);
+  });
 
   if (submenuToggle && submenuPanel) {
     submenuToggle.addEventListener('click', () => toggleSubmenu());
@@ -587,9 +523,9 @@
   });
 
   syncCurrentSelection();
-  renderMaterials();
+  setVisualizationExpanded(false);
   renderSelectors();
   renderQuickChips();
-  updateStepperControls();
+  updateViewerHeader();
   loadScenario(true);
 })();

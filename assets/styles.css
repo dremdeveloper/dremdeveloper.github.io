@@ -446,7 +446,7 @@ p { line-height: 1.75; color: var(--muted); }
   min-width: 110px;
   padding: 12px 14px;
   border: 1px solid #d8dee4;
-  border-radius: 18px;
+  border-radius: 14px;
   background: #fff;
   color: var(--text);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
@@ -465,6 +465,18 @@ p { line-height: 1.75; color: var(--muted); }
   background: linear-gradient(135deg, #24292f 0%, #353c46 100%);
   color: #fff;
   border-color: #24292f;
+}
+
+.study-submenu-root::after {
+  content: '▸';
+  margin-top: 6px;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.study-submenu-root.is-active::after {
+  content: '▾';
+  opacity: 1;
 }
 
 .study-submenu-root-label {
@@ -727,48 +739,6 @@ p { line-height: 1.75; color: var(--muted); }
   color: #4a5662;
 }
 
-.study-viewer-toolbar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.study-nav-button {
-  min-width: 108px;
-  min-height: 42px;
-  padding: 0 16px;
-  border: 1px solid #d8dee4;
-  border-radius: 999px;
-  background: #ffffff;
-  color: var(--text);
-  font-weight: 700;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
-  cursor: pointer;
-  transition: transform var(--ease), background var(--ease), border-color var(--ease), color var(--ease), opacity var(--ease);
-}
-
-.study-nav-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  background: #f5f8fc;
-  border-color: #b8c4d0;
-}
-
-.study-nav-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.study-nav-button-primary {
-  background: linear-gradient(135deg, #24292f 0%, #39414b 100%);
-  border-color: #24292f;
-  color: #ffffff;
-}
-
-.study-nav-button-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2e343b 0%, #454d58 100%);
-  border-color: #2e343b;
-}
 
 .study-frame-wrap {
   background:
@@ -1084,14 +1054,6 @@ p { line-height: 1.75; color: var(--muted); }
     flex-direction: column;
   }
 
-  .study-viewer-toolbar-actions {
-    width: 100%;
-  }
-
-  .study-nav-button {
-    flex: 1 1 0;
-  }
-
   .study-frame-wrap,
   .study-frame-wrap-embedded,
   .study-frame-wrap-embedded iframe,
@@ -1129,17 +1091,11 @@ p { line-height: 1.75; color: var(--muted); }
     width: min(calc(100% - 24px), var(--container));
   }
   .study-submenu-root,
-  .study-quick-chip,
-  .study-nav-button {
+  .study-quick-chip {
     width: 100%;
   }
   .study-viewer-toolbar {
     padding: 18px 18px 16px;
-  }
-  .study-viewer-toolbar-actions {
-    display: grid;
-    grid-template-columns: 1fr;
-    width: 100%;
   }
   .study-frame-wrap,
   .study-frame-wrap-embedded,
