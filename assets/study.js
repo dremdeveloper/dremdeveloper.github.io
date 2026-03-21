@@ -2,11 +2,11 @@
 (() => {
   const frame = document.getElementById('study-frame');
   const rootList = document.getElementById('study-root-list');
-  const groupList = document.getElementById('study-group-list');
+  const scenarioSelect = document.getElementById('study-scenario-select');
   const titleNode = document.getElementById('study-viewer-title');
   const breadcrumbNode = document.getElementById('study-breadcrumb');
 
-  if (!frame || !rootList || !groupList) return;
+  if (!frame || !rootList || !scenarioSelect) return;
 
   const studyTree = [
     {
@@ -121,36 +121,23 @@
         const root = getCurrentRoot();
         currentScenarioId = root.groups[0].items[0].id;
         renderRootMenu();
-        renderGroupMenu();
+        renderScenarioSelect();
         loadScenario(true);
       });
     });
   }
 
-  function renderGroupMenu() {
+  function renderScenarioSelect() {
     const root = getCurrentRoot();
-    groupList.innerHTML = root.groups.map((group) => `
-      <section class="study-group">
-        <h3 class="study-group-title">${group.label}</h3>
-        <div class="study-submenu">
-          ${group.items.map((item) => `
-            <button type="button" class="study-subitem ${item.id === currentScenarioId ? 'is-active' : ''}" data-scenario="${item.id}">
-              ${item.label}
-            </button>
-          `).join('')}
-        </div>
-      </section>
+    scenarioSelect.innerHTML = root.groups.map((group) => `
+      <optgroup label="${group.label}">
+        ${group.items.map((item) => `
+          <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${item.label}</option>
+        `).join('')}
+      </optgroup>
     `).join('');
 
-    groupList.querySelectorAll('[data-scenario]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const nextScenarioId = button.dataset.scenario;
-        if (nextScenarioId === currentScenarioId) return;
-        currentScenarioId = nextScenarioId;
-        renderGroupMenu();
-        loadScenario(false);
-      });
-    });
+    scenarioSelect.value = currentScenarioId;
   }
 
   function updateViewerHeader() {
@@ -372,6 +359,14 @@
     }
   }
 
+  scenarioSelect.addEventListener('change', () => {
+    const nextScenarioId = scenarioSelect.value;
+    if (!nextScenarioId || nextScenarioId === currentScenarioId) return;
+    currentScenarioId = nextScenarioId;
+    renderScenarioSelect();
+    loadScenario(false);
+  });
+
   frame.addEventListener('load', () => {
     injectViewerTheme();
     bindFrameObservers();
@@ -394,7 +389,7 @@
   });
 
   renderRootMenu();
-  renderGroupMenu();
+  renderScenarioSelect();
   updateViewerHeader();
   loadScenario(true);
 })();
