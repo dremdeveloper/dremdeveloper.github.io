@@ -725,6 +725,10 @@ p { line-height: 1.75; color: var(--muted); }
 .meta-card strong {
   line-height: 1.55;
 }
+.lecture-summary-card strong {
+  display: block;
+  font-size: 1rem;
+}
 .meta-card.wide { grid-column: 1 / -1; }
 .video-card,
 .study-viewer-card { overflow: hidden; }
