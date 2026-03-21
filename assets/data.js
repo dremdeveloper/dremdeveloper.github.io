@@ -4,10 +4,11 @@ window.siteData = {
     repo: 'dremdeveloper.github.io',
     branch: 'main',
     articlesPath: 'articles',
-    defaultFile: '2026-03-21-sample-article.md',
+    categoryOrder: ['AI 논문', '트러블 슈팅', '코딩 테스트 팁', '생각정리'],
+    defaultFile: 'articles/생각정리/2026-03-21-sample-article.md',
     files: [
       {
-        name: '2026-03-21-sample-article.md',
+        name: 'articles/생각정리/2026-03-21-sample-article.md',
         title: 'sample article'
       }
     ]
