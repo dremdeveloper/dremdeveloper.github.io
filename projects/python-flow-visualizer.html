@@ -2416,10 +2416,6 @@ body {
         </div>
 
         <div class="side-stack">
-          <article class="panel-card glass">
-            <div id="descriptionArea"></div>
-          </article>
-
           <article class="panel-card glass panel-card-code" id="codePanel">
             <div class="panel-title">실행 중인 Python 코드</div>
             <div id="codeArea"></div>
@@ -4727,7 +4723,7 @@ body {
       'sectionNav', 'sectionLabel', 'heroTitle', 'heroSummary', 'heroBadges',
       'algorithmTabs',
       'prevBtn', 'playBtn', 'nextBtn', 'resetBtn', 'stepMeta', 'stepRange',
-      'speedLabel', 'speedRange', 'visualArea', 'legendArea', 'descriptionArea',
+      'speedLabel', 'speedRange', 'visualArea', 'legendArea',
       'codeArea', 'stateArea', 'noteArea',
     ];
     ids.forEach((id) => {
@@ -5056,7 +5052,6 @@ function exposePublicApi() {
     els.stepRange.value = APP.stepIndex;
     els.stepMeta.textContent = `${APP.stepIndex + 1} / ${scenario.steps.length} · ${step.title}`;
     els.speedLabel.textContent = speedLabel(APP.speed);
-    renderDescription(step);
     renderCode(scenario, step);
     renderState(step);
     renderLegend(scenario);
@@ -5070,20 +5065,6 @@ function exposePublicApi() {
     } catch (error) {
       // ignore cross-origin messaging errors
     }
-  }
-
-  function renderDescription(step) {
-    els.descriptionArea.innerHTML = `
-      <div class="description-card">
-        <div class="description-top">
-          <div class="line-chip">${activeLineLabel(step.lines)}</div>
-          <div class="note-chip">${step.title}</div>
-        </div>
-        <div class="description-title">${step.title}</div>
-        <p class="description-summary">${step.summary}</p>
-        <p class="description-detail">${step.detail}</p>
-      </div>
-    `;
   }
 
   function renderCode(scenario, step) {
