@@ -617,6 +617,110 @@ p { line-height: 1.75; color: var(--muted); }
   display: none;
 }
 
+.study-plan-browser {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.study-plan-intro-card {
+  background: linear-gradient(135deg, #ffffff 0%, #eef5fd 100%);
+}
+
+.study-plan-sidebar {
+  position: sticky;
+  top: 104px;
+  display: grid;
+  gap: 18px;
+}
+
+.study-plan-sidebar-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.study-plan-sidebar-copy strong {
+  font-size: 1rem;
+}
+
+.study-plan-menu {
+  display: grid;
+  gap: 14px;
+}
+
+.study-plan-group {
+  display: grid;
+  gap: 10px;
+}
+
+.study-plan-group-label {
+  margin: 0;
+  color: #4e5a66;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.study-plan-list {
+  display: grid;
+  gap: 10px;
+}
+
+.study-plan-link {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #d8e1eb;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  transition: transform var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+
+.study-plan-link:hover {
+  transform: translateY(-1px);
+  border-color: #b9c8d8;
+  background: #f8fbff;
+}
+
+.study-plan-link.is-active {
+  border-color: #b7cae2;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef5fd 100%);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.study-plan-link-title {
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.study-plan-link-description {
+  color: #52606d;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.study-plan-viewer {
+  overflow: hidden;
+}
+
+.study-plan-frame-wrap {
+  padding: 0;
+}
+
+.study-plan-frame-wrap iframe {
+  width: 100%;
+  min-height: clamp(760px, 82vh, 1800px);
+  border: 0;
+  background: #f6f8fa;
+}
+
 .study-selector-card {
   display: grid;
   gap: 16px;
@@ -1093,7 +1197,8 @@ p { line-height: 1.75; color: var(--muted); }
   .study-page-header,
   .study-submenu-selector,
   .study-selector-grid,
-  .study-overview-grid {
+  .study-overview-grid,
+  .study-plan-browser {
     grid-template-columns: 1fr;
   }
 
@@ -1102,7 +1207,8 @@ p { line-height: 1.75; color: var(--muted); }
     grid-template-columns: 1fr;
   }
 
-  .browser-sidebar {
+  .browser-sidebar,
+  .study-plan-sidebar {
     position: static;
     max-height: none;
   }
