@@ -403,13 +403,13 @@ p { line-height: 1.75; color: var(--muted); }
 .page-header h1 { margin-bottom: 0; font-size: clamp(2rem, 4vw, 2.8rem); }
 .study-topbar {
   margin-bottom: 14px;
-  align-items: flex-start;
 }
 
 .study-topbar .site-nav {
   flex: 1;
   justify-content: flex-end;
-  align-items: flex-start;
+  align-items: center;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -417,76 +417,69 @@ p { line-height: 1.75; color: var(--muted); }
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .site-nav-study-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 9px 12px;
-  border: 1px solid #d8dee4;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
-  color: var(--text);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+}
+
+.site-nav-study-toggle:hover,
+.site-nav-study-toggle[aria-expanded='true'],
+.site-nav-study.is-active .site-nav-study-toggle {
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 .study-top-submenu {
-  width: min(560px, calc(100vw - 64px));
-  margin-top: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 140px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .study-top-submenu[hidden] {
   display: none;
 }
 
-.study-top-submenu-head {
-  display: grid;
-  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.study-top-submenu-head p:last-child {
-  margin: 0;
-  color: #44505c;
-}
-
 .study-submenu-roots {
   display: grid;
-  gap: 6px;
+  gap: 2px;
 }
 
 .study-submenu-root {
-  display: grid;
-  gap: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
-  padding: 10px 4px;
+  padding: 9px 12px;
   border: 0;
-  border-bottom: 1px solid #e4eaf1;
+  border-radius: 8px;
   background: transparent;
-  color: var(--text);
+  color: var(--muted);
   text-align: left;
   cursor: pointer;
-  transition: color var(--ease), border-color var(--ease), background var(--ease);
+  transition: background var(--ease), color var(--ease);
 }
 
-.study-submenu-root:hover {
-  color: var(--accent-strong);
-  border-color: #c9d7e6;
-  background: transparent;
-  transform: none;
-  box-shadow: none;
-}
-
+.study-submenu-root:hover,
 .study-submenu-root.is-active {
-  color: var(--accent-strong);
-  border-color: #c9d7e6;
-  background: transparent;
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 .study-submenu-root::after {
@@ -494,15 +487,8 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .study-submenu-root-label {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1rem;
-}
-
-.study-submenu-root-meta {
-  margin-top: 0;
-  font-size: 0.84rem;
-  color: #5a6775;
-  opacity: 1;
 }
 
 .study-submenu-selector {
@@ -590,7 +576,12 @@ p { line-height: 1.75; color: var(--muted); }
 .study-selector-card {
   display: grid;
   gap: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+  padding-left: 0;
+  padding-right: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .study-selector-card-copy {
@@ -1055,7 +1046,6 @@ p { line-height: 1.75; color: var(--muted); }
   .content-grid,
   .book-grid,
   .study-page-header,
-  .study-top-submenu-head,
   .study-submenu-selector,
   .study-selector-grid,
   .study-overview-grid {
@@ -1136,8 +1126,9 @@ p { line-height: 1.75; color: var(--muted); }
   .study-visual-head { flex-direction: column; align-items: flex-start; }
   .meta-grid { grid-template-columns: 1fr; }
   .study-top-submenu {
+    position: static;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 6px;
   }
   .study-submenu-root,
   .study-quick-chip {

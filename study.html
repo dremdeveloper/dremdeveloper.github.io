@@ -35,17 +35,16 @@
             <span aria-hidden="true">▾</span>
           </button>
 
-          <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴" hidden>
+          <section id="study-top-submenu" class="study-top-submenu" aria-label="공부자료 서브메뉴" hidden>
             <div id="study-submenu-roots" class="study-submenu-roots" role="list">
               <button
                 id="study-visualization-toggle"
-                class="study-submenu-root study-submenu-root-text"
+                class="study-submenu-root"
                 type="button"
                 aria-expanded="false"
-                aria-controls="study-selector-card"
+                aria-controls="study-visualization-panel"
               >
                 <span class="study-submenu-root-label">시각화</span>
-                <span class="study-submenu-root-meta">Home 강의처럼 텍스트형 메뉴로 열기</span>
               </button>
             </div>
           </section>
@@ -54,8 +53,8 @@
     </header>
 
     <main class="page-shell section-tight">
-      <section class="study-focus-layout">
-        <article id="study-selector-card" class="card panel-pad-md study-selector-card" hidden>
+      <section id="study-visualization-panel" class="study-focus-layout" hidden>
+        <article id="study-selector-card" class="panel-pad-md study-selector-card">
           <div class="study-selector-card-copy">
             <p class="study-chip-label">시각화 선택</p>
             <strong>알고리즘 종류와 세부 알고리즘을 선택해 시각화를 확인하세요.</strong>
