@@ -79,7 +79,7 @@
     const fileKey = normalizeFileKey(item.path || item.name || item.file || '');
     const safeFileName = fileKey.split('/').pop() || '';
     const categoryParts = fileKey.split('/').slice(1, -1);
-    const category = categoryParts.join(' / ') || '미분류';
+    const category = item.category || categoryParts.join(' / ') || '미분류';
     const encodedPath = encodePath(fileKey);
     const localPath = item.localPath || encodeURI(fileKey);
     const githubRawUrl = item.githubRawUrl || item.download_url || `${rawBaseUrl}/${encodedPath}`;

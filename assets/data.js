@@ -8,6 +8,10 @@ window.siteData = {
     defaultFile: 'articles/생각정리/2026-03-21-sample-article.md',
     files: [
       {
+        name: 'articles/08_instruction_tuning_survey_section6_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
         name: 'articles/생각정리/2026-03-21-sample-article.md',
         title: 'sample article'
       }
