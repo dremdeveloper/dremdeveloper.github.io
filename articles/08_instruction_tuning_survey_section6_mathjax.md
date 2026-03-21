@@ -1,36 +1,30 @@
-    ---
-    title: "Section 6. Domain-specific Instruction Tuning — 확장 해설본 (arXiv:2308.10792)"
-    math: true
-    ---
+---
+title: "Instruction Tuning for Large Language Models: A Survey — Section 6"
+math: true
+---
 
-    <script>
+<script>
 window.MathJax = {
   tex: {
-    inlineMath: [['\\(', '\\)']],
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
     displayMath: [['$$', '$$'], ['\\[', '\\]']],
-    processEscapes: true
+    processEscapes: true,
+    tags: 'ams'
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
   },
   svg: { fontCache: 'global' }
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-> 편집 원칙  
-> - 수식은 MathJax 기준으로 다시 정리했습니다.  
-> - Figure/Table은 실제 이미지를 직접 삽입하지 않고, **어떤 원문 도판을 넣어야 하는지**를 안내하는 placeholder로 통일했습니다.  
-> - 이해 점검 질문, 스터디 체크리스트, 로드맵 등 부속 학습 패키지는 제거해 **논문 해설 본문 중심**으로 재구성했습니다.  
+## 핵심 요약
 
-
-## 전문가 관점 요약
-
-이 문서는 *Instruction Tuning for Large Language Models: A Survey*의 Section 6만을 확장 해설한 자료다. 따라서 읽는 목적도 분명해야 한다. 이 절의 가치는 새로운 알고리즘 하나를 제안하는 데 있지 않고, **instruction tuning이 범용 대화를 넘어 특정 도메인 문제로 들어갈 때 어떤 구조적 변화가 생기는지**를 체계적으로 보여 주는 데 있다. 다시 말해, 범용 IT가 domain-specific IT로 옮겨갈 때 데이터, 평가, 실패 모드, 목표 함수가 어떻게 달라지는지를 정리하는 분류 체계 문서다.
-
-전문가 관점에서 Section 6의 핵심은 “도메인 특화는 단순히 데이터를 더 넣는 문제인가?”라는 질문에 대한 답이다. 실제로는 그렇지 않다. 의료, 정보추출, 감성분석, 글쓰기, 코드, 수학 등 각 영역은 **출력 형식, 사실성 요구 수준, 안전성 조건, 평가 가능성**이 크게 다르다. 따라서 instruction tuning도 단일 recipe가 아니라, 태스크 구조와 오류 비용에 맞춰 변형된다. 예를 들어 정보추출은 schema consistency가 중요하고, 의료는 harmlessness와 factual precision이 더 민감하며, 글쓰기는 창의성과 편집 지시 준수의 균형이 중요하다.
-
-이 절을 읽을 때는 각 사례를 나열식으로 소비하지 말고, 어떤 도메인에서 **instruction schema가 supervision interface 역할**을 하는지 살펴보는 것이 좋다. 즉, instruction은 단순한 자연어 프롬프트가 아니라 태스크 정의, 입력 형식, 출력 제약, 평가 기준을 함께 운반하는 구조적 신호다. 이 점을 이해하면 domain-specific IT가 왜 소량 데이터에서도 강하게 작동할 수 있는지, 또 왜 특정 도메인에서는 금방 한계에 부딪히는지도 보인다.
-
-이 문서의 올바른 활용법은 개별 모델 이름을 외우는 것이 아니라, 각 사례를 통해 **도메인 적응형 정렬(domain-adaptive alignment)** 의 공통 패턴을 읽는 것이다. 그런 의미에서 Section 6은 survey의 주변부가 아니라, instruction tuning이 실제 문제로 들어갈 때 벌어지는 변형을 보여 주는 매우 중요한 절이다.
-
+- 이 문서는 instruction tuning survey의 Section 6을 중심으로, **도메인별 instruction tuning이 어떻게 달라지는지**를 정리한다.
+- 의료, 정보추출, 글쓰기, 감성분석, 코드, 산술처럼 도메인이 바뀌면 **출력 형식, 위험도, 평가 방식**도 함께 바뀐다.
+- 따라서 도메인 특화는 단순히 데이터를 더 넣는 문제가 아니라, **무엇을 맞는 답으로 볼지 다시 정의하는 작업**에 가깝다.
+- 이 절은 개별 모델 이름보다 **도메인에 따라 supervision interface가 어떻게 변하는지**를 보는 데 의미가 있다.
 
 # Instruction Tuning for Large Language Models: A Survey
 
@@ -38,7 +32,7 @@ window.MathJax = {
 - 원문: *Instruction Tuning for Large Language Models: A Survey* (arXiv:2308.10792v10)  
   https://arxiv.org/abs/2308.10792
 
-> 표기 규칙  
+> 표기 규칙
 > - **[원문 근거]**: 서베이 원문(Section 6 / Table 6 / Figure 13 / Figure 14)의 서술에 직접 근거한 내용  
 > - **[추가 설명(일반 지식)]**: 원문 밖의 일반적 배경 설명(원문 주장으로 오인되지 않도록 분리)
 
@@ -55,9 +49,7 @@ window.MathJax = {
 
 ### Table 6. Domain-specific Instruction Fine-tuned LLMs
 
-> [Table 삽입 안내] 이 위치에 **논문 원문의 Table 6.** crop을 넣으십시오.  
-> - 권장 캡션: `Table 6. Domain-specific Instruction Fine-tuned LLMs`  
-> - 편집 원칙: 도판 자체는 원문 이미지를 사용하고, 본문에서는 **이 도판이 무엇을 보여 주는지**만 해설합니다.
+> Table 6 삽입
 
 - **[원문 근거]** Table 6은 도메인별 대표 “domain-specific instruction fine-tuned LLMs”를 **모델명 / 기반 모델(Base Model) / 파라미터 수(# Params) / 학습 데이터 크기(Trainset Size)**로 요약한다. (근거: Table 6)
 
@@ -65,9 +57,7 @@ window.MathJax = {
 
 ### Table 6 각주(프로젝트/리소스 링크)
 
-> [Table 삽입 안내] 이 위치에 **논문 원문의 Table 6** crop을 넣으십시오.  
-> - 권장 캡션: `Table 6 각주(프로젝트/리소스 링크)`  
-> - 편집 원칙: 도판 자체는 원문 이미지를 사용하고, 본문에서는 **이 도판이 무엇을 보여 주는지**만 해설합니다.
+> Table 6 삽입
 
 - **[원문 근거]** Table 6에는 관련 코드/리소스 링크가 각주로 제시된다. (근거: Table 6 각주)
 
@@ -157,9 +147,7 @@ window.MathJax = {
 
 #### Figure 13. InstructUIE 개요 프레임워크(텍스트 재서술)
 
-> [Figure 삽입 안내] 이 위치에 **논문 원문의 Figure 13.** crop을 넣으십시오.  
-> - 권장 캡션: `Figure 13. InstructUIE 개요 프레임워크(텍스트 재서술)`  
-> - 편집 원칙: 도판 자체는 원문 이미지를 사용하고, 본문에서는 **이 도판이 무엇을 보여 주는지**만 해설합니다.
+> Figure 13 삽입
 
 - **[원문 근거]** Figure 13은 InstructUIE의 overview framework를 제시하며, Wang et al.(2023d)에서 복사된 그림임이 캡션에 명시된다. (근거: Figure 13)
 - **[원문 근거]** 도식은 다음의 흐름을 나타낸다. (근거: Figure 13)  
@@ -239,9 +227,7 @@ window.MathJax = {
 
 #### Figure 14. COEDIT 개요 프레임워크(텍스트 재서술)
 
-> [Figure 삽입 안내] 이 위치에 **논문 원문의 Figure 14.** crop을 넣으십시오.  
-> - 권장 캡션: `Figure 14. COEDIT 개요 프레임워크(텍스트 재서술)`  
-> - 편집 원칙: 도판 자체는 원문 이미지를 사용하고, 본문에서는 **이 도판이 무엇을 보여 주는지**만 해설합니다.
+> Figure 14 삽입
 
 - **[원문 근거]** Figure 14는 COEDIT의 overview framework를 제시하며, Raheja et al.(2023)에서 복사된 그림임이 캡션에 명시된다. (근거: Figure 14)
 - **[원문 근거]** 도식은 다음과 같은 구조를 나타낸다. (근거: Figure 14)  
