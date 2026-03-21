@@ -557,12 +557,11 @@ p { line-height: 1.75; color: var(--muted); }
 .study-focus-layout {
   display: grid;
   gap: 18px;
-  margin-top: 18px;
 }
 
 .study-overview-card {
   display: grid;
-  gap: 20px;
+  gap: 10px;
   background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
 }
 
@@ -716,7 +715,7 @@ p { line-height: 1.75; color: var(--muted); }
 
 .study-viewer-toolbar-copy {
   display: grid;
-  gap: 6px;
+  gap: 0;
 }
 
 .study-viewer-toolbar-copy strong {
