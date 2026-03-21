@@ -7,6 +7,7 @@
   const submenuSelectorNode = document.getElementById('study-submenu-selector');
   const quickChipsNode = document.getElementById('study-quick-chips');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
+  const overviewCard = document.getElementById('study-overview-card');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
@@ -117,6 +118,7 @@
     visualizationToggle.classList.toggle('is-active', isExpanded);
     visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
     submenuSelectorNode.hidden = !isExpanded;
+    if (overviewCard) overviewCard.hidden = !isExpanded;
   }
 
   function renderSelectors() {
