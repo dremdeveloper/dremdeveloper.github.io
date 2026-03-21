@@ -6,6 +6,10 @@
   const countNode = document.getElementById('article-count-label');
   const statusNode = document.getElementById('article-status');
   const viewerNode = document.getElementById('article-viewer');
+  const sidebarNode = document.querySelector('.article-sidebar');
+  const sidebarToggle = document.getElementById('article-sidebar-toggle');
+  const sidebarCurrentNode = document.getElementById('article-sidebar-current');
+  const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
 
   if (!listNode || !countNode || !statusNode || !viewerNode) return;
 
@@ -94,6 +98,23 @@
     };
   }
 
+  function setSidebarState(isOpen) {
+    if (!sidebarNode || !sidebarToggle) return;
+    sidebarNode.classList.toggle('is-mobile-open', isOpen);
+    sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  function closeSidebarOnMobile() {
+    if (!mobileMediaQuery.matches) return;
+    setSidebarState(false);
+  }
+
+  function updateSidebarCurrentLabel() {
+    if (!sidebarCurrentNode) return;
+    const currentEntry = articleFiles.find((entry) => entry.name === currentFile);
+    sidebarCurrentNode.textContent = currentEntry?.title || '원하는 아티클을 선택하세요';
+  }
+
   function setArticleFiles(files) {
     articleFiles = files
       .filter((item) => normalizeFileKey(item?.path || item?.name))
@@ -101,6 +122,7 @@
       .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
 
     countNode.textContent = `${articleFiles.length}개의 md 파일`;
+    updateSidebarCurrentLabel();
     renderList();
   }
 
@@ -360,6 +382,7 @@
 
   function renderList() {
     listNode.innerHTML = '';
+    updateSidebarCurrentLabel();
 
     const groupedFiles = articleFiles.reduce((groups, file) => {
       const key = file.category || '미분류';
@@ -442,7 +465,9 @@
       const renderedTitle = extractTitle(sanitizedMarkdown, file.fileName || file.name);
       file.title = renderedTitle;
       renderList();
+      updateSidebarCurrentLabel();
       showViewer(renderMarkdown(sanitizedMarkdown));
+      closeSidebarOnMobile();
       await typesetMath();
     } catch (error) {
       setStatus('md 파일을 불러오지 못했습니다. 배포된 articles 경로와 파일명을 확인해 주세요.', true);
@@ -488,5 +513,17 @@
     }
   }
 
+  sidebarToggle?.addEventListener('click', () => {
+    const isOpen = sidebarToggle.getAttribute('aria-expanded') !== 'true';
+    setSidebarState(isOpen);
+  });
+
+  mobileMediaQuery.addEventListener?.('change', (event) => {
+    if (!event.matches) {
+      setSidebarState(false);
+    }
+  });
+
+  updateSidebarCurrentLabel();
   loadArticleIndex();
 })();
