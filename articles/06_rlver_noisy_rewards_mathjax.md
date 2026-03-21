@@ -19,16 +19,14 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Rate or Fate? RLVεR: Reinforcement Learning with Verifiable Noisy Rewards
+
 ## 핵심 요약
 
 - 이 문서는 **검증 가능한 noisy reward**가 있는 RLVR 환경에서 학습이 언제 제대로 작동하고 언제 무너지는지를 분석한다.
 - 핵심 지표는 **\(J = \mathrm{TPR} - \mathrm{FPR}\)** 이며, 검증기가 랜덤보다 나은지만 먼저 확인하면 학습 가능성을 빠르게 판단할 수 있다.
 - 저자들은 **\(J>0\)** 이면 노이즈가 있어도 학습은 진행되고, **\(J<0\)** 이면 잘못된 방향으로 강화되어 붕괴할 수 있음을 보인다.
 - 즉 노이즈는 단순히 속도만 늦추는 경우도 있지만, 검증기가 너무 나쁘면 **학습 자체의 방향을 뒤집을 수 있다**는 것이 요지다.
-
-# Rate or Fate? RLVεR: Reinforcement Learning with Verifiable Noisy Rewards
-
-## 확장 해설본(annotated expansion)
 
 - **원문 제목**: *RLVεR: Reinforcement Learning with Verifiable Noisy Rewards*
 - **저자**: Ali Rad, Khashayar Filom, Darioush Keivan, Peyman Mohajerin Esfahani, Ehsan Kamalinejad
@@ -39,20 +37,7 @@ window.MathJax = {
 
 ---
 
-## 작성 원칙
-
-이 문서는 원문 논문의 전체 구조를 따라가며, 각 절의 논지를 빠짐없이 재구성하고 필요한 배경과 직관을 덧붙인 **확장 해설본**이다. 본문과 부록의 정의, 수식, 표, 그림 캡션, 실험 설정, 제한사항, 향후 과제를 모두 다루는 것을 목표로 한다. 원문에 직접 근거가 있는 내용은 가능한 한 섹션·식·그림·표·부록 번호를 함께 명시하였다. 원문에 없는 구현 세부나 실험 조건은 추정하지 않으며, 필요한 경우 **“논문에 명시 없음”**이라고 분리해 적는다.
-
-표기 규칙은 다음과 같다.
-
-- **[원문 근거]**: 논문 본문이나 부록에 직접적으로 근거가 있는 진술.
-- **[추가 설명(일반 지식)]**: 독해를 돕기 위한 배경 설명이나 직관.
-- **[추가 아이디어(원문 외)]**: 논문이 직접 주장하지는 않지만, 스터디·응용·후속 연구 관점에서 유의미한 확장 제안.
-
----
-
-# Abstract 확장 해설
-
+# Abstract
 ## A. 먼저 볼 것
 
 Abstract의 핵심 질문은 다음 한 문장으로 요약된다. **검증 가능한 보상으로 수행하는 RLVR에서 검증기(verifier)가 noisy할 때, 그 노이즈는 학습을 단지 느리게 만드는가, 아니면 학습의 최종 귀결 자체를 뒤집는가?** (근거: Abstract)
@@ -79,8 +64,7 @@ $$
 
 ---
 
-# 1. Introduction 확장 해설
-
+# 1. Introduction
 ## A. 먼저 볼 것
 
 서론의 목적은 세 가지다. 첫째, 왜 RLVR과 GRPO가 최근 LLM 학습에서 핵심적 위치를 차지하게 되었는지 설명한다. 둘째, group-normalized RL이 실전에서 의존하는 sequence-level reward가 얼마나 취약한지 문제를 제기한다. 셋째, noisy verifier 문제를 false positive/false negative와 Youden’s index \(J\)라는 최소 모델로 정식화한다. (근거: Section 1)
@@ -159,8 +143,7 @@ $$
 [추가 설명(일반 지식)] 서론의 중요한 통찰은, noisy supervision의 문제가 단순한 “annotation quality 저하” 문제가 아니라는 점이다. RL에서는 보상이 곧 최적화 방향이다. 따라서 false negative는 유용한 신호를 약화시키는 효과가 있지만, false positive는 아예 **잘못된 방향으로 gradient를 밀어버릴 수 있다**. 이 논문은 그 차이를 \(J\)의 부호 변화라는 형태로 압축해 보여준다. 코딩 과제에서 unit test가 불완전하면, 모델은 실제로 더 좋은 코드를 만들기보다 “테스트를 통과하는 방식”을 학습할 수 있다. 서론은 바로 이 위험을 정면으로 다룬다. (근거: Section 1)
 
 ---
-# 2. RLVR with Sloppy Rewards 확장 해설
-
+# 2. RLVR with Sloppy Rewards
 ## A. 먼저 볼 것
 
 이 절의 목적은 실제 GRPO/RLVR 업데이트를 최소한의 수식으로 적고, 그 결과 잘못된 해법 질량이 어떻게 이동하는지를 연속시간 방정식으로 도출하는 데 있다. 핵심 질문은 다음과 같다. 동일 프롬프트에서 여러 completion을 샘플링하고, 이를 group-normalized reward로 비교해 업데이트할 때, 그 업데이트는 “좋은 답”과 “나쁜 답”의 확률질량을 어떤 방향으로 이동시키는가? (근거: Section 2)
@@ -294,8 +277,7 @@ $$
 
 ---
 
-# 3. Phase Transition 확장 해설
-
+# 3. Phase Transition
 ## A. 먼저 볼 것
 
 Section 3은 논문의 핵심 결과를 가장 직접적으로 제시하는 절이다. 앞 절에서 얻은 bad mass ODE에 noisy reward model을 대입해, 학습이 세 가지 regime—learning, neutral, anti-learning—으로 나뉜다는 사실을 보인다. 또한 \(J>0\)일 때 noise가 주로 수렴 속도만 바꾸는 이유, 그리고 왜 중간 난이도의 프롬프트가 가장 잘 학습되는지를 정리한다. (근거: Section 3)
@@ -448,8 +430,7 @@ $$
 [추가 설명(일반 지식)] Section 3의 가장 중요한 메시지는, verifier quality가 충분히 나쁘면 학습이 단지 느려지는 것이 아니라 **방향을 바꾼다**는 점이다. supervised learning에서 noisy label은 종종 성능을 떨어뜨리는 정도로 이해되지만, RL에서는 reward가 곧 optimization direction이므로, false positive가 심해지면 policy는 실제로 더 나쁜 해답군을 선호하는 방향으로 이동할 수 있다. 이 논문은 바로 그 경계가 \(J=0\)임을 보여준다. 또한 support barrier는 RLVR가 “없던 능력을 창조하는 기계”가 아니라 “가끔 나오는 정답 경로를 증폭하는 기계”에 가깝다는 점을 명확히 한다. 이 해석은 후속 실험과 practical takeaway를 이해하는 데 필수적이다. (근거: Section 3)
 
 ---
-# 4. LLM as a Multi-Armed Bandit 확장 해설
-
+# 4. LLM as a Multi-Armed Bandit
 ## A. 먼저 볼 것
 
 이 절은 RLVR/GRPO를 sequence-level bandit으로 다시 쓰는 이론적 기초를 제공한다. 핵심 아이디어는 간단하지만 중요하다. completion 전체가 끝난 뒤에 verifier가 점수를 주는 구조라면, 토큰 단위 MDP보다 **완성된 답변 하나를 arm으로 보는 multi-armed bandit 추상화**가 더 직접적이라는 것이다. 그러나 실제 completion space는 방대하므로, 저자들은 이를 반복적으로 등장하는 reasoning mode로 coarse-grain한다. (근거: Section 4, Appendix A)
@@ -544,8 +525,7 @@ $$
 [원문 근거] 한 가지 유의할 점은, 논문이 reasoning mode \(\phi\)를 실험적으로 실제 클러스터링했다는 뜻은 아니라는 점이다. mode 분해는 주로 분석을 위한 추상화로 제시되며, 구체적인 자동 clustering 절차는 본문과 부록에 명시되어 있지 않다. (근거: Section 4, Appendix A.3)
 
 ---
-# 5. Geometry of the Probability Simplex 확장 해설
-
+# 5. Geometry of the Probability Simplex
 ## A. 먼저 볼 것
 
 Section 5는 본 논문의 수학적 핵심부다. 저자들은 mode distribution이 놓인 공간이 단순한 Euclidean 공간이 아니라, 합이 1로 고정된 **확률단체(simplex)** 라는 사실을 강조한다. softmax Jacobian은 이 공간의 자연 기하를 만들고, GRPO mean-field dynamics는 이 기하 위에서 replicator flow 또는 natural gradient flow로 해석된다. (근거: Section 5, Figure 4, Appendix H)
@@ -786,8 +766,7 @@ $$
 [추가 설명(일반 지식)] Section 5를 한 문장으로 요약하면, **GRPO는 확률단체 위 자연선택형 질량 재배치**다. 확률벡터는 합이 1이어야 하므로 일반 Euclidean gradient descent처럼 움직일 수 없고, softmax Jacobian이 그 제약을 만족시키는 자연스러운 projector 역할을 한다. 그 결과 “평균보다 더 나은 모드가 늘어나고, 평균보다 못한 모드는 줄어드는” replicator 구조가 발생한다. 또한 good mode들이 여러 개 있을 때도 균형 공존이 아니라 하나의 dominant mode로 편중되기 쉽다는 점은, RLVR를 reasoning quality 향상 도구로만 볼 것이 아니라 **output diversity를 잠식할 수 있는 알고리즘**으로도 보아야 함을 시사한다. (근거: Section 5, Appendix I–K)
 
 ---
-# 6. LLM as a Bandit under Noisy Rewards 확장 해설
-
+# 6. LLM as a Bandit under Noisy Rewards
 ## A. 먼저 볼 것
 
 이 절은 이론을 실제 PPO/GRPO 세부와 연결한다. 실제 시스템에서는 importance sampling ratio, PPO clipping, KL regularization 같은 요소들이 존재한다. 따라서 앞서 도출한 sign-of-\(J\) phase transition이 이러한 장치들 아래에서도 유지되는지 확인하는 것이 필요하다. 저자들의 결론은 분명하다. 작은 스텝 크기에서는 clipping과 importance sampling은 leading-order drift를 바꾸지 않으며, KL regularization은 sharp boundary collapse를 interior equilibrium으로 완화하지만 \(J\)의 부호 자체를 무력화하지는 못한다. (근거: Section 6, Appendix F, Appendix G)
@@ -988,8 +967,7 @@ $$
 [추가 설명(일반 지식)] Section 6의 직관은 “reward signal”과 “anchoring force”의 줄다리기다. reward-driven term은 verifier가 가리키는 방향으로 질량을 이동시키고, KL term은 reference policy에서 너무 멀어지지 않도록 잡아당긴다. 그러나 verifier가 근본적으로 anti-informative \((J<0)\)라면, KL은 학습 방향을 반전시키지 못한다. 다만 그 잘못된 방향으로의 붕괴를 완화해 interior equilibrium을 만든다. 이는 실무에서 KL regularization을 안정화 도구로 사용할 수는 있지만, verifier 품질 문제를 대체할 수는 없다는 결론으로 이어진다. (근거: Section 6, Appendix G)
 
 ---
-# 7. Experiments 확장 해설
-
+# 7. Experiments
 ## A. 먼저 볼 것
 
 실험의 목적은 이론의 두 핵심 가설을 검증하는 데 있다. 첫째, \(J=0\) 부근에서 실제 RL fine-tuning에서도 sharp phase transition이 관찰되는가. 둘째, \(J>0\) 영역에서 noise는 fate가 아니라 rate만 바꾸는가. 즉 verifier가 informative하기만 하면, 노이즈가 존재하더라도 학습은 같은 방향으로 진행되는가. (근거: Section 7.1)
@@ -1075,8 +1053,7 @@ $$
 
 ---
 
-# 8. Conclusion 확장 해설
-
+# 8. Conclusion
 ## A. 먼저 볼 것
 
 결론 절은 논문의 핵심 메시지를 다시 단일 문장으로 고정한다. **불완전한 verifier 아래 RLVR의 qualitative outcome은 결국 \(J=\mathrm{TPR}-\mathrm{FPR}\)의 부호에 의해 지배된다.** 이 절에서는 그동안 도출한 이론적 결과와 실험적 관찰을 한 번에 종합하고, practical takeaway를 명시한다. (근거: Section 8)
@@ -1105,8 +1082,7 @@ $$
 [추가 설명(일반 지식)] 결론의 힘은 복잡한 RLHF/RLVR pipeline의 세부를 하나하나 해체하지 않고도, verifier가 **평균적으로 정답에 더 우호적인가, 오답에 더 우호적인가**라는 질문으로 핵심을 압축했다는 데 있다. 물론 현실 시스템은 time-dependent verifier, prompt별 difficulty 이질성, distribution shift, truncation, mode discovery 문제 등을 포함한다. 그럼에도 이 논문은 최소한 learning direction의 부호를 가르는 일차 원리가 \(J\)에 있다는 강한 메시지를 제시한다. (근거: Section 8)
 
 ---
-# Appendix A–N 확장 해설
-
+# Appendix A–N
 이 절에서는 본문보다 더 세부적인 증명, 기하학적 해석, explicit solution, 하이퍼파라미터, noise injection 알고리즘, 데이터 샘플을 포함한 부록 전체를 순서대로 정리한다. 부록은 본문에서 선언된 결과의 엄밀한 근거를 제공하므로, 재현과 후속 연구를 위해서는 오히려 본문보다 중요할 수 있다. (근거: Appendix A–N)
 
 ---

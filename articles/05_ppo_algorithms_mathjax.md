@@ -19,6 +19,8 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Proximal Policy Optimization Algorithms
+
 ## 핵심 요약
 
 - PPO는 정책을 한 번에 너무 크게 바꾸지 않도록 막아 **정책 경사 기반 강화학습을 안정화**한 알고리즘이다.
@@ -26,9 +28,6 @@ window.MathJax = {
 - TRPO보다 계산이 간단하면서도 업데이트 폭을 제어할 수 있어, 이후 RLHF 계열에서도 널리 쓰이게 되었다.
 - 실제로는 보상 스케일, KL 제어, advantage 추정 방식에 따라 결과가 크게 달라지므로 구현 세부가 중요하다.
 
-# Proximal Policy Optimization Algorithms
-
-## 확장 해설
 ## 문헌 정보
 
 - **논문명**: *Proximal Policy Optimization Algorithms*
@@ -36,7 +35,7 @@ window.MathJax = {
 - **소속**: OpenAI
 - **버전**: arXiv:1707.06347v2, 2017-08-28
 
-본 문서는 원 논문의 구조를 유지하면서, 각 절과 수식, 표, 그림 캡션, 각주, 부록, 참고문헌까지 빠짐없이 서술하는 해설본이다. 기술적 설명은 원문 이해를 돕기 위해 보강하되, 논문에 명시되지 않은 사항은 논문 주장인 것처럼 단정하지 않는다. 절, 식, 그림, 표의 번호는 모두 원 논문 기준을 따른다.
+본 문서는 원 논문의 구조를 유지하면서, 각 절과 수식, 표, 그림 캡션, 각주, 부록, 참고문헌까지 빠짐없이 서술한다. 기술적 설명은 원문 이해를 돕기 위해 보강하되, 논문에 명시되지 않은 사항은 논문 주장인 것처럼 단정하지 않는다. 절, 식, 그림, 표의 번호는 모두 원 논문 기준을 따른다.
 
 ---
 

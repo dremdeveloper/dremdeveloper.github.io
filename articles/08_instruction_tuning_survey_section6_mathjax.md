@@ -19,6 +19,8 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Instruction Tuning for Large Language Models: A Survey
+
 ## 핵심 요약
 
 - 이 문서는 instruction tuning survey의 Section 6을 중심으로, **도메인별 instruction tuning이 어떻게 달라지는지**를 정리한다.
@@ -26,9 +28,7 @@ window.MathJax = {
 - 따라서 도메인 특화는 단순히 데이터를 더 넣는 문제가 아니라, **무엇을 맞는 답으로 볼지 다시 정의하는 작업**에 가깝다.
 - 이 절은 개별 모델 이름보다 **도메인에 따라 supervision interface가 어떻게 변하는지**를 보는 데 의미가 있다.
 
-# Instruction Tuning for Large Language Models: A Survey
-
-## Section 6. Domain-specific Instruction Tuning — 확장 해설본
+## Section 6. Domain-specific Instruction Tuning
 - 원문: *Instruction Tuning for Large Language Models: A Survey* (arXiv:2308.10792v10)  
   https://arxiv.org/abs/2308.10792
 
