@@ -702,6 +702,20 @@ p { line-height: 1.75; color: var(--muted); }
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
+.study-plan-link-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.study-plan-link-icon {
+  justify-self: end;
+  align-self: center;
+  color: #0969da;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .study-plan-link-title {
   font-weight: 700;
   line-height: 1.5;
