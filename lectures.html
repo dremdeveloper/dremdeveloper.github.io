@@ -59,13 +59,25 @@
 
           <article class="card video-card">
             <div class="video-frame-wrap">
-              <iframe
+              <div
                 id="lecture-player"
-                title="강의 재생 플레이어"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen></iframe>
+                class="video-player-embed"
+                role="img"
+                aria-label="강의 재생 플레이어"></div>
+            </div>
+            <div class="video-controls" aria-label="영상 재생 컨트롤">
+              <button class="video-control-button" id="lecture-play-toggle" type="button" aria-label="재생" disabled>
+                재생
+              </button>
+              <label class="video-progress" for="lecture-progress">
+                <span class="sr-only">영상 진행률</span>
+                <input id="lecture-progress" type="range" min="0" max="1000" value="0" disabled />
+              </label>
+              <div class="video-time" aria-live="polite">
+                <span id="lecture-current-time">00:00</span>
+                <span aria-hidden="true">/</span>
+                <span id="lecture-duration">00:00</span>
+              </div>
             </div>
           </article>
         </section>
