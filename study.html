@@ -45,7 +45,7 @@
           <p class="eyebrow no-margin">Study Submenu</p>
           <h2>주제 선택</h2>
         </div>
-        <p>강의 페이지는 기존 서브메뉴를 그대로 두고, 공부자료만 상단에서 원하는 주제를 열어 바로 이동할 수 있게 정리했습니다.</p>
+        <p>공부자료를 한 번에 훑고 바로 실행할 수 있게 주제, 카테고리, 시나리오 선택 동선을 짧고 선명하게 정리했습니다.</p>
       </div>
       <div id="study-submenu-roots" class="study-submenu-roots" role="list"></div>
       <div id="study-submenu-selector" class="study-submenu-selector" hidden>
@@ -63,6 +63,28 @@
     </section>
 
     <main class="page-shell section-tight">
+      <section class="study-page-header card panel-pad-lg">
+        <div class="study-page-header-copy">
+          <p class="eyebrow">Interactive Study</p>
+          <h1>한눈에 읽히는 공부자료 뷰어</h1>
+          <p class="study-page-lead">텍스트 대비를 높이고, 현재 위치를 더 쉽게 파악할 수 있게 정보 구조를 다듬고, 시뮬레이션 애니메이션도 더 차분하고 또렷하게 보이도록 정리했습니다.</p>
+        </div>
+        <div class="study-page-header-highlights" aria-label="공부자료 핵심 포인트">
+          <div class="study-page-highlight">
+            <strong>빠른 탐색</strong>
+            <p>주제 선택, 시나리오 이동, 이전·다음 탐색을 한 영역에서 바로 처리할 수 있습니다.</p>
+          </div>
+          <div class="study-page-highlight">
+            <strong>가독성 강화</strong>
+            <p>설명 카드, 보조 텍스트, 임베드 영역의 대비를 조정해 핵심 정보가 더 선명하게 보입니다.</p>
+          </div>
+          <div class="study-page-highlight">
+            <strong>모션 정리</strong>
+            <p>늘어진 느낌의 전환을 줄이고 과한 펄스 효과를 완화해 학습 흐름에 집중하기 쉽게 만들었습니다.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="study-focus-layout">
         <article class="card panel-pad-md study-overview-card">
           <div class="study-overview-head">
@@ -70,6 +92,7 @@
               <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
               <h2 id="study-viewer-title">버블 정렬</h2>
             </div>
+            <p id="study-viewer-status" class="study-viewer-status">현재 시나리오 정보를 불러오는 중입니다.</p>
           </div>
 
           <div class="study-overview-grid">
@@ -91,10 +114,24 @@
               <strong id="study-current-index">0 / 0</strong>
             </div>
           </div>
-          <div id="study-quick-chips" class="study-quick-chips" hidden aria-hidden="true"></div>
+          <div>
+            <p class="study-chip-label">빠른 이동</p>
+            <div id="study-quick-chips" class="study-quick-chips" hidden aria-hidden="true"></div>
+          </div>
         </article>
 
         <article class="card study-viewer-card study-viewer-shell">
+          <div class="study-viewer-toolbar">
+            <div class="study-viewer-toolbar-copy">
+              <p class="eyebrow no-margin">Scenario Navigator</p>
+              <strong id="study-toolbar-title">현재 시나리오로 이동 중</strong>
+              <p id="study-toolbar-description">이전·다음 버튼이나 빠른 이동 칩으로 다른 알고리즘을 바로 확인할 수 있습니다.</p>
+            </div>
+            <div class="study-viewer-toolbar-actions">
+              <button id="study-prev-button" class="study-nav-button" type="button">← 이전</button>
+              <button id="study-next-button" class="study-nav-button study-nav-button-primary" type="button">다음 →</button>
+            </div>
+          </div>
           <div class="study-frame-wrap study-frame-wrap-embedded study-frame-wrap-expanded">
             <iframe id="study-frame" title="공부자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
           </div>

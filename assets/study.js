@@ -12,6 +12,12 @@
   const groupCountNode = document.getElementById('study-group-count');
   const currentIndexNode = document.getElementById('study-current-index');
   const currentDescriptionNode = document.getElementById('study-current-description');
+  const currentStatusNode = document.getElementById('study-viewer-status');
+  const quickChipsNode = document.getElementById('study-quick-chips');
+  const toolbarTitleNode = document.getElementById('study-toolbar-title');
+  const toolbarDescriptionNode = document.getElementById('study-toolbar-description');
+  const prevButton = document.getElementById('study-prev-button');
+  const nextButton = document.getElementById('study-next-button');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
@@ -106,9 +112,14 @@
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
+  let boundFrameWindow = null;
 
   function getCurrentRoot() {
     return studyTree.find((item) => item.key === currentRootKey) || studyTree[0];
+  }
+
+  function getRootScenarioItems(root = getCurrentRoot()) {
+    return root.groups.flatMap((group) => group.items.map((item) => ({ ...item, group })));
   }
 
   function findScenarioInfo(id) {
@@ -124,21 +135,89 @@
     return null;
   }
 
+  function getScenarioPosition(root, scenarioId) {
+    const items = getRootScenarioItems(root);
+    return items.findIndex((item) => item.id === scenarioId);
+  }
+
   function buildFrameUrl(root, scenarioId) {
     return `${root.path}?embed=1&scenario=${encodeURIComponent(scenarioId)}`;
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function renderQuickChips() {
+    if (!quickChipsNode) return;
+    const info = findScenarioInfo(currentScenarioId);
+    if (!info) {
+      quickChipsNode.hidden = true;
+      quickChipsNode.setAttribute('aria-hidden', 'true');
+      quickChipsNode.innerHTML = '';
+      return;
+    }
+
+    quickChipsNode.hidden = false;
+    quickChipsNode.setAttribute('aria-hidden', 'false');
+    quickChipsNode.innerHTML = info.group.items.map((item) => `
+      <button
+        type="button"
+        class="study-quick-chip ${item.id === currentScenarioId ? 'is-active' : ''}"
+        data-scenario-chip="${item.id}"
+        aria-pressed="${item.id === currentScenarioId ? 'true' : 'false'}"
+      >
+        ${escapeHtml(item.label)}
+      </button>
+    `).join('');
+
+    quickChipsNode.querySelectorAll('[data-scenario-chip]').forEach((button) => {
+      button.addEventListener('click', () => {
+        setScenario(button.dataset.scenarioChip);
+      });
+    });
+  }
+
+  function updateStepperControls() {
+    const root = getCurrentRoot();
+    const items = getRootScenarioItems(root);
+    const currentIndex = items.findIndex((item) => item.id === currentScenarioId);
+    const currentItem = items[currentIndex];
+
+    if (prevButton) prevButton.disabled = currentIndex <= 0;
+    if (nextButton) nextButton.disabled = currentIndex < 0 || currentIndex >= items.length - 1;
+
+    if (toolbarTitleNode && currentItem) {
+      toolbarTitleNode.textContent = `${currentItem.group.label} · ${currentItem.label}`;
+    }
+
+    if (toolbarDescriptionNode) {
+      const positionLabel = currentIndex >= 0 ? `${currentIndex + 1} / ${items.length}` : '0 / 0';
+      toolbarDescriptionNode.textContent = `같은 주제 안에서 ${positionLabel} 순서로 이동하고 있습니다. 빠른 이동 칩이나 이전·다음 버튼으로 흐름을 이어서 볼 수 있습니다.`;
+    }
   }
 
   function setScenario(nextScenarioId, forceReload = false) {
     if (!nextScenarioId) return;
     const nextInfo = findScenarioInfo(nextScenarioId);
     if (!nextInfo) return;
+
     currentRootKey = nextInfo.root.key;
-    if (nextScenarioId === currentScenarioId && !forceReload) return;
+    const isSameScenario = nextScenarioId === currentScenarioId;
     currentScenarioId = nextScenarioId;
+
     renderScenarioSelect();
     renderSubmenu();
     updateViewerHeader();
-    loadScenario(forceReload);
+    renderQuickChips();
+    updateStepperControls();
+
+    loadScenario(forceReload || isSameScenario);
   }
 
   function renderSubmenu() {
@@ -149,23 +228,33 @@
         data-root="${root.key}"
         aria-pressed="${root.key === currentRootKey && isRootSelectorVisible ? 'true' : 'false'}"
       >
-        <span class="study-submenu-root-label">${root.label}</span>
+        <span class="study-submenu-root-label">${escapeHtml(root.label)}</span>
         <span class="study-submenu-root-meta">${root.groups.length}개 카테고리</span>
       </button>
     `).join('');
 
     submenuRootsNode.querySelectorAll('[data-root]').forEach((button) => {
       button.addEventListener('click', () => {
-        currentRootKey = button.dataset.root;
+        const nextRoot = studyTree.find((root) => root.key === button.dataset.root);
+        if (!nextRoot) return;
+
+        currentRootKey = nextRoot.key;
         isRootSelectorVisible = true;
+
+        const nextRootItems = getRootScenarioItems(nextRoot);
+        if (!nextRootItems.some((item) => item.id === currentScenarioId) && nextRootItems[0]) {
+          currentScenarioId = nextRootItems[0].id;
+        }
+
         renderSubmenu();
         renderScenarioSelect();
+        updateViewerHeader();
+        renderQuickChips();
+        updateStepperControls();
       });
     });
 
-    if (submenuSelectorNode) {
-      submenuSelectorNode.hidden = !isRootSelectorVisible;
-    }
+    submenuSelectorNode.hidden = !isRootSelectorVisible;
   }
 
   function renderScenarioSelect() {
@@ -173,12 +262,13 @@
     if (selectorTitleNode) selectorTitleNode.textContent = root.label;
     if (selectorDescriptionNode) {
       const scenarioCount = root.groups.reduce((sum, group) => sum + group.items.length, 0);
-      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오 중 하나를 골라 바로 확인할 수 있습니다.`;
+      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오를 카테고리별로 골라 바로 확인할 수 있습니다.`;
     }
+
     scenarioSelect.innerHTML = root.groups.map((group) => `
-      <optgroup label="${group.label}">
+      <optgroup label="${escapeHtml(group.label)}">
         ${group.items.map((item) => `
-          <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${item.label}</option>
+          <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${escapeHtml(item.label)}</option>
         `).join('')}
       </optgroup>
     `).join('');
@@ -191,6 +281,7 @@
     if (!info) return;
 
     const itemIndex = info.group.items.findIndex((item) => item.id === currentScenarioId) + 1;
+    const rootScenarioCount = getRootScenarioItems(info.root).length;
 
     breadcrumbNode.textContent = `${info.root.label} · ${info.group.label}`;
     titleNode.textContent = info.item.label;
@@ -200,6 +291,9 @@
     if (groupCountNode) groupCountNode.textContent = `${info.group.items.length}개 시나리오`;
     if (currentIndexNode) currentIndexNode.textContent = `${itemIndex} / ${info.group.items.length}`;
     if (currentDescriptionNode) currentDescriptionNode.textContent = info.group.description;
+    if (currentStatusNode) {
+      currentStatusNode.textContent = `${info.group.label} 카테고리의 ${itemIndex}번째 시나리오입니다. 현재 주제에는 총 ${rootScenarioCount}개의 시나리오가 준비되어 있어 흐름을 이어서 보기 좋습니다.`;
+    }
   }
 
   function injectViewerTheme() {
@@ -216,31 +310,42 @@
 
       style.textContent = `
         :root {
-          --bg: #f6f8fa !important;
-          --bg-2: #f6f8fa !important;
+          --bg: #f4f7fb !important;
+          --bg-2: #f4f7fb !important;
           --panel: #ffffff !important;
           --panel-strong: #ffffff !important;
-          --panel-soft: #f6f8fa !important;
+          --panel-soft: #f5f8fc !important;
           --line: #d0d7de !important;
           --line-strong: #c4ccd5 !important;
-          --text: #1f2328 !important;
-          --muted: #59636e !important;
-          --muted-2: #6e7781 !important;
-          --accent: #24292f !important;
+          --text: #111827 !important;
+          --muted: #44505c !important;
+          --muted-2: #5b6773 !important;
+          --accent: #1f2937 !important;
           --accent-2: #0969da !important;
-          --accent-soft: #eef2f7 !important;
+          --accent-soft: #eaf1f8 !important;
           --good: #1a7f37 !important;
           --warn: #9a6700 !important;
           --danger: #cf222e !important;
-          --cyan: #0969da !important;
-          --shadow: 0 1px 2px rgba(31, 35, 40, 0.08) !important;
+          --cyan: #0b63ce !important;
+          --shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+        }
+        html {
+          color-scheme: light !important;
+          scroll-behavior: auto !important;
         }
         html, body {
-          background: #f6f8fa !important;
-          color: #1f2328 !important;
+          background: linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%) !important;
+          color: #111827 !important;
         }
         body {
           padding: 0 !important;
+        }
+        *, *::before, *::after {
+          animation-duration: 0.12s !important;
+          animation-delay: 0s !important;
+          transition-duration: 0.12s !important;
+          transition-delay: 0s !important;
+          caret-color: #111827 !important;
         }
         .glass,
         .sidebar-card,
@@ -260,18 +365,37 @@
         .board-frame,
         .structure-card,
         .description-card,
-        .code-block {
+        .code-block,
+        .note-chip,
+        .badge,
+        .stack-token,
+        .structure-token,
+        .queue-lane,
+        .stack-column,
+        .graph-stage,
+        .tree-stage,
+        .recursion-stage,
+        .pruning-stage {
           background: #ffffff !important;
           border-color: #d0d7de !important;
-          box-shadow: 0 1px 2px rgba(31, 35, 40, 0.08) !important;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
           backdrop-filter: none !important;
+        }
+        .ambient,
+        .ambient-a,
+        .ambient-b {
+          display: none !important;
         }
         .section-button.active,
         .algorithm-tab.active,
-        .control-btn.active {
-          background: #eef2f7 !important;
-          border-color: #b6c3d1 !important;
-          color: #1f2328 !important;
+        .control-btn.active,
+        .control-btn-primary,
+        .badge-highlight,
+        .legend-item.highlight {
+          background: #eaf1f8 !important;
+          border-color: #b8c4d0 !important;
+          color: #111827 !important;
+          box-shadow: none !important;
         }
         .panel-title,
         .workspace-head,
@@ -279,8 +403,20 @@
         .state-value,
         .graph-node text,
         .tree-node text,
-        .call-node text {
-          color: #1f2328 !important;
+        .call-node text,
+        .brand h1,
+        .hero h2,
+        .visual-guide-title,
+        .stat-value,
+        .section-title,
+        .algorithm-tab,
+        .control-btn,
+        .factorial-result,
+        .array-value,
+        .code-block,
+        strong {
+          color: #111827 !important;
+          fill: #111827 !important;
         }
         .description-summary,
         .description-detail,
@@ -288,8 +424,28 @@
         .meta-line,
         label,
         .bar-footer,
-        .panel-subtitle {
-          color: #59636e !important;
+        .panel-subtitle,
+        .brand-copy,
+        .hero p,
+        .project-meta p,
+        .note-block p,
+        .section-desc,
+        .sidebar-list,
+        .stat-label,
+        .visual-guide-detail,
+        .token-hint,
+        .factorial-result.muted,
+        .array-value.muted,
+        .factorial-note,
+        .factorial-expression,
+        .queue-caption,
+        .stack-caption {
+          color: #44505c !important;
+          fill: #44505c !important;
+        }
+        .eyebrow,
+        .visual-guide-tag {
+          color: #0b63ce !important;
         }
         .description-card {
           background: linear-gradient(180deg, #f8fbff, #eef4fb) !important;
@@ -310,7 +466,7 @@
         .queue-lane,
         .token-row,
         .board-grid {
-          background: #f6f8fa !important;
+          background: #f4f7fb !important;
         }
         .bar-track {
           background: #e5e7eb !important;
@@ -318,9 +474,9 @@
         }
         .bar-fill {
           color: #ffffff !important;
-          background: linear-gradient(180deg, #111111, #000000) !important;
-          border: 1px solid #000000 !important;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 14px rgba(0, 0, 0, 0.18) !important;
+          background: linear-gradient(180deg, #1f2937, #111827) !important;
+          border: 1px solid #111827 !important;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 6px 14px rgba(17, 24, 39, 0.16) !important;
         }
         .bar-card.comparing .bar-fill,
         .bar-card.key .bar-fill,
@@ -328,8 +484,24 @@
         .bar-card.sorted .bar-fill,
         .bar-card.fixed .bar-fill,
         .bar-card.current-write .bar-fill {
-          background: linear-gradient(180deg, #111111, #000000) !important;
-          border-color: #000000 !important;
+          background: linear-gradient(180deg, #1f2937, #111827) !important;
+          border-color: #111827 !important;
+        }
+        .pulse-ring,
+        .current-node,
+        .call-stack-item.active,
+        .stack-frame.is-active,
+        .tree-node.active,
+        .graph-node.active,
+        [class*="pulse"],
+        [class*="highlight"][style*="animation"] {
+          animation: none !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+          }
         }
       `;
     } catch (error) {
@@ -363,6 +535,11 @@
       const win = frame.contentWindow;
       const doc = frame.contentDocument || win?.document;
       if (!win || !doc || !doc.body) return;
+
+      if (boundFrameWindow && boundFrameWindow !== win) {
+        boundFrameWindow.removeEventListener('resize', queueHeightSync);
+      }
+      boundFrameWindow = win;
 
       if (resizeObserver) resizeObserver.disconnect();
       if (mutationObserver) mutationObserver.disconnect();
@@ -412,6 +589,15 @@
     }
   }
 
+  function stepScenario(direction) {
+    const root = getCurrentRoot();
+    const items = getRootScenarioItems(root);
+    const currentIndex = getScenarioPosition(root, currentScenarioId);
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= items.length) return;
+    setScenario(items[nextIndex].id);
+  }
+
   function toggleSubmenu(forceOpen) {
     if (!submenuPanel || !submenuToggle) return;
     const shouldOpen = typeof forceOpen === 'boolean'
@@ -430,6 +616,9 @@
     if (!nextScenarioId) return;
     setScenario(nextScenarioId);
   });
+
+  prevButton?.addEventListener('click', () => stepScenario(-1));
+  nextButton?.addEventListener('click', () => stepScenario(1));
 
   if (submenuToggle && submenuPanel) {
     submenuToggle.addEventListener('click', () => toggleSubmenu());
@@ -471,5 +660,7 @@
   renderSubmenu();
   renderScenarioSelect();
   updateViewerHeader();
+  renderQuickChips();
+  updateStepperControls();
   loadScenario(true);
 })();
