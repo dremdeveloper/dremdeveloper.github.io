@@ -266,6 +266,19 @@ p { line-height: 1.75; color: var(--muted); }
 .social-logo-inline {
   width: 112px;
 }
+.social-logo-gmail {
+  width: 72px;
+}
+
+.hero-links {
+  align-items: center;
+}
+
+.hero-links .social-logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .social-logo-kakao {
   width: 112px;
