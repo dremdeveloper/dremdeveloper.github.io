@@ -20,6 +20,7 @@
   const branch = config.branch || 'main';
   const articlesPath = config.articlesPath || 'articles';
   const defaultFile = config.defaultFile || '';
+  const configuredFiles = Array.isArray(config.files) ? config.files : [];
 
   const contentsApiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(articlesPath)}?ref=${encodeURIComponent(branch)}`;
   const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}/${articlesPath}`;
@@ -46,6 +47,31 @@
   function extractTitle(markdown, fileName) {
     const heading = markdown.match(/^#\s+(.+)$/m);
     return heading?.[1]?.trim() || slugToTitle(fileName);
+  }
+
+  function buildArticleEntry(item) {
+    const fileName = item.name || item.file || '';
+    const safeFileName = fileName.split('/').pop() || '';
+    const encodedFileName = encodeURIComponent(safeFileName);
+    const localPath = item.localPath || `${articlesPath}/${encodedFileName}`;
+    const githubRawUrl = item.githubRawUrl || item.download_url || `${rawBaseUrl}/${encodedFileName}`;
+
+    return {
+      name: safeFileName,
+      title: item.title || slugToTitle(safeFileName),
+      localPath,
+      downloadUrl: githubRawUrl
+    };
+  }
+
+  function setArticleFiles(files) {
+    articleFiles = files
+      .filter((item) => item?.name)
+      .map(buildArticleEntry)
+      .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
+
+    countNode.textContent = `${articleFiles.length}개의 md 파일`;
+    renderList();
   }
 
   function setStatus(message, isError = false) {
@@ -222,6 +248,23 @@
     });
   }
 
+  async function fetchMarkdown(file) {
+    const targets = [file.localPath, file.downloadUrl].filter(Boolean);
+    let lastError = null;
+
+    for (const target of targets) {
+      try {
+        const response = await fetch(target, { headers: { Accept: 'text/plain' } });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.text();
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error('Unable to fetch markdown');
+  }
+
   async function loadArticle(fileName) {
     const file = articleFiles.find((entry) => entry.name === fileName);
     if (!file) return;
@@ -237,8 +280,8 @@
         <strong>${escapeHtml(articlesPath)}/${escapeHtml(file.name)}</strong>
       </div>
       <div class="meta-card article-summary-card">
-        <span>Updated</span>
-        <strong>GitHub 저장소에 업로드된 md 파일</strong>
+        <span>Source</span>
+        <strong>동일 사이트 경로 우선, GitHub Raw 백업</strong>
       </div>
     `;
 
@@ -246,20 +289,36 @@
     updateQuery(file.name);
 
     try {
-      const response = await fetch(file.downloadUrl, { headers: { Accept: 'text/plain' } });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const markdown = await response.text();
+      const markdown = await fetchMarkdown(file);
       const renderedTitle = extractTitle(markdown, file.name);
+      file.title = renderedTitle;
       titleNode.textContent = renderedTitle;
+      renderList();
       showViewer(renderMarkdown(markdown));
     } catch (error) {
-      setStatus('md 파일을 불러오지 못했습니다. GitHub Pages 배포 후 다시 확인해 주세요.', true);
+      setStatus('md 파일을 불러오지 못했습니다. 배포된 articles 경로와 파일명을 확인해 주세요.', true);
       viewerNode.hidden = true;
       console.error(error);
     }
   }
 
   async function loadArticleIndex() {
+    if (configuredFiles.length) {
+      setArticleFiles(configuredFiles);
+
+      if (!articleFiles.length) {
+        setStatus('articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.');
+        return;
+      }
+
+      const initialFile = articleFiles.find((file) => file.name === requestedFile)?.name
+        || articleFiles.find((file) => file.name === defaultFile)?.name
+        || articleFiles[0].name;
+
+      loadArticle(initialFile);
+      return;
+    }
+
     setStatus('GitHub 저장소에서 article 목록을 불러오는 중입니다.');
 
     try {
@@ -270,16 +329,9 @@
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
-      articleFiles = items
-        .filter((item) => item.type === 'file' && /\.md$/i.test(item.name))
-        .sort((a, b) => b.name.localeCompare(a.name, 'ko'))
-        .map((item) => ({
-          name: item.name,
-          title: slugToTitle(item.name),
-          downloadUrl: item.download_url || `${rawBaseUrl}/${encodeURIComponent(item.name)}`
-        }));
-
-      countNode.textContent = `${articleFiles.length}개의 md 파일`;
+      setArticleFiles(
+        items.filter((item) => item.type === 'file' && /\.md$/i.test(item.name))
+      );
 
       if (!articleFiles.length) {
         setStatus('articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.');
@@ -296,11 +348,10 @@
         || articleFiles.find((file) => file.name === defaultFile)?.name
         || articleFiles[0].name;
 
-      renderList();
       loadArticle(initialFile);
     } catch (error) {
       countNode.textContent = '목록을 불러오지 못했습니다';
-      setStatus('article 목록을 불러오지 못했습니다. assets/data.js의 GitHub 저장소 설정을 확인해 주세요.', true);
+      setStatus('article 목록을 불러오지 못했습니다. assets/data.js의 article 파일 목록 또는 GitHub 저장소 설정을 확인해 주세요.', true);
       detailGridNode.innerHTML = `
         <div class="meta-card wide article-summary-card">
           <span>Repository</span>

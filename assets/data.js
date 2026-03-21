@@ -4,7 +4,13 @@ window.siteData = {
     repo: 'dremdeveloper.github.io',
     branch: 'main',
     articlesPath: 'articles',
-    defaultFile: '2026-03-21-sample-article.md'
+    defaultFile: '2026-03-21-sample-article.md',
+    files: [
+      {
+        name: '2026-03-21-sample-article.md',
+        title: 'sample article'
+      }
+    ]
   },
   lectures: {
     python: {
