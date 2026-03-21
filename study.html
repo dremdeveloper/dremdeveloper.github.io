@@ -29,7 +29,7 @@
             id="study-nav-toggle"
             class="site-nav-study-toggle"
             type="button"
-            aria-expanded="true"
+            aria-expanded="false"
             aria-controls="study-top-submenu"
           >
             공부자료
@@ -39,15 +39,27 @@
       </nav>
     </header>
 
-    <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴">
+    <section id="study-top-submenu" class="study-top-submenu card panel-pad-md" aria-label="공부자료 서브메뉴" hidden>
       <div class="study-top-submenu-head">
         <div>
           <p class="eyebrow no-margin">Study Submenu</p>
-          <h2>공부자료 바로가기</h2>
+          <h2>주제 선택</h2>
         </div>
         <p>강의 페이지는 기존 서브메뉴를 그대로 두고, 공부자료만 상단에서 원하는 주제를 열어 바로 이동할 수 있게 정리했습니다.</p>
       </div>
-      <div id="study-submenu-groups" class="study-submenu-groups"></div>
+      <div id="study-submenu-roots" class="study-submenu-roots" role="list"></div>
+      <div id="study-submenu-selector" class="study-submenu-selector" hidden>
+        <div>
+          <p class="eyebrow no-margin">Selected Topic</p>
+          <h3 id="study-selector-title">시각화</h3>
+          <p id="study-selector-description">선택한 주제에서 보고 싶은 시나리오를 콤보박스로 골라 바로 실행할 수 있습니다.</p>
+        </div>
+        <div class="study-viewer-controls">
+          <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
+          <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
+        </div>
+      </div>
+      <div id="study-submenu-groups" class="study-submenu-groups" hidden aria-hidden="true"></div>
     </section>
 
     <main class="page-shell section-tight">
@@ -65,10 +77,6 @@
             <div>
               <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
               <h2 id="study-viewer-title">버블 정렬</h2>
-            </div>
-            <div class="study-viewer-controls">
-              <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
-              <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
             </div>
           </div>
 
@@ -91,14 +99,7 @@
               <strong id="study-current-index">0 / 0</strong>
             </div>
           </div>
-
-          <div class="study-chip-panel">
-            <div class="study-chip-panel-head">
-              <h3>빠른 이동</h3>
-              <p>상단 서브메뉴와 동일하게 현재 카테고리의 시나리오를 버튼으로 바로 전환할 수 있습니다.</p>
-            </div>
-            <div id="study-quick-chips" class="study-quick-chips"></div>
-          </div>
+          <div id="study-quick-chips" class="study-quick-chips" hidden aria-hidden="true"></div>
         </article>
 
         <article class="card study-viewer-card study-viewer-shell">
