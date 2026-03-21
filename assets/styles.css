@@ -403,12 +403,14 @@ p { line-height: 1.75; color: var(--muted); }
 .page-header h1 { margin-bottom: 0; font-size: clamp(2rem, 4vw, 2.8rem); }
 .study-topbar {
   margin-bottom: 14px;
+  align-items: flex-start;
+  padding-bottom: 24px;
 }
 
 .study-topbar .site-nav {
   flex: 1;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   flex-wrap: wrap;
 }
@@ -416,9 +418,9 @@ p { line-height: 1.75; color: var(--muted); }
 .site-nav-study {
   position: relative;
   display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   padding: 0;
   color: var(--muted);
 }
@@ -443,6 +445,7 @@ p { line-height: 1.75; color: var(--muted); }
 .study-top-submenu {
   position: static;
   min-width: 0;
+  width: 100%;
   padding: 0;
   background: transparent;
   border: 0;
@@ -464,6 +467,7 @@ p { line-height: 1.75; color: var(--muted); }
 .study-submenu-roots {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .study-submenu-root {
