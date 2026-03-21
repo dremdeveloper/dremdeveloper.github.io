@@ -1427,8 +1427,20 @@ p { line-height: 1.75; color: var(--muted); }
 
 .article-category-title {
   margin: 0;
-  font-size: 0.92rem;
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 41, 55, 0.12);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(236, 72, 153, 0.12));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  text-transform: none;
 }
 
 .article-category-items {
