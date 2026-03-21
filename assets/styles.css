@@ -761,19 +761,6 @@ p { line-height: 1.75; color: var(--muted); }
   gap: 2px;
 }
 
-.study-plan-link .study-plan-link-icon {
-  color: var(--study-plan-week-accent);
-}
-
-.study-plan-link-icon {
-  justify-self: end;
-  align-self: center;
-  color: #0969da;
-  font-size: 1rem;
-  font-weight: 900;
-  line-height: 1;
-}
-
 .study-plan-link-title {
   font-weight: 700;
   line-height: 1.5;
