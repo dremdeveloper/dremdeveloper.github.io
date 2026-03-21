@@ -73,7 +73,7 @@ window.siteData = {
       label: '파이썬 알고리즘 실행 흐름 시각화',
       typeLabel: 'Interactive HTML',
       title: '파이썬 알고리즘 실행 흐름 시각화',
-      summary: '정렬, 그래프 탐색, 트리 탐색, 트리 순회, 재귀, 스택, 큐, 힙 정렬, N-Queen을 단계별로 볼 수 있는 자료입니다.',
+      summary: '강의 페이지의 기존 서브메뉴는 유지한 채, 공부자료에서만 정렬, 그래프 탐색, 트리 탐색, 트리 순회, 재귀, 스택, 큐, 힙 정렬, N-Queen을 단계별로 볼 수 있게 구성한 자료입니다.',
       detailA: '형식',
       valueA: 'HTML / CSS / JavaScript',
       detailB: '주제',
