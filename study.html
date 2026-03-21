@@ -40,24 +40,14 @@
             <div id="study-submenu-roots" class="study-submenu-roots" role="list">
               <button
                 id="study-visualization-toggle"
-                class="study-submenu-root"
+                class="study-submenu-root study-submenu-root-text"
                 type="button"
                 aria-expanded="false"
-                aria-controls="study-submenu-selector"
+                aria-controls="study-selector-card"
               >
                 <span class="study-submenu-root-label">시각화</span>
-                <span class="study-submenu-root-meta">알고리즘 시뮬레이션 보기</span>
+                <span class="study-submenu-root-meta">Home 강의처럼 텍스트형 메뉴로 열기</span>
               </button>
-            </div>
-            <div id="study-submenu-selector" class="study-submenu-selector" hidden>
-              <div class="study-viewer-controls">
-                <label class="study-select-label" for="study-group-select">알고리즘 종류</label>
-                <select id="study-group-select" class="study-scenario-select" aria-label="알고리즘 종류 선택"></select>
-              </div>
-              <div class="study-viewer-controls">
-                <label class="study-select-label" for="study-scenario-select">세부 알고리즘</label>
-                <select id="study-scenario-select" class="study-scenario-select" aria-label="세부 알고리즘 선택"></select>
-              </div>
             </div>
           </section>
         </div>
@@ -66,10 +56,20 @@
 
     <main class="page-shell section-tight">
       <section class="study-focus-layout">
-        <article id="study-overview-card" class="card panel-pad-md study-overview-card" hidden>
-          <div>
-            <p class="study-chip-label">빠른 이동</p>
-            <div id="study-quick-chips" class="study-quick-chips" hidden aria-hidden="true"></div>
+        <article id="study-selector-card" class="card panel-pad-md study-selector-card" hidden>
+          <div class="study-selector-card-copy">
+            <p class="study-chip-label">시각화 선택</p>
+            <strong>알고리즘 종류와 세부 알고리즘을 선택해 시각화를 확인하세요.</strong>
+          </div>
+          <div class="study-selector-grid">
+            <div class="study-viewer-controls">
+              <label class="study-select-label" for="study-group-select">알고리즘 종류</label>
+              <select id="study-group-select" class="study-scenario-select" aria-label="알고리즘 종류 선택"></select>
+            </div>
+            <div class="study-viewer-controls">
+              <label class="study-select-label" for="study-scenario-select">세부 알고리즘</label>
+              <select id="study-scenario-select" class="study-scenario-select" aria-label="세부 알고리즘 선택"></select>
+            </div>
           </div>
         </article>
 

@@ -2,16 +2,13 @@
   const frame = document.getElementById('study-frame');
   const groupSelect = document.getElementById('study-group-select');
   const scenarioSelect = document.getElementById('study-scenario-select');
-  const submenuRootsNode = document.getElementById('study-submenu-roots');
   const visualizationToggle = document.getElementById('study-visualization-toggle');
-  const submenuSelectorNode = document.getElementById('study-submenu-selector');
-  const quickChipsNode = document.getElementById('study-quick-chips');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
-  const overviewCard = document.getElementById('study-overview-card');
+  const selectorCard = document.getElementById('study-selector-card');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !groupSelect || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode || !visualizationToggle) return;
+  if (!frame || !groupSelect || !scenarioSelect || !visualizationToggle || !selectorCard) return;
 
   const studyMaterials = Array.isArray(window.siteData?.studyMaterials)
     ? window.siteData.studyMaterials.filter((material) => Array.isArray(material.groups) && material.groups.length)
@@ -74,38 +71,6 @@
     }
   }
 
-  function renderQuickChips() {
-    if (!quickChipsNode) return;
-
-    const group = getCurrentGroup();
-    const items = group?.items || [];
-
-    if (!items.length) {
-      quickChipsNode.hidden = true;
-      quickChipsNode.setAttribute('aria-hidden', 'true');
-      quickChipsNode.innerHTML = '';
-      return;
-    }
-
-    quickChipsNode.hidden = false;
-    quickChipsNode.setAttribute('aria-hidden', 'false');
-    quickChipsNode.innerHTML = items.map((item) => `
-      <button
-        type="button"
-        class="study-quick-chip ${item.id === currentScenarioId ? 'is-active' : ''}"
-        data-scenario-chip="${item.id}"
-        aria-pressed="${item.id === currentScenarioId ? 'true' : 'false'}"
-      >
-        ${escapeHtml(item.label)}
-      </button>
-    `).join('');
-
-    quickChipsNode.querySelectorAll('[data-scenario-chip]').forEach((button) => {
-      button.addEventListener('click', () => {
-        setScenario(button.dataset.scenarioChip);
-      });
-    });
-  }
 
   function updateViewerHeader() {
     const currentInfo = findScenarioInfo(currentScenarioId);
@@ -117,8 +82,7 @@
   function setVisualizationExpanded(isExpanded) {
     visualizationToggle.classList.toggle('is-active', isExpanded);
     visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
-    submenuSelectorNode.hidden = !isExpanded;
-    if (overviewCard) overviewCard.hidden = !isExpanded;
+    selectorCard.hidden = !isExpanded;
   }
 
   function renderSelectors() {
@@ -148,7 +112,6 @@
     currentScenarioId = nextScenarioId;
 
     renderSelectors();
-    renderQuickChips();
     updateViewerHeader();
     loadScenario(forceReload || isSameScenario);
   }
@@ -164,7 +127,6 @@
     currentScenarioId = nextGroup.items[0]?.id || '';
 
     renderSelectors();
-    renderQuickChips();
     updateViewerHeader();
     loadScenario(false);
   }
@@ -485,6 +447,7 @@
   visualizationToggle.addEventListener('click', () => {
     const shouldExpand = visualizationToggle.getAttribute('aria-expanded') !== 'true';
     setVisualizationExpanded(shouldExpand);
+    if (shouldExpand) toggleSubmenu(false);
   });
 
   if (submenuToggle && submenuPanel) {
