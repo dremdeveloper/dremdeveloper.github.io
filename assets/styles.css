@@ -241,6 +241,30 @@ p { line-height: 1.75; color: var(--muted); }
   background: var(--panel-soft);
 }
 
+.social-logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+}
+
+.social-logo-link-block {
+  width: fit-content;
+}
+
+.social-logo {
+  display: block;
+  height: auto;
+}
+
+.social-logo-inline {
+  width: 112px;
+}
+
+.social-logo-stack {
+  width: 136px;
+}
+
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(280px, 340px);
