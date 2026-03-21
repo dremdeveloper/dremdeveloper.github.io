@@ -51,34 +51,7 @@
       </nav>
     </header>
 
-    <main class="page-shell section-tight stack-gap">
-      <section class="card panel-pad-lg article-hero">
-        <p class="eyebrow">Markdown Article Library</p>
-        <h1>Article</h1>
-        <p class="article-lead">
-          논문, 리뷰, 정리 글을 <code>articles/</code> 폴더에 <code>.md</code> 파일로 올리면
-          이 페이지 왼쪽 메뉴에 자동으로 노출되도록 구성했습니다.
-        </p>
-        <div class="article-hero-grid">
-          <div class="article-hero-card">
-            <strong>올리는 방법</strong>
-            <ol>
-              <li><code>articles/</code> 폴더에 새 <code>.md</code> 파일을 추가합니다.</li>
-              <li>파일 첫 줄에 <code># 제목</code>을 적으면 화면 제목으로 바로 사용됩니다.</li>
-              <li>파일명은 <code>YYYY-MM-DD-title.md</code>처럼 두면 정리하기 편합니다.</li>
-            </ol>
-          </div>
-          <div class="article-hero-card">
-            <strong>자동 처리</strong>
-            <ul>
-              <li>GitHub 저장소의 <code>articles/</code> 폴더를 읽어 목록을 만듭니다.</li>
-              <li>md 파일은 페이지 안에서 바로 렌더링됩니다.</li>
-              <li>원본 md 파일 열기 링크도 함께 제공합니다.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
+    <main class="page-shell section-tight stack-gap article-page-shell">
       <section class="browser-layout article-layout">
         <aside class="browser-sidebar card panel-pad-md article-sidebar">
           <div class="sidebar-meta article-sidebar-meta">
@@ -88,23 +61,7 @@
           <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
         </aside>
 
-        <section class="browser-main stack-gap">
-          <article class="card panel-pad-lg article-summary">
-            <div class="summary-topline article-summary-topline">
-              <span class="eyebrow no-margin" id="article-file-label">Markdown Viewer</span>
-              <div class="article-summary-actions">
-                <a class="button button-secondary compact-button" id="article-open-raw" href="#" target="_blank" rel="noopener noreferrer">원본 MD</a>
-              </div>
-            </div>
-            <h2 id="article-title">Article을 선택하세요</h2>
-            <div class="meta-grid" id="article-detail-grid">
-              <div class="meta-card wide article-summary-card">
-                <span>Guide</span>
-                <strong>왼쪽 목록에서 md 파일을 선택하면 논문/아티클 내용을 바로 읽을 수 있습니다.</strong>
-              </div>
-            </div>
-          </article>
-
+        <section class="browser-main">
           <article class="card panel-pad-lg article-viewer-card">
             <div id="article-status" class="article-status" aria-live="polite">GitHub 저장소의 articles 폴더를 확인하는 중입니다.</div>
             <div id="article-viewer" class="article-viewer markdown-body" hidden></div>
