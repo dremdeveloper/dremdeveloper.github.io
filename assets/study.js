@@ -27,6 +27,7 @@
   let currentScenarioId = '';
   let currentPlanKey = '';
   let currentPlanFileId = '';
+  let expandedPlanWeek = '';
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
@@ -87,17 +88,33 @@
 
     const defaultPlan = studyPlans[0];
     const defaultFile = defaultPlan?.files[0];
-    const defaultLesson = defaultFile?.lessons?.[0]?.items?.[0];
+    const defaultGroup = defaultFile?.lessons?.[0];
+    const defaultLesson = defaultGroup?.items?.[0];
 
     if (!defaultPlan || !defaultFile) return;
 
     currentPlanKey = defaultPlan.key;
     currentPlanFileId = defaultLesson?.id || defaultFile.id;
+    expandedPlanWeek = defaultGroup?.group || '';
   }
 
   function getCurrentPlan() {
     ensureInitialPlanSelection();
     return studyPlans.find((plan) => plan.key === currentPlanKey) || studyPlans[0];
+  }
+
+  function findPlanWeekByFileId(fileId) {
+    for (const plan of studyPlans) {
+      for (const file of plan.files) {
+        if (!Array.isArray(file.lessons)) continue;
+        for (const group of file.lessons) {
+          if (group.items.some((item) => item.id === fileId)) {
+            return group.group;
+          }
+        }
+      }
+    }
+    return '';
   }
 
   function findPlanFileInfo(fileId) {
@@ -226,43 +243,61 @@
   function renderPlanMenu() {
     if (!planMenuRoot || !studyPlans.length) return;
 
-    planMenuRoot.innerHTML = studyPlans.map((plan) => `
-      <section class="study-plan-group">
-        <button
-          class="study-plan-link ${plan.files.some((file) => file.id === currentPlanFileId || file.lessons?.some((group) => group.items.some((item) => item.id === currentPlanFileId))) ? 'is-active' : ''}"
-          type="button"
-          data-plan-file="${escapeHtml(plan.files[0].id)}"
-          role="tab"
-          aria-selected="${String(plan.files.some((file) => file.id === currentPlanFileId || file.lessons?.some((group) => group.items.some((item) => item.id === currentPlanFileId))))}"
-        >
-          <span class="study-plan-link-title">${escapeHtml(plan.files[0].label)}</span>
-          <span class="study-plan-link-description">${escapeHtml(plan.files[0].description || plan.summary || '')}</span>
-        </button>
-        ${Array.isArray(plan.files[0].lessons) && plan.files[0].lessons.length ? `
-          <div class="study-plan-submenu">
-            ${plan.files[0].lessons.map((group) => `
-              <section class="study-plan-group-block">
-                <p class="study-plan-group-label">${escapeHtml(group.group)}</p>
-                <div class="study-plan-list study-plan-list-nested">
-                  ${group.items.map((item) => `
-                    <button
-                      class="study-plan-sub-link ${item.id === currentPlanFileId ? 'is-active' : ''}"
-                      type="button"
-                      data-plan-file="${escapeHtml(item.id)}"
-                      role="tab"
-                      aria-selected="${String(item.id === currentPlanFileId)}"
-                    >
-                      <span class="study-plan-link-title">${escapeHtml(item.label)}</span>
-                      <span class="study-plan-link-description">${escapeHtml(item.metaLabel || '')}</span>
-                    </button>
-                  `).join('')}
-                </div>
-              </section>
-            `).join('')}
+    if (!expandedPlanWeek) {
+      expandedPlanWeek = findPlanWeekByFileId(currentPlanFileId);
+    }
+
+    planMenuRoot.innerHTML = studyPlans.map((plan) => {
+      const file = plan.files[0];
+      return Array.isArray(file.lessons) && file.lessons.length ? `
+        <section class="study-plan-group">
+          <div class="study-plan-list">
+            ${file.lessons.map((group) => {
+              const isSelectedWeek = group.items.some((item) => item.id === currentPlanFileId);
+              const isExpandedWeek = group.group === expandedPlanWeek;
+              return `
+                <section class="study-plan-group-block">
+                  <button
+                    class="study-plan-link ${(isExpandedWeek || isSelectedWeek) ? 'is-active' : ''}"
+                    type="button"
+                    data-plan-week="${escapeHtml(group.group)}"
+                    role="tab"
+                    aria-selected="${String(isExpandedWeek)}"
+                    aria-expanded="${String(isExpandedWeek)}"
+                  >
+                    <span class="study-plan-link-title">${escapeHtml(group.group)}</span>
+                  </button>
+                  <div class="study-plan-submenu" ${isExpandedWeek ? '' : 'hidden'}>
+                    <div class="study-plan-list study-plan-list-nested">
+                      ${group.items.map((item) => `
+                        <button
+                          class="study-plan-sub-link ${item.id === currentPlanFileId ? 'is-active' : ''}"
+                          type="button"
+                          data-plan-file="${escapeHtml(item.id)}"
+                          role="tab"
+                          aria-selected="${String(item.id === currentPlanFileId)}"
+                        >
+                          <span class="study-plan-link-title">${escapeHtml(item.label)}</span>
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+                </section>
+              `;
+            }).join('')}
           </div>
-        ` : ''}
-      </section>
-    `).join('');
+        </section>
+      ` : '';
+    }).join('');
+
+    planMenuRoot.querySelectorAll('[data-plan-week]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const weekLabel = button.getAttribute('data-plan-week');
+        if (!weekLabel || weekLabel === expandedPlanWeek) return;
+        expandedPlanWeek = weekLabel;
+        renderPlanMenu();
+      });
+    });
 
     planMenuRoot.querySelectorAll('[data-plan-file]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -298,6 +333,7 @@
 
     currentPlanKey = currentInfo.plan.key;
     currentPlanFileId = currentInfo.lesson?.id || currentInfo.file.id;
+    expandedPlanWeek = findPlanWeekByFileId(currentPlanFileId) || expandedPlanWeek;
 
     renderPlanMenu();
     if (!learningPlanPanel?.hidden) {
