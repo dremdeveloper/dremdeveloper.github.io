@@ -1,18 +1,9 @@
 (() => {
   const frame = document.getElementById('study-frame');
+  const groupSelect = document.getElementById('study-group-select');
   const scenarioSelect = document.getElementById('study-scenario-select');
-  const titleNode = document.getElementById('study-viewer-title');
-  const breadcrumbNode = document.getElementById('study-breadcrumb');
   const submenuRootsNode = document.getElementById('study-submenu-roots');
   const submenuSelectorNode = document.getElementById('study-submenu-selector');
-  const selectorTitleNode = document.getElementById('study-selector-title');
-  const selectorDescriptionNode = document.getElementById('study-selector-description');
-  const currentGroupNode = document.getElementById('study-current-group');
-  const totalCountNode = document.getElementById('study-total-count');
-  const groupCountNode = document.getElementById('study-group-count');
-  const currentIndexNode = document.getElementById('study-current-index');
-  const currentDescriptionNode = document.getElementById('study-current-description');
-  const currentStatusNode = document.getElementById('study-viewer-status');
   const quickChipsNode = document.getElementById('study-quick-chips');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
   const toolbarDescriptionNode = document.getElementById('study-toolbar-description');
@@ -21,113 +12,45 @@
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
-  if (!frame || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode) return;
+  if (!frame || !groupSelect || !scenarioSelect || !submenuRootsNode || !submenuSelectorNode) return;
 
-  const studyTree = [
-    {
-      key: 'visualizer',
-      label: '시각화',
-      path: 'projects/python-flow-visualizer.html',
-      groups: [
-        {
-          key: 'sorting',
-          label: '정렬',
-          description: '대표 정렬 알고리즘의 비교, 교환, 분할 과정을 단계별로 따라갑니다.',
-          items: [
-            { id: 'bubble-sort', label: '버블 정렬' },
-            { id: 'insertion-sort', label: '삽입 정렬' },
-            { id: 'merge-sort', label: '머지 정렬' },
-            { id: 'quick-sort', label: '퀵 정렬' },
-            { id: 'counting-sort', label: '계수 정렬' },
-            { id: 'heap-sort', label: '힙 정렬' },
-          ],
-        },
-        {
-          key: 'structures',
-          label: '스택·큐',
-          description: '자료구조 내부 상태가 push/pop, enqueue/dequeue에 따라 어떻게 바뀌는지 확인합니다.',
-          items: [
-            { id: 'stack-basic', label: '스택' },
-            { id: 'queue-basic', label: '큐' },
-          ],
-        },
-        {
-          key: 'graph',
-          label: '그래프 탐색',
-          description: '탐색 순서와 방문 상태가 그래프 위에서 어떻게 확장되는지 살펴봅니다.',
-          items: [
-            { id: 'dfs', label: '깊이 우선 탐색' },
-            { id: 'bfs', label: '너비 우선 탐색' },
-          ],
-        },
-        {
-          key: 'tree-search',
-          label: '트리 탐색',
-          description: 'BST에서 탐색 경로가 조건문과 함께 어떻게 결정되는지 보여줍니다.',
-          items: [
-            { id: 'bst-search', label: 'BST 탐색' },
-          ],
-        },
-        {
-          key: 'tree-traversal',
-          label: '트리 순회',
-          description: '전위·중위·후위 순회가 재귀 호출 스택과 함께 어떻게 이동하는지 설명합니다.',
-          items: [
-            { id: 'preorder', label: '전위 순회' },
-            { id: 'inorder', label: '중위 순회' },
-            { id: 'postorder', label: '후위 순회' },
-          ],
-        },
-        {
-          key: 'dynamic',
-          label: '동적 계획법·백트래킹',
-          description: '가지치기와 상태 전이를 시각적으로 비교하며 문제 해결 흐름을 따라갑니다.',
-          items: [
-            { id: 'n-queen', label: 'N-Queen' },
-            { id: 'subset-sum-pruning', label: '부분집합 합 가지치기' },
-          ],
-        },
-        {
-          key: 'recursion',
-          label: '재귀',
-          description: '재귀 호출의 전개와 복귀 시점이 코드 흐름에 맞춰 어떻게 변하는지 확인합니다.',
-          items: [
-            { id: 'factorial', label: '팩토리얼' },
-            { id: 'fibonacci', label: '피보나치' },
-            { id: 'combination', label: '조합' },
-          ],
-        },
-      ],
-    },
-  ];
+  const studyMaterials = Array.isArray(window.siteData?.studyMaterials)
+    ? window.siteData.studyMaterials.filter((material) => Array.isArray(material.groups) && material.groups.length)
+    : [];
 
-  const totalScenarioCount = studyTree.reduce(
-    (sum, root) => sum + root.groups.reduce((groupSum, group) => groupSum + group.items.length, 0),
+  if (!studyMaterials.length) return;
+
+  const totalScenarioCount = studyMaterials.reduce(
+    (sum, material) => sum + material.groups.reduce((groupSum, group) => groupSum + group.items.length, 0),
     0,
   );
 
-  let currentRootKey = 'visualizer';
-  let currentScenarioId = 'bubble-sort';
-  let isRootSelectorVisible = false;
+  let currentMaterialKey = studyMaterials[0].key;
+  let currentGroupKey = studyMaterials[0].groups[0]?.key || '';
+  let currentScenarioId = studyMaterials[0].groups[0]?.items[0]?.id || '';
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
   let boundFrameWindow = null;
 
-  function getCurrentRoot() {
-    return studyTree.find((item) => item.key === currentRootKey) || studyTree[0];
+  function getCurrentMaterial() {
+    return studyMaterials.find((item) => item.key === currentMaterialKey) || studyMaterials[0];
   }
 
-  function getRootScenarioItems(root = getCurrentRoot()) {
-    return root.groups.flatMap((group) => group.items.map((item) => ({ ...item, group })));
+  function getCurrentGroup(material = getCurrentMaterial()) {
+    return material.groups.find((group) => group.key === currentGroupKey) || material.groups[0];
+  }
+
+  function getMaterialScenarioItems(material = getCurrentMaterial()) {
+    return material.groups.flatMap((group) => group.items.map((item) => ({ ...item, group })));
   }
 
   function findScenarioInfo(id) {
-    for (const root of studyTree) {
-      for (const group of root.groups) {
+    for (const material of studyMaterials) {
+      for (const group of material.groups) {
         for (const item of group.items) {
           if (item.id === id) {
-            return { root, group, item };
+            return { material, group, item };
           }
         }
       }
@@ -135,13 +58,13 @@
     return null;
   }
 
-  function getScenarioPosition(root, scenarioId) {
-    const items = getRootScenarioItems(root);
+  function getScenarioPosition(material, scenarioId) {
+    const items = getMaterialScenarioItems(material);
     return items.findIndex((item) => item.id === scenarioId);
   }
 
-  function buildFrameUrl(root, scenarioId) {
-    return `${root.path}?embed=1&scenario=${encodeURIComponent(scenarioId)}`;
+  function buildFrameUrl(material, scenarioId) {
+    return `${material.path}?embed=1&scenario=${encodeURIComponent(scenarioId)}`;
   }
 
   function escapeHtml(value) {
@@ -153,10 +76,26 @@
       .replaceAll("'", '&#39;');
   }
 
+  function syncCurrentSelection() {
+    const material = getCurrentMaterial();
+    const group = getCurrentGroup(material);
+    const groupItems = group?.items || [];
+
+    if (!group) return;
+
+    currentGroupKey = group.key;
+    if (!groupItems.some((item) => item.id === currentScenarioId)) {
+      currentScenarioId = groupItems[0]?.id || '';
+    }
+  }
+
   function renderQuickChips() {
     if (!quickChipsNode) return;
-    const info = findScenarioInfo(currentScenarioId);
-    if (!info) {
+
+    const group = getCurrentGroup();
+    const items = group?.items || [];
+
+    if (!items.length) {
       quickChipsNode.hidden = true;
       quickChipsNode.setAttribute('aria-hidden', 'true');
       quickChipsNode.innerHTML = '';
@@ -165,7 +104,7 @@
 
     quickChipsNode.hidden = false;
     quickChipsNode.setAttribute('aria-hidden', 'false');
-    quickChipsNode.innerHTML = info.group.items.map((item) => `
+    quickChipsNode.innerHTML = items.map((item) => `
       <button
         type="button"
         class="study-quick-chip ${item.id === currentScenarioId ? 'is-active' : ''}"
@@ -184,8 +123,8 @@
   }
 
   function updateStepperControls() {
-    const root = getCurrentRoot();
-    const items = getRootScenarioItems(root);
+    const material = getCurrentMaterial();
+    const items = getMaterialScenarioItems(material);
     const currentIndex = items.findIndex((item) => item.id === currentScenarioId);
     const currentItem = items[currentIndex];
 
@@ -193,107 +132,96 @@
     if (nextButton) nextButton.disabled = currentIndex < 0 || currentIndex >= items.length - 1;
 
     if (toolbarTitleNode && currentItem) {
-      toolbarTitleNode.textContent = `${currentItem.group.label} · ${currentItem.label}`;
+      toolbarTitleNode.textContent = `${material.label} · ${currentItem.group.label} · ${currentItem.label}`;
     }
 
     if (toolbarDescriptionNode) {
       const positionLabel = currentIndex >= 0 ? `${currentIndex + 1} / ${items.length}` : '0 / 0';
-      toolbarDescriptionNode.textContent = `같은 주제 안에서 ${positionLabel} 순서로 이동하고 있습니다. 빠른 이동 칩이나 이전·다음 버튼으로 흐름을 이어서 볼 수 있습니다.`;
+      const groupSummary = currentItem?.group?.description || `${totalScenarioCount}개의 공부자료 시나리오를 이동할 수 있습니다.`;
+      toolbarDescriptionNode.textContent = `${groupSummary} 현재 자료 안에서는 ${positionLabel} 순서로 이동하고 있습니다.`;
     }
+  }
+
+  function renderMaterials() {
+    submenuRootsNode.innerHTML = studyMaterials.map((material) => `
+      <button
+        type="button"
+        class="study-submenu-root ${material.key === currentMaterialKey ? 'is-active' : ''}"
+        data-material="${material.key}"
+        aria-pressed="${material.key === currentMaterialKey ? 'true' : 'false'}"
+      >
+        <span class="study-submenu-root-label">${escapeHtml(material.label)}</span>
+        <span class="study-submenu-root-meta">${material.groups.length}개 알고리즘 종류</span>
+      </button>
+    `).join('');
+
+    submenuRootsNode.querySelectorAll('[data-material]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextMaterial = studyMaterials.find((material) => material.key === button.dataset.material);
+        if (!nextMaterial) return;
+
+        currentMaterialKey = nextMaterial.key;
+        currentGroupKey = nextMaterial.groups[0]?.key || '';
+        currentScenarioId = nextMaterial.groups[0]?.items[0]?.id || '';
+
+        renderMaterials();
+        renderSelectors();
+        renderQuickChips();
+        updateStepperControls();
+        loadScenario(true);
+      });
+    });
+  }
+
+  function renderSelectors() {
+    const material = getCurrentMaterial();
+    const group = getCurrentGroup(material);
+
+    submenuSelectorNode.hidden = false;
+
+    groupSelect.innerHTML = material.groups.map((item) => `
+      <option value="${item.key}" ${item.key === currentGroupKey ? 'selected' : ''}>${escapeHtml(item.label)}</option>
+    `).join('');
+    groupSelect.value = group.key;
+
+    scenarioSelect.innerHTML = group.items.map((item) => `
+      <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${escapeHtml(item.label)}</option>
+    `).join('');
+    scenarioSelect.value = currentScenarioId;
   }
 
   function setScenario(nextScenarioId, forceReload = false) {
     if (!nextScenarioId) return;
+
     const nextInfo = findScenarioInfo(nextScenarioId);
     if (!nextInfo) return;
 
-    currentRootKey = nextInfo.root.key;
     const isSameScenario = nextScenarioId === currentScenarioId;
+    currentMaterialKey = nextInfo.material.key;
+    currentGroupKey = nextInfo.group.key;
     currentScenarioId = nextScenarioId;
 
-    renderScenarioSelect();
-    renderSubmenu();
-    updateViewerHeader();
+    renderMaterials();
+    renderSelectors();
     renderQuickChips();
     updateStepperControls();
-
     loadScenario(forceReload || isSameScenario);
   }
 
-  function renderSubmenu() {
-    submenuRootsNode.innerHTML = studyTree.map((root) => `
-      <button
-        type="button"
-        class="study-submenu-root ${root.key === currentRootKey ? 'is-active' : ''}"
-        data-root="${root.key}"
-        aria-pressed="${root.key === currentRootKey && isRootSelectorVisible ? 'true' : 'false'}"
-      >
-        <span class="study-submenu-root-label">${escapeHtml(root.label)}</span>
-        <span class="study-submenu-root-meta">${root.groups.length}개 카테고리</span>
-      </button>
-    `).join('');
+  function setGroup(nextGroupKey) {
+    if (!nextGroupKey) return;
 
-    submenuRootsNode.querySelectorAll('[data-root]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const nextRoot = studyTree.find((root) => root.key === button.dataset.root);
-        if (!nextRoot) return;
+    const material = getCurrentMaterial();
+    const nextGroup = material.groups.find((group) => group.key === nextGroupKey);
+    if (!nextGroup) return;
 
-        currentRootKey = nextRoot.key;
-        isRootSelectorVisible = true;
+    currentGroupKey = nextGroup.key;
+    currentScenarioId = nextGroup.items[0]?.id || '';
 
-        const nextRootItems = getRootScenarioItems(nextRoot);
-        if (!nextRootItems.some((item) => item.id === currentScenarioId) && nextRootItems[0]) {
-          currentScenarioId = nextRootItems[0].id;
-        }
-
-        renderSubmenu();
-        renderScenarioSelect();
-        updateViewerHeader();
-        renderQuickChips();
-        updateStepperControls();
-      });
-    });
-
-    submenuSelectorNode.hidden = !isRootSelectorVisible;
-  }
-
-  function renderScenarioSelect() {
-    const root = getCurrentRoot();
-    if (selectorTitleNode) selectorTitleNode.textContent = root.label;
-    if (selectorDescriptionNode) {
-      const scenarioCount = root.groups.reduce((sum, group) => sum + group.items.length, 0);
-      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오를 카테고리별로 골라 바로 확인할 수 있습니다.`;
-    }
-
-    scenarioSelect.innerHTML = root.groups.map((group) => `
-      <optgroup label="${escapeHtml(group.label)}">
-        ${group.items.map((item) => `
-          <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${escapeHtml(item.label)}</option>
-        `).join('')}
-      </optgroup>
-    `).join('');
-
-    scenarioSelect.value = currentScenarioId;
-  }
-
-  function updateViewerHeader() {
-    const info = findScenarioInfo(currentScenarioId);
-    if (!info) return;
-
-    const itemIndex = info.group.items.findIndex((item) => item.id === currentScenarioId) + 1;
-    const rootScenarioCount = getRootScenarioItems(info.root).length;
-
-    breadcrumbNode.textContent = `${info.root.label} · ${info.group.label}`;
-    titleNode.textContent = info.item.label;
-
-    if (currentGroupNode) currentGroupNode.textContent = info.group.label;
-    if (totalCountNode) totalCountNode.textContent = `${totalScenarioCount}개`;
-    if (groupCountNode) groupCountNode.textContent = `${info.group.items.length}개 시나리오`;
-    if (currentIndexNode) currentIndexNode.textContent = `${itemIndex} / ${info.group.items.length}`;
-    if (currentDescriptionNode) currentDescriptionNode.textContent = info.group.description;
-    if (currentStatusNode) {
-      currentStatusNode.textContent = `${info.group.label} 카테고리의 ${itemIndex}번째 시나리오입니다. 현재 주제에는 총 ${rootScenarioCount}개의 시나리오가 준비되어 있어 흐름을 이어서 보기 좋습니다.`;
-    }
+    renderSelectors();
+    renderQuickChips();
+    updateStepperControls();
+    loadScenario(false);
   }
 
   function injectViewerTheme() {
@@ -569,11 +497,11 @@
   }
 
   function loadScenario(forceReload) {
-    const root = getCurrentRoot();
-    const samePageLoaded = frame.dataset.loadedRoot === root.key;
+    const material = getCurrentMaterial();
+    const samePageLoaded = frame.dataset.loadedMaterial === material.key;
     if (forceReload || !samePageLoaded) {
-      frame.src = buildFrameUrl(root, currentScenarioId);
-      frame.dataset.loadedRoot = root.key;
+      frame.src = buildFrameUrl(material, currentScenarioId);
+      frame.dataset.loadedMaterial = material.key;
       return;
     }
 
@@ -582,17 +510,17 @@
         frame.contentWindow.visualizerApi.setScenario(currentScenarioId);
         queueHeightSync();
       } else {
-        frame.src = buildFrameUrl(root, currentScenarioId);
+        frame.src = buildFrameUrl(material, currentScenarioId);
       }
     } catch (error) {
-      frame.src = buildFrameUrl(root, currentScenarioId);
+      frame.src = buildFrameUrl(material, currentScenarioId);
     }
   }
 
   function stepScenario(direction) {
-    const root = getCurrentRoot();
-    const items = getRootScenarioItems(root);
-    const currentIndex = getScenarioPosition(root, currentScenarioId);
+    const material = getCurrentMaterial();
+    const items = getMaterialScenarioItems(material);
+    const currentIndex = getScenarioPosition(material, currentScenarioId);
     const nextIndex = currentIndex + direction;
     if (nextIndex < 0 || nextIndex >= items.length) return;
     setScenario(items[nextIndex].id);
@@ -604,12 +532,13 @@
       ? forceOpen
       : submenuToggle.getAttribute('aria-expanded') !== 'true';
 
-    isRootSelectorVisible = false;
-    renderSubmenu();
-
     submenuToggle.setAttribute('aria-expanded', String(shouldOpen));
     submenuPanel.hidden = !shouldOpen;
   }
+
+  groupSelect.addEventListener('change', () => {
+    setGroup(groupSelect.value);
+  });
 
   scenarioSelect.addEventListener('change', () => {
     const nextScenarioId = scenarioSelect.value;
@@ -657,9 +586,9 @@
     }
   });
 
-  renderSubmenu();
-  renderScenarioSelect();
-  updateViewerHeader();
+  syncCurrentSelection();
+  renderMaterials();
+  renderSelectors();
   renderQuickChips();
   updateStepperControls();
   loadScenario(true);
