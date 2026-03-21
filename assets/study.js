@@ -270,7 +270,6 @@
                       <span class="study-plan-link-title">${escapeHtml(group.group)}</span>
                       <span class="study-plan-link-description">${escapeHtml(weekCountLabel)}</span>
                     </span>
-                    <span class="study-plan-link-icon" aria-hidden="true">${isExpandedWeek ? '−' : '+'}</span>
                   </button>
                   <div class="study-plan-submenu" ${isExpandedWeek ? '' : 'hidden'}>
                     <div class="study-plan-list study-plan-list-nested">
