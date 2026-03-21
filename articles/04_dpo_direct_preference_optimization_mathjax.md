@@ -19,6 +19,8 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Direct Preference Optimization: Your Language Model is Secretly a Reward Model
+
 ## 핵심 요약
 
 - DPO는 RLHF에서 쓰이던 **보상모델 학습과 PPO 단계를 하나의 직접 최적화 문제로 바꾼 방법**이다.
@@ -26,9 +28,6 @@ window.MathJax = {
 - 이론적으로는 **KL 제약이 있는 보상 최대화 문제와 직접 분류형 목적식이 연결된다**는 점을 보인다.
 - 구조가 단순해 실무 적용이 쉽지만, 여전히 **선호 데이터 품질과 reference model 선택**의 영향을 크게 받는다.
 
-# Direct Preference Optimization: Your Language Model is Secretly a Reward Model
-
-## 확장 해설본
 ## 문헌 정보
 
 - **논문명**: *Direct Preference Optimization: Your Language Model is Secretly a Reward Model*
@@ -38,9 +37,7 @@ window.MathJax = {
 - **버전**: arXiv:2305.18290v3 (2024-07-29)
 - **비고**: 원문 각주에는 `Equal contribution; more junior authors listed earlier.`가 명시되어 있다.
 
-본 문서는 위 논문의 **초록, 본문, 그림·표 캡션, 각주, 감사의 글, 참고문헌, 저자 기여, 부록 A–D**를 순서대로 재구성한 확장 해설본이다. 목표는 축약 요약이 아니라, 원문을 따라가면서 각 정의, 수식, 실험 설계, 해석, 부록 유도까지 하나의 연속적인 한국어 문서로 읽히도록 정리하는 데 있다. 별도의 응용 지침이나 프로젝트 운영 규칙은 포함하지 않았으며, 설명의 기준은 모두 원문 텍스트이다.
-
----
+본 문서는 위 논문의 **초록, 본문, 그림·표 캡션, 각주, 감사의 글, 참고문헌, 저자 기여, 부록 A–D**를 순서대로 재구성한 문서이다. 목표는 축약 요약이 아니라, 원문을 따라가면서 각 정의, 수식, 실험 설계, 해석, 부록 유도까지 하나의 연속적인 한국어 문서로 읽히도록 정리하는 데 있다. 별도의 응용 지침이나 프로젝트 운영 규칙은 포함하지 않았으며, 설명의 기준은 모두 원문 텍스트이다.
 
 ## Abstract
 

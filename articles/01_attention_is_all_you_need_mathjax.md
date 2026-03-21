@@ -19,6 +19,8 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Attention Is All You Need (arXiv:1706.03762)
+
 ## 핵심 요약
 
 - Transformer는 RNN이나 CNN 없이 **self-attention만으로 시퀀스 변환 모델을 구성할 수 있다**는 점을 보여 준 논문이다.
@@ -26,9 +28,7 @@ window.MathJax = {
 - 기계번역 실험에서 성능과 학습 효율을 함께 개선했고, 특히 **병렬화가 쉽다**는 점이 큰 강점으로 드러났다.
 - 다만 self-attention의 계산량이 시퀀스 길이에 대해 **\(O(n^2)\)** 으로 커지기 때문에, 긴 문맥에서는 여전히 비용 문제가 남는다.
 
-# Attention Is All You Need (arXiv:1706.03762)
-
-원문 논문: Vaswani et al., 2017. https://arxiv.org/pdf/1706.03762<br>생성일(Asia/Seoul): 2026-03-21<br>주의: 본 문서는 원문 내용을 기반으로 한 ‘확장 해설’이며, 원문에 없는 내용은 [추가 설명(일반 지식)] 또는 [추가 아이디어(원문 외)]로 명시했습니다.
+원문 논문: Vaswani et al., 2017. https://arxiv.org/pdf/1706.03762<br>생성일(Asia/Seoul): 2026-03-21<br>주의: 본 문서는 원문 내용을 기반으로 하며, 원문에 없는 내용은 [추가 설명(일반 지식)] 또는 [추가 아이디어(원문 외)]로 명시했습니다.
 
 ※ 요청에 따라 **구현/재현 관점 메모** 및 **프로젝트 적용 지침**에 해당하는 항목은 본 문서에서 제외하였다.
 

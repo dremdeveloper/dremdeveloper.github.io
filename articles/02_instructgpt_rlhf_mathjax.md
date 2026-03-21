@@ -19,6 +19,8 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
+# Training Language Models to Follow Instructions with Human Feedback
+
 ## 핵심 요약
 
 - 이 논문은 **SFT → Reward Model → PPO**로 이어지는 RLHF 표준 파이프라인을 정리한 기준 문헌이다.
@@ -26,14 +28,14 @@ window.MathJax = {
 - 인간 평가에서는 거대한 GPT-3 기본 모델보다 **작은 InstructGPT 모델이 더 선호되는 경우**가 많았고, 정렬이 품질 체감에 큰 영향을 준다는 점을 보였다.
 - 하지만 이 결과는 어디까지나 **특정 라벨러 집단과 프롬프트 분포에 맞춘 정렬**이며, 보편적 인간 가치 정렬을 의미하지는 않는다.
 
-# Training Language Models to Follow Instructions with Human Feedback
-## 확장 해설본 (InstructGPT / RLHF)
+## InstructGPT / RLHF
 - 논문: Long Ouyang et al., 2022  
 - arXiv: 2203.02155 (v1: 2022-03-04)  
 - 링크: https://arxiv.org/abs/2203.02155 (PDF: https://arxiv.org/pdf/2203.02155)
 
 본 문서는 위 논문 원문을 바탕으로 내용을 풀어 쓴 해설본이다.  
 논문에 직접 근거가 있는 내용은 **【원문 근거】**, 배경 설명은 **【추가 설명(일반 지식)】**으로 나누어 적었다.  
+
 (근거 표시는 원문 섹션/그림/표/부록 번호를 가능한 한 함께 적는다.)
 
 ---
