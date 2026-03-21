@@ -324,14 +324,18 @@
           background: #f4f7fb !important;
         }
         .bar-track {
-          background: #e5e7eb !important;
-          border: 1px solid #c4ccd5 !important;
+          background: transparent !important;
+          border: 0 !important;
         }
         .bar-fill {
           color: #ffffff !important;
           background: linear-gradient(180deg, #1f2937, #111827) !important;
           border: 1px solid #111827 !important;
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 6px 14px rgba(17, 24, 39, 0.16) !important;
+          font-size: 14px !important;
+          line-height: 1 !important;
+          align-items: center !important;
+          padding: 8px 6px !important;
         }
         .bar-card.comparing .bar-fill,
         .bar-card.key .bar-fill,
