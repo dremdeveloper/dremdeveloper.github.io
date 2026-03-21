@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>공부자료 | 박경록</title>
-  <meta name="description" content="박경록 공부자료 페이지. 좌측 메뉴에서 알고리즘 시뮬레이션을 선택하면 우측에서 바로 볼 수 있습니다." />
+  <meta name="description" content="박경록 공부자료 페이지. 공부자료 페이지에서 시나리오를 우측 콤보박스로 빠르게 바꿔 볼 수 있습니다." />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
@@ -35,18 +35,17 @@
           <p class="eyebrow">Study Material</p>
           <h1>공부자료</h1>
         </div>
-        <p class="study-page-lead">코드 영역은 걷어내고, 애니메이션·현재 단계 설명·상태 변수를 한눈에 빠르게 볼 수 있게 정리했습니다.</p>
+        <p class="study-page-lead">애니메이션, 단계 설명, 상태 변수를 한눈에 빠르게 보고 시나리오는 우측 콤보박스에서 바로 바꿀 수 있게 정리했습니다.</p>
       </section>
 
       <section class="browser-layout study-browser-layout">
         <aside class="browser-sidebar card panel-pad-md study-sidebar">
           <div class="sidebar-meta">
             <h2>자료 메뉴</h2>
-            <p>왼쪽에서 알고리즘을 고르면 오른쪽에서 애니메이션, 단계 설명, 상태 변수가 바로 정리되어 보입니다.</p>
+            <p>좌측은 자료 분류만 간단히 두고, 시나리오 전환은 우측 콤보박스에서 바로 할 수 있게 정리했습니다.</p>
           </div>
 
           <div class="study-root-list" id="study-root-list"></div>
-          <div class="study-group-list" id="study-group-list" aria-label="공부자료 세부 메뉴"></div>
         </aside>
 
         <section class="browser-main">
@@ -55,6 +54,10 @@
               <div class="study-viewer-copy">
                 <p class="eyebrow no-margin" id="study-breadcrumb">시각화</p>
                 <h2 id="study-viewer-title">버블 정렬</h2>
+              </div>
+              <div class="study-viewer-controls">
+                <label class="study-select-label" for="study-scenario-select">시나리오 선택</label>
+                <select id="study-scenario-select" class="study-scenario-select" aria-label="시나리오 선택"></select>
               </div>
             </div>
 

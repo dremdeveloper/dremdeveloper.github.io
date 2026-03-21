@@ -2378,20 +2378,6 @@ body {
           <div class="badge-row" id="heroBadges"></div>
         </div>
 
-        <div class="hero-stats">
-          <div class="stat-card">
-            <div class="stat-label">현재 알고리즘</div>
-            <div class="stat-value" id="statAlgorithm"></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">전체 단계 수</div>
-            <div class="stat-value" id="statSteps"></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">복잡도</div>
-            <div class="stat-value" id="statComplexity"></div>
-          </div>
-        </div>
       </header>
 
       <section class="toolbar glass">
@@ -2431,7 +2417,6 @@ body {
 
         <div class="side-stack">
           <article class="panel-card glass">
-            <div class="panel-title">현재 단계</div>
             <div id="descriptionArea"></div>
           </article>
 
@@ -4740,7 +4725,7 @@ body {
   function setupDom() {
     const ids = [
       'sectionNav', 'sectionLabel', 'heroTitle', 'heroSummary', 'heroBadges',
-      'statAlgorithm', 'statSteps', 'statComplexity', 'algorithmTabs',
+      'algorithmTabs',
       'prevBtn', 'playBtn', 'nextBtn', 'resetBtn', 'stepMeta', 'stepRange',
       'speedLabel', 'speedRange', 'visualArea', 'legendArea', 'descriptionArea',
       'codeArea', 'stateArea', 'noteArea',
@@ -5054,9 +5039,6 @@ function exposePublicApi() {
       `<span class="badge">${scenario.spaceComplexity}</span>`,
       ...scenario.badges.map((badge) => `<span class="badge">${badge}</span>`),
     ].join('');
-    els.statAlgorithm.textContent = scenario.label;
-    els.statSteps.textContent = `${scenario.steps.length} steps`;
-    els.statComplexity.textContent = `${scenario.complexity}\n${scenario.spaceComplexity}`;
   }
 
   function renderNotes() {
