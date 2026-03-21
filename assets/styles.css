@@ -1361,9 +1361,20 @@ p { line-height: 1.75; color: var(--muted); }
     pointer-events: auto;
     transform: none;
   }
+  .study-submenu-roots {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 8px;
+  }
   .study-submenu-root,
   .study-quick-chip {
     width: 100%;
+  }
+  .study-submenu-root {
+    justify-content: center;
+    text-align: center;
+    padding: 12px 14px;
   }
   .study-viewer-toolbar {
     padding: 18px 18px 16px;
