@@ -216,7 +216,7 @@ window.MathJax = {
 
 #### 원문 서술 재구성
 - **[원문 근거]** CoEdIT는 글쓰기 보조를 위해 **FlanT5(770M/3B/11B)**를 text editing instruction 데이터로 파인튜닝한다. (근거: Section 6.5)
-- **[원문 근거]** 데이터셋은 약 **82K**의 `<instruction: source, target>` 페어로 구성된다. (근거: Section 6.5)
+- **[원문 근거]** 데이터셋은 약 **82K**의 ``<instruction: source, target>`` 페어로 구성된다. (근거: Section 6.5)
 - **[원문 근거]** 사용자는 예를 들어 `"Make the sentence simpler"`와 같은 instruction으로 편집 목표를 지정할 수 있다. (근거: Section 6.5, Figure 14 설명)
 - **[원문 근거]** CoEdIT는 다음 태스크에서 SOTA를 달성했다고 서술한다. (근거: Section 6.5)  
   - grammatical error correction  
@@ -245,7 +245,7 @@ window.MathJax = {
 
 #### 원문 서술 재구성
 - **[원문 근거]** CoPoet은 협업 시(poetry) 글쓰기 도구로, **T5-3B, T5-11B, T0-3B** 등의 LLM을 시 instruction 데이터로 학습한다. (근거: Section 6.5)
-- **[원문 근거]** 데이터는 `<instruction, poem_line>` 페어이며, instruction 유형은 3가지로 서술된다. (근거: Section 6.5)  
+- **[원문 근거]** 데이터는 ``<instruction, poem_line>`` 페어이며, instruction 유형은 3가지로 서술된다. (근거: Section 6.5)  
   1) **Continuation**  
   2) **Lexical Constraints**  
   3) **Rhetorical Techniques**
