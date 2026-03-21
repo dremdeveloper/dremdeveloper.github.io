@@ -22,6 +22,14 @@
   let syncTimer = null;
   let isSeeking = false;
 
+  const syncProgressVisual = () => {
+    const min = Number(progressInput.min || 0);
+    const max = Number(progressInput.max || 1000);
+    const value = Number(progressInput.value || 0);
+    const ratio = max > min ? ((value - min) / (max - min)) * 100 : 0;
+    progressInput.style.setProperty('--progress-percent', `${Math.min(100, Math.max(0, ratio))}%`);
+  };
+
   const formatTime = (seconds) => {
     if (!Number.isFinite(seconds) || seconds <= 0) {
       return '00:00';
@@ -51,6 +59,8 @@
       const progressValue = duration > 0 ? Math.min(1000, Math.round((currentTime / duration) * 1000)) : 0;
       progressInput.value = String(progressValue);
     }
+
+    syncProgressVisual();
   };
 
   const getCurrentSelection = () => {
@@ -239,6 +249,7 @@
     if (!playerReady || !ytPlayer?.getDuration) return;
 
     isSeeking = true;
+    syncProgressVisual();
     const duration = ytPlayer.getDuration();
     const targetTime = duration > 0 ? (Number(progressInput.value) / 1000) * duration : 0;
     currentTimeNode.textContent = formatTime(targetTime);
@@ -270,5 +281,6 @@
     button.addEventListener('click', () => switchTrack(button.dataset.track));
   });
 
+  syncProgressVisual();
   switchTrack('python');
 })();
