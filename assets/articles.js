@@ -70,6 +70,18 @@
     renderList();
   }
 
+  function mergeArticleFiles(primaryFiles, secondaryFiles = []) {
+    const merged = new Map();
+
+    [...primaryFiles, ...secondaryFiles].forEach((item) => {
+      if (!item?.name) return;
+      const existing = merged.get(item.name) || {};
+      merged.set(item.name, { ...item, ...existing });
+    });
+
+    return Array.from(merged.values());
+  }
+
   function setStatus(message, isError = false) {
     statusNode.hidden = false;
     statusNode.textContent = message;
@@ -283,22 +295,6 @@
   }
 
   async function loadArticleIndex() {
-    if (configuredFiles.length) {
-      setArticleFiles(configuredFiles);
-
-      if (!articleFiles.length) {
-        setStatus('articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.');
-        return;
-      }
-
-      const initialFile = articleFiles.find((file) => file.name === requestedFile)?.name
-        || articleFiles.find((file) => file.name === defaultFile)?.name
-        || articleFiles[0].name;
-
-      loadArticle(initialFile);
-      return;
-    }
-
     setStatus('GitHub 저장소에서 article 목록을 불러오는 중입니다.');
 
     try {
@@ -310,7 +306,10 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
       setArticleFiles(
-        items.filter((item) => item.type === 'file' && /\.md$/i.test(item.name))
+        mergeArticleFiles(
+          configuredFiles,
+          items.filter((item) => item.type === 'file' && /\.md$/i.test(item.name))
+        )
       );
 
       if (!articleFiles.length) {
@@ -324,6 +323,18 @@
 
       loadArticle(initialFile);
     } catch (error) {
+      if (configuredFiles.length) {
+        setArticleFiles(configuredFiles);
+        setStatus('GitHub 목록을 불러오지 못해 assets/data.js에 등록된 article 목록만 표시합니다.', true);
+
+        const initialFile = articleFiles.find((file) => file.name === requestedFile)?.name
+          || articleFiles.find((file) => file.name === defaultFile)?.name
+          || articleFiles[0]?.name;
+
+        if (initialFile) loadArticle(initialFile);
+        return;
+      }
+
       countNode.textContent = '목록을 불러오지 못했습니다';
       setStatus('article 목록을 불러오지 못했습니다. assets/data.js의 article 파일 목록 또는 GitHub 저장소 설정을 확인해 주세요.', true);
       console.error(error);
