@@ -443,13 +443,13 @@
   }
 
   function toggleSubmenu(forceOpen) {
-    if (!submenuPanel || !submenuToggle) return;
+    if (!submenuToggle) return;
     const shouldOpen = typeof forceOpen === 'boolean'
       ? forceOpen
       : submenuToggle.getAttribute('aria-expanded') !== 'true';
 
     submenuToggle.setAttribute('aria-expanded', String(shouldOpen));
-    submenuPanel.hidden = !shouldOpen;
+    submenuToggle.parentElement?.classList.toggle('is-open', shouldOpen);
   }
 
   groupSelect.addEventListener('change', () => {
@@ -469,13 +469,18 @@
   });
 
   if (submenuToggle && submenuPanel) {
+    const submenuContainer = submenuToggle.parentElement;
+
     submenuToggle.addEventListener('click', () => toggleSubmenu());
+    submenuContainer?.addEventListener('mouseenter', () => toggleSubmenu(true));
+    submenuContainer?.addEventListener('mouseleave', () => toggleSubmenu(false));
+    submenuToggle.addEventListener('focus', () => toggleSubmenu(true));
+    submenuPanel.addEventListener('focusin', () => toggleSubmenu(true));
 
     document.addEventListener('click', (event) => {
-      if (submenuPanel.hidden) return;
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (submenuPanel.contains(target) || submenuToggle.contains(target)) return;
+      if (submenuContainer?.contains(target)) return;
       toggleSubmenu(false);
     });
 
