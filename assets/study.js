@@ -173,7 +173,7 @@
     if (selectorTitleNode) selectorTitleNode.textContent = root.label;
     if (selectorDescriptionNode) {
       const scenarioCount = root.groups.reduce((sum, group) => sum + group.items.length, 0);
-      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오를 카테고리별로 묶어 두었습니다. 콤보박스에서 원하는 흐름을 골라 아래 시각화로 바로 확인해 보세요.`;
+      selectorDescriptionNode.textContent = `${scenarioCount}개의 시나리오 중 하나를 골라 바로 확인할 수 있습니다.`;
     }
     scenarioSelect.innerHTML = root.groups.map((group) => `
       <optgroup label="${group.label}">
