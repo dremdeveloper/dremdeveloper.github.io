@@ -459,6 +459,12 @@ p { line-height: 1.75; color: var(--muted); }
   color: var(--text);
 }
 
+.site-nav-study-toggle::after {
+  content: "▾";
+  margin-left: 8px;
+  font-size: 0.8rem;
+}
+
 .study-top-submenu {
   position: absolute;
   top: calc(100% + 6px);

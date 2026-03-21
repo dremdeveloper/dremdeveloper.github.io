@@ -26,7 +26,26 @@
 
       <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
         <a href="lectures.html">강의</a>
-        <a href="study.html">공부자료</a>
+        <div class="site-nav-study" id="study-nav-item">
+          <button
+            id="study-nav-toggle"
+            class="site-nav-study-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="study-top-submenu"
+          >
+            공부자료
+          </button>
+
+          <section id="study-top-submenu" class="study-top-submenu" aria-label="공부자료 서브메뉴">
+            <div class="study-submenu-roots" role="list">
+              <a class="study-submenu-root" href="study.html">
+                <span class="study-submenu-root-label">시각화</span>
+              </a>
+            </div>
+          </section>
+        </div>
       </nav>
     </header>
 
