@@ -27,6 +27,7 @@
   let hasLoadedVisualization = false;
   let pendingScrollAnchorTop = null;
   let pendingScrollAnchorTimeout = null;
+  let submenuCloseTimer = null;
 
   function ensureInitialSelection() {
     if (currentMaterialKey && currentGroupKey && currentScenarioId) return;
@@ -477,6 +478,25 @@
     submenuToggle.parentElement?.classList.toggle('is-open', shouldOpen);
   }
 
+  function clearSubmenuCloseTimer() {
+    if (!submenuCloseTimer) return;
+    window.clearTimeout(submenuCloseTimer);
+    submenuCloseTimer = null;
+  }
+
+  function openSubmenu() {
+    clearSubmenuCloseTimer();
+    toggleSubmenu(true);
+  }
+
+  function scheduleSubmenuClose() {
+    clearSubmenuCloseTimer();
+    submenuCloseTimer = window.setTimeout(() => {
+      toggleSubmenu(false);
+      submenuCloseTimer = null;
+    }, 220);
+  }
+
   groupSelect.addEventListener('change', () => {
     captureScrollAnchor();
     setGroup(groupSelect.value);
@@ -498,21 +518,35 @@
   if (submenuToggle && submenuPanel) {
     const submenuContainer = submenuToggle.parentElement;
 
-    submenuToggle.addEventListener('click', () => toggleSubmenu());
-    submenuContainer?.addEventListener('mouseenter', () => toggleSubmenu(true));
-    submenuContainer?.addEventListener('mouseleave', () => toggleSubmenu(false));
-    submenuToggle.addEventListener('focus', () => toggleSubmenu(true));
-    submenuPanel.addEventListener('focusin', () => toggleSubmenu(true));
+    submenuToggle.addEventListener('click', () => {
+      clearSubmenuCloseTimer();
+      toggleSubmenu();
+    });
+    submenuContainer?.addEventListener('mouseenter', openSubmenu);
+    submenuContainer?.addEventListener('mouseleave', scheduleSubmenuClose);
+    submenuToggle.addEventListener('focus', openSubmenu);
+    submenuPanel.addEventListener('focusin', openSubmenu);
+    submenuPanel.addEventListener('focusout', () => {
+      window.setTimeout(() => {
+        if (!submenuContainer?.contains(document.activeElement)) {
+          scheduleSubmenuClose();
+        }
+      }, 0);
+    });
 
     document.addEventListener('click', (event) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (submenuContainer?.contains(target)) return;
+      clearSubmenuCloseTimer();
       toggleSubmenu(false);
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') toggleSubmenu(false);
+      if (event.key === 'Escape') {
+        clearSubmenuCloseTimer();
+        toggleSubmenu(false);
+      }
     });
   }
 
