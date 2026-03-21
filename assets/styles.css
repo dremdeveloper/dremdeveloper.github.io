@@ -418,42 +418,51 @@ p { line-height: 1.75; color: var(--muted); }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 9px 12px;
+  color: var(--muted);
 }
 
 .site-nav-study-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 12px;
+  padding: 0;
   border: 0;
-  border-radius: 8px;
   background: transparent;
-  color: var(--muted);
+  color: inherit;
   cursor: pointer;
-  transition: background var(--ease), color var(--ease);
+  transition: color var(--ease);
 }
 
-.site-nav-study-toggle:hover,
-.site-nav-study-toggle[aria-expanded='true'],
-.site-nav-study.is-active .site-nav-study-toggle {
-  background: var(--accent-soft);
+.site-nav-study:hover,
+.site-nav-study:focus-within,
+.site-nav-study.is-open {
   color: var(--text);
 }
 
 .study-top-submenu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 4px);
   right: 0;
-  min-width: 140px;
-  padding: 0;
+  min-width: 96px;
+  padding: 2px 0 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity var(--ease), transform var(--ease), visibility var(--ease);
 }
 
-.study-top-submenu[hidden] {
-  display: none;
+.site-nav-study:hover .study-top-submenu,
+.site-nav-study:focus-within .study-top-submenu,
+.site-nav-study.is-open .study-top-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .study-submenu-roots {
@@ -466,19 +475,17 @@ p { line-height: 1.75; color: var(--muted); }
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: 9px 12px;
+  padding: 0;
   border: 0;
-  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   text-align: left;
   cursor: pointer;
-  transition: background var(--ease), color var(--ease);
+  transition: color var(--ease);
 }
 
 .study-submenu-root:hover,
 .study-submenu-root.is-active {
-  background: var(--accent-soft);
   color: var(--text);
 }
 
@@ -1108,6 +1115,7 @@ p { line-height: 1.75; color: var(--muted); }
   .site-nav-study {
     width: 100%;
     align-items: stretch;
+    padding: 9px 12px;
   }
 
   .panel-pad-lg { padding: 20px; }
