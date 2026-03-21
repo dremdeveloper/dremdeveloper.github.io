@@ -1,5 +1,5 @@
 :root {
-  --study-frame-min-height: clamp(420px, 58vh, 760px);
+  --study-frame-min-height: clamp(520px, 68vh, 860px);
   --bg: #f6f8fa;
   --panel: #ffffff;
   --panel-soft: #f6f8fa;
@@ -85,7 +85,7 @@ button, iframe { font: inherit; }
   min-width: 0;
 }
 .brand-text { display: flex; flex-direction: column; }
-.brand-text strong { font-size: clamp(1.18rem, 1.1rem + 0.35vw, 1.34rem); }
+.brand-text strong { font-size: clamp(1.4rem, 1.22rem + 0.7vw, 1.8rem); }
 .brand-text span { color: var(--muted); font-size: 0.84rem; }
 
 .site-nav {
@@ -1119,7 +1119,7 @@ p { line-height: 1.75; color: var(--muted); }
   .study-frame-wrap-embedded,
   .study-frame-wrap-embedded iframe,
   .study-frame-wrap-expanded {
-    min-height: clamp(360px, 52vh, 680px);
+    min-height: clamp(440px, 60vh, 760px);
   }
 }
 
@@ -1185,5 +1185,5 @@ p { line-height: 1.75; color: var(--muted); }
   .study-frame-wrap,
   .study-frame-wrap-embedded,
   .study-frame-wrap-embedded iframe,
-  .study-frame-wrap-expanded { min-height: clamp(320px, 48vh, 560px); }
+  .study-frame-wrap-expanded { min-height: clamp(380px, 54vh, 640px); }
 }
