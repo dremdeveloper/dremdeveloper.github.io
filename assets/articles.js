@@ -368,7 +368,7 @@
     const orderedCategories = [
       ...configuredCategoryOrder,
       ...Array.from(groupedFiles.keys()).filter((category) => !configuredCategoryOrder.includes(category))
-    ];
+    ].filter((category) => (groupedFiles.get(category) || []).length > 0);
 
     let articleIndex = 0;
 
@@ -401,13 +401,6 @@
         });
         groupList.appendChild(button);
       });
-
-      if (!files.length) {
-        const emptyState = document.createElement('p');
-        emptyState.className = 'article-category-empty';
-        emptyState.textContent = '문서 없음';
-        groupList.appendChild(emptyState);
-      }
 
       section.appendChild(groupList);
       listNode.appendChild(section);
