@@ -17,16 +17,31 @@
 
   if (!studyMaterials.length) return;
 
-  let currentMaterialKey = studyMaterials[0].key;
-  let currentGroupKey = studyMaterials[0].groups[0]?.key || '';
-  let currentScenarioId = studyMaterials[0].groups[0]?.items[0]?.id || '';
+  let currentMaterialKey = '';
+  let currentGroupKey = '';
+  let currentScenarioId = '';
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
   let boundFrameWindow = null;
   let hasLoadedVisualization = false;
 
+  function ensureInitialSelection() {
+    if (currentMaterialKey && currentGroupKey && currentScenarioId) return;
+
+    const defaultMaterial = studyMaterials[0];
+    const defaultGroup = defaultMaterial?.groups[0];
+    const defaultScenario = defaultGroup?.items[0];
+
+    if (!defaultMaterial || !defaultGroup || !defaultScenario) return;
+
+    currentMaterialKey = defaultMaterial.key;
+    currentGroupKey = defaultGroup.key;
+    currentScenarioId = defaultScenario.id;
+  }
+
   function getCurrentMaterial() {
+    ensureInitialSelection();
     return studyMaterials.find((item) => item.key === currentMaterialKey) || studyMaterials[0];
   }
 
@@ -60,20 +75,6 @@
       .replaceAll("'", '&#39;');
   }
 
-  function syncCurrentSelection() {
-    const material = getCurrentMaterial();
-    const group = getCurrentGroup(material);
-    const groupItems = group?.items || [];
-
-    if (!group) return;
-
-    currentGroupKey = group.key;
-    if (!groupItems.some((item) => item.id === currentScenarioId)) {
-      currentScenarioId = groupItems[0]?.id || '';
-    }
-  }
-
-
   function updateViewerHeader() {
     const currentInfo = findScenarioInfo(currentScenarioId);
     if (!toolbarTitleNode || !currentInfo) return;
@@ -86,7 +87,13 @@
     visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
     visualizationPanel.hidden = !isExpanded;
 
-    if (isExpanded && !hasLoadedVisualization) {
+    if (!isExpanded) return;
+
+    ensureInitialSelection();
+    renderSelectors();
+    updateViewerHeader();
+
+    if (!hasLoadedVisualization) {
       loadScenario(true);
       hasLoadedVisualization = true;
     }
@@ -498,8 +505,5 @@
     }
   });
 
-  syncCurrentSelection();
-  renderSelectors();
-  updateViewerHeader();
   setVisualizationExpanded(false);
 })();
