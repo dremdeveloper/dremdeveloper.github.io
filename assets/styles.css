@@ -200,13 +200,6 @@ p { line-height: 1.75; color: var(--muted); }
 }
 .compact-button { min-height: 36px; }
 
-.profile-avatar {
-  width: 100%;
-  max-width: 220px;
-  margin: 0 auto 18px;
-  border-radius: 16px;
-  border: 1px solid var(--line-soft);
-}
 .profile-card dl,
 .profile-card dd { margin: 0; }
 .profile-card dt { color: var(--muted); font-size: 0.9rem; }
