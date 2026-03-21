@@ -85,7 +85,7 @@ button, iframe { font: inherit; }
   min-width: 0;
 }
 .brand-text { display: flex; flex-direction: column; }
-.brand-text strong { font-size: 0.98rem; }
+.brand-text strong { font-size: clamp(1.18rem, 1.1rem + 0.35vw, 1.34rem); }
 .brand-text span { color: var(--muted); font-size: 0.84rem; }
 
 .site-nav {
@@ -428,12 +428,22 @@ p { line-height: 1.75; color: var(--muted); }
 .site-nav-study-toggle {
   display: inline-flex;
   align-items: center;
-  padding: 0;
+  padding: 9px 12px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
   color: inherit;
+  font: inherit;
+  line-height: 1.4;
   cursor: pointer;
-  transition: color var(--ease);
+  transition: background var(--ease), color var(--ease);
+}
+
+.site-nav-study-toggle:hover,
+.site-nav-study.is-open .site-nav-study-toggle,
+.site-nav-study:focus-within .site-nav-study-toggle {
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 .site-nav-study:hover,
@@ -443,30 +453,37 @@ p { line-height: 1.75; color: var(--muted); }
 }
 
 .study-top-submenu {
-  position: static;
-  min-width: 0;
-  width: 100%;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 120px;
+  width: max-content;
   padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: none;
-  transition: color var(--ease);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity var(--ease), transform var(--ease), visibility var(--ease);
 }
 
 .site-nav-study:hover .study-top-submenu,
 .site-nav-study:focus-within .study-top-submenu,
 .site-nav-study.is-open .study-top-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
   color: var(--text);
 }
 
 .study-submenu-roots {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   width: 100%;
 }
 
@@ -477,11 +494,13 @@ p { line-height: 1.75; color: var(--muted); }
   width: auto;
   padding: 9px 12px;
   border: 0;
-  background: transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
   color: var(--muted);
   text-align: left;
   cursor: pointer;
-  transition: color var(--ease);
+  box-shadow: var(--shadow);
+  transition: background var(--ease), color var(--ease);
 }
 
 .study-submenu-root:hover,
@@ -1142,7 +1161,12 @@ p { line-height: 1.75; color: var(--muted); }
   .study-top-submenu {
     position: static;
     width: 100%;
+    min-width: 0;
     margin-top: 6px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
   }
   .study-submenu-root,
   .study-quick-chip {
