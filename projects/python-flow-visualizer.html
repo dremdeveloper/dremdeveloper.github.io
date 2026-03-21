@@ -5268,7 +5268,6 @@ function exposePublicApi() {
   function renderVisualGuide(scenario, step) {
     return `
       <div class="visual-guide">
-        <div class="visual-guide-tag">지금 하는 일</div>
         <div class="visual-guide-title">${escapeHtml(step.summary)}</div>
         <div class="visual-guide-detail">${escapeHtml(visualHint(scenario, step))}</div>
       </div>
