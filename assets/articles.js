@@ -6,12 +6,8 @@
   const countNode = document.getElementById('article-count-label');
   const statusNode = document.getElementById('article-status');
   const viewerNode = document.getElementById('article-viewer');
-  const titleNode = document.getElementById('article-title');
-  const fileLabelNode = document.getElementById('article-file-label');
-  const detailGridNode = document.getElementById('article-detail-grid');
-  const rawLinkNode = document.getElementById('article-open-raw');
 
-  if (!listNode || !countNode || !statusNode || !viewerNode || !titleNode || !fileLabelNode || !detailGridNode || !rawLinkNode) return;
+  if (!listNode || !countNode || !statusNode || !viewerNode) return;
 
   const searchParams = new URLSearchParams(window.location.search);
   const requestedFile = searchParams.get('file');
@@ -238,7 +234,6 @@
         <span class="menu-item-index">${String(index + 1).padStart(2, '0')}</span>
         <span class="menu-item-copy">
           <strong>${escapeHtml(file.title)}</strong>
-          <small>${escapeHtml(file.name)}</small>
         </span>
       `;
       button.addEventListener('click', () => {
@@ -271,20 +266,6 @@
 
     currentFile = file.name;
     renderList();
-    titleNode.textContent = file.title;
-    fileLabelNode.textContent = file.name;
-    rawLinkNode.href = file.downloadUrl;
-    detailGridNode.innerHTML = `
-      <div class="meta-card article-summary-card">
-        <span>Path</span>
-        <strong>${escapeHtml(articlesPath)}/${escapeHtml(file.name)}</strong>
-      </div>
-      <div class="meta-card article-summary-card">
-        <span>Source</span>
-        <strong>동일 사이트 경로 우선, GitHub Raw 백업</strong>
-      </div>
-    `;
-
     setStatus('아티클 내용을 불러오는 중입니다.');
     updateQuery(file.name);
 
@@ -292,7 +273,6 @@
       const markdown = await fetchMarkdown(file);
       const renderedTitle = extractTitle(markdown, file.name);
       file.title = renderedTitle;
-      titleNode.textContent = renderedTitle;
       renderList();
       showViewer(renderMarkdown(markdown));
     } catch (error) {
@@ -335,12 +315,6 @@
 
       if (!articleFiles.length) {
         setStatus('articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.');
-        detailGridNode.innerHTML = `
-          <div class="meta-card wide article-summary-card">
-            <span>Next Step</span>
-            <strong>articles 폴더에 첫 번째 .md 파일을 추가해 주세요.</strong>
-          </div>
-        `;
         return;
       }
 
@@ -352,12 +326,6 @@
     } catch (error) {
       countNode.textContent = '목록을 불러오지 못했습니다';
       setStatus('article 목록을 불러오지 못했습니다. assets/data.js의 article 파일 목록 또는 GitHub 저장소 설정을 확인해 주세요.', true);
-      detailGridNode.innerHTML = `
-        <div class="meta-card wide article-summary-card">
-          <span>Repository</span>
-          <strong>${escapeHtml(owner)}/${escapeHtml(repo)} · ${escapeHtml(branch)} · ${escapeHtml(articlesPath)}</strong>
-        </div>
-      `;
       console.error(error);
     }
   }
