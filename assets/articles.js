@@ -259,6 +259,12 @@
       quoteLines = [];
     };
 
+    const flushTextBlocks = () => {
+      flushParagraph();
+      flushList();
+      flushQuote();
+    };
+
     const flushCode = () => {
       if (!inCodeBlock) return;
       html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
@@ -268,9 +274,7 @@
 
     for (const line of lines) {
       if (line.trim().startsWith('```')) {
-        flushParagraph();
-        flushList();
-        flushQuote();
+        flushTextBlocks();
         if (inCodeBlock) {
           flushCode();
         } else {
@@ -286,25 +290,19 @@
       }
 
       if (!line.trim()) {
-        flushParagraph();
-        flushList();
-        flushQuote();
+        flushTextBlocks();
         continue;
       }
 
       if (/^---+$/.test(line.trim())) {
-        flushParagraph();
-        flushList();
-        flushQuote();
+        flushTextBlocks();
         html.push('<hr />');
         continue;
       }
 
       const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
       if (headingMatch) {
-        flushParagraph();
-        flushList();
-        flushQuote();
+        flushTextBlocks();
         const level = Math.min(6, headingMatch[1].length);
         html.push(`<h${level}>${renderInline(headingMatch[2].trim())}</h${level}>`);
         continue;
@@ -347,12 +345,17 @@
       paragraphLines.push(line.trim());
     }
 
-    flushParagraph();
-    flushList();
-    flushQuote();
+    flushTextBlocks();
     flushCode();
 
     return html.join('');
+  }
+
+  function resolveInitialFileName() {
+    return articleFiles.find((file) => file.name === requestedFile)?.name
+      || articleFiles.find((file) => file.name === defaultFile)?.name
+      || articleFiles[0]?.name
+      || '';
   }
 
   function renderList() {
@@ -465,9 +468,7 @@
         return;
       }
 
-      const initialFile = articleFiles.find((file) => file.name === requestedFile)?.name
-        || articleFiles.find((file) => file.name === defaultFile)?.name
-        || articleFiles[0].name;
+      const initialFile = resolveInitialFileName();
 
       loadArticle(initialFile);
     } catch (error) {
@@ -475,9 +476,7 @@
         setArticleFiles(configuredFiles);
         setStatus('GitHub 목록을 불러오지 못해 assets/data.js에 등록된 article 목록만 표시합니다.', true);
 
-        const initialFile = articleFiles.find((file) => file.name === requestedFile)?.name
-          || articleFiles.find((file) => file.name === defaultFile)?.name
-          || articleFiles[0]?.name;
+        const initialFile = resolveInitialFileName();
 
         if (initialFile) loadArticle(initialFile);
         return;

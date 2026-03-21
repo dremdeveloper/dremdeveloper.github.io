@@ -103,18 +103,14 @@
     return studyPlans.find((plan) => plan.key === currentPlanKey) || studyPlans[0];
   }
 
+  function getPlanLessonGroups() {
+    return studyPlans
+      .flatMap((plan) => plan.files)
+      .flatMap((file) => file.lessons || []);
+  }
+
   function findPlanWeekByFileId(fileId) {
-    for (const plan of studyPlans) {
-      for (const file of plan.files) {
-        if (!Array.isArray(file.lessons)) continue;
-        for (const group of file.lessons) {
-          if (group.items.some((item) => item.id === fileId)) {
-            return group.group;
-          }
-        }
-      }
-    }
-    return '';
+    return getPlanLessonGroups().find((group) => group.items.some((item) => item.id === fileId))?.group || '';
   }
 
   function findPlanFileInfo(fileId) {
@@ -299,10 +295,7 @@
         const weekLabel = button.getAttribute('data-plan-week');
         if (!weekLabel || weekLabel === expandedPlanWeek) return;
 
-        const nextWeekGroup = studyPlans
-          .flatMap((plan) => plan.files)
-          .flatMap((file) => file.lessons || [])
-          .find((group) => group.group === weekLabel);
+        const nextWeekGroup = getPlanLessonGroups().find((group) => group.group === weekLabel);
 
         expandedPlanWeek = weekLabel;
 
