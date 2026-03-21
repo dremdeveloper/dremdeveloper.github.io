@@ -52,14 +52,30 @@
 
     <main class="page-shell section-tight">
       <section class="browser-layout lecture-layout">
-        <aside class="browser-sidebar card panel-pad-md">
-          <div class="track-switch" role="tablist" aria-label="강의 종류 선택">
-            <button class="track-button is-active" type="button" data-track="python">Python</button>
-            <button class="track-button" type="button" data-track="cpp">C++</button>
-          </div>
+        <aside class="browser-sidebar card panel-pad-md lecture-sidebar">
+          <button
+            class="mobile-sidebar-toggle"
+            id="lecture-sidebar-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="lecture-sidebar-body"
+          >
+            <span class="mobile-sidebar-toggle-copy">
+              <span class="mobile-sidebar-toggle-label">강의 목록</span>
+              <strong id="lecture-sidebar-current">Python</strong>
+            </span>
+            <span class="mobile-sidebar-toggle-icon" aria-hidden="true"></span>
+          </button>
 
-          <div class="sidebar-meta" id="track-meta"></div>
-          <div class="menu-list" id="lecture-list" aria-label="강의 목록"></div>
+          <div class="mobile-sidebar-body" id="lecture-sidebar-body">
+            <div class="track-switch" role="tablist" aria-label="강의 종류 선택">
+              <button class="track-button is-active" type="button" data-track="python">Python</button>
+              <button class="track-button" type="button" data-track="cpp">C++</button>
+            </div>
+
+            <div class="sidebar-meta" id="track-meta"></div>
+            <div class="menu-list" id="lecture-list" aria-label="강의 목록"></div>
+          </div>
         </aside>
 
         <section class="browser-main stack-gap">

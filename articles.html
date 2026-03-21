@@ -53,11 +53,27 @@
     <main class="page-shell section-tight stack-gap article-page-shell">
       <section class="browser-layout article-layout">
         <aside class="browser-sidebar card panel-pad-md article-sidebar">
-          <div class="sidebar-meta article-sidebar-meta">
-            <h2>Articles</h2>
-            <p id="article-count-label">불러오는 중...</p>
+          <button
+            class="mobile-sidebar-toggle"
+            id="article-sidebar-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="article-sidebar-body"
+          >
+            <span class="mobile-sidebar-toggle-copy">
+              <span class="mobile-sidebar-toggle-label">Article 목록</span>
+              <strong id="article-sidebar-current">불러오는 중...</strong>
+            </span>
+            <span class="mobile-sidebar-toggle-icon" aria-hidden="true"></span>
+          </button>
+
+          <div class="mobile-sidebar-body" id="article-sidebar-body">
+            <div class="sidebar-meta article-sidebar-meta">
+              <h2>Articles</h2>
+              <p id="article-count-label">불러오는 중...</p>
+            </div>
+            <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
           </div>
-          <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
         </aside>
 
         <section class="browser-main">

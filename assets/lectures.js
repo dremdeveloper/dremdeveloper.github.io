@@ -13,6 +13,10 @@
   const progressInput = document.getElementById('lecture-progress');
   const currentTimeNode = document.getElementById('lecture-current-time');
   const durationNode = document.getElementById('lecture-duration');
+  const sidebarNode = document.querySelector('.lecture-sidebar');
+  const sidebarToggle = document.getElementById('lecture-sidebar-toggle');
+  const sidebarCurrentNode = document.getElementById('lecture-sidebar-current');
+  const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
 
   let currentTrack = 'python';
   let currentValue = data[currentTrack]?.items[0]?.value || '';
@@ -21,6 +25,17 @@
   let pendingSelection = null;
   let syncTimer = null;
   let isSeeking = false;
+
+  const setSidebarState = (isOpen) => {
+    if (!sidebarNode || !sidebarToggle) return;
+    sidebarNode.classList.toggle('is-mobile-open', isOpen);
+    sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+  };
+
+  const closeSidebarOnMobile = () => {
+    if (!mobileMediaQuery.matches) return;
+    setSidebarState(false);
+  };
 
   const syncProgressVisual = () => {
     const min = Number(progressInput.min || 0);
@@ -68,6 +83,12 @@
     const item = track.items.find((entry) => entry.value === currentValue) || track.items[0];
     const index = track.items.findIndex((entry) => entry.value === item.value);
     return { track, item, index };
+  };
+
+  const updateSidebarCurrentLabel = () => {
+    if (!sidebarCurrentNode) return;
+    const selection = getCurrentSelection();
+    sidebarCurrentNode.textContent = `${selection.track.label} · ${selection.item.title}`;
   };
 
   const updateProgress = () => {
@@ -180,6 +201,7 @@
   };
 
   const renderList = () => {
+    updateSidebarCurrentLabel();
     const track = data[currentTrack];
     listNode.innerHTML = '';
 
@@ -198,6 +220,7 @@
         currentValue = item.value;
         renderList();
         renderPlayer();
+        closeSidebarOnMobile();
       });
       listNode.appendChild(button);
     });
@@ -209,6 +232,7 @@
     courseLabel.textContent = track.label;
     titleNode.textContent = item.title;
     bookLink.href = track.bookUrl;
+    updateSidebarCurrentLabel();
 
     detailGrid.innerHTML = `
       <div class="meta-card wide lecture-summary-card">
@@ -266,6 +290,17 @@
     ytPlayer.seekTo(targetTime, true);
     isSeeking = false;
     updateProgress();
+  });
+
+  sidebarToggle?.addEventListener('click', () => {
+    const isOpen = sidebarToggle.getAttribute('aria-expanded') !== 'true';
+    setSidebarState(isOpen);
+  });
+
+  mobileMediaQuery.addEventListener?.('change', (event) => {
+    if (!event.matches) {
+      setSidebarState(false);
+    }
   });
 
   trackButtons.forEach((button) => {
