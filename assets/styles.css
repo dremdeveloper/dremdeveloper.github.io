@@ -720,16 +720,18 @@ p { line-height: 1.75; color: var(--muted); }
 
 .study-plan-viewer {
   overflow: hidden;
-  min-height: clamp(760px, 82vh, 1800px);
+  min-height: 0;
 }
 
 .study-plan-frame-wrap {
   padding: 0;
+  min-height: 0;
 }
 
 .study-plan-frame-wrap iframe {
   width: 100%;
-  min-height: clamp(760px, 82vh, 1800px);
+  display: block;
+  min-height: 0;
   border: 0;
   background: #f6f8fa;
 }
@@ -931,6 +933,10 @@ p { line-height: 1.75; color: var(--muted); }
 
 .study-frame-wrap-expanded {
   min-height: var(--study-frame-min-height);
+}
+
+.study-plan-frame-wrap.study-frame-wrap-expanded {
+  min-height: 0;
 }
 
 .browser-layout {
@@ -1312,4 +1318,11 @@ p { line-height: 1.75; color: var(--muted); }
   .study-frame-wrap-embedded,
   .study-frame-wrap-embedded iframe,
   .study-frame-wrap-expanded { min-height: clamp(380px, 54vh, 640px); }
+}
+
+.study-plan-viewer,
+.study-plan-frame-wrap,
+.study-plan-frame-wrap iframe,
+.study-plan-frame-wrap.study-frame-wrap-expanded {
+  min-height: 0;
 }
