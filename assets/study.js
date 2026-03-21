@@ -253,19 +253,23 @@
         <section class="study-plan-group">
           <div class="study-plan-list">
             ${file.lessons.map((group) => {
-              const isSelectedWeek = group.items.some((item) => item.id === currentPlanFileId);
               const isExpandedWeek = group.group === expandedPlanWeek;
+              const weekCountLabel = `${group.items.length}개 과제`;
               return `
                 <section class="study-plan-group-block">
                   <button
-                    class="study-plan-link ${(isExpandedWeek || isSelectedWeek) ? 'is-active' : ''}"
+                    class="study-plan-link ${isExpandedWeek ? 'is-active' : ''}"
                     type="button"
                     data-plan-week="${escapeHtml(group.group)}"
                     role="tab"
                     aria-selected="${String(isExpandedWeek)}"
                     aria-expanded="${String(isExpandedWeek)}"
                   >
-                    <span class="study-plan-link-title">${escapeHtml(group.group)}</span>
+                    <span class="study-plan-link-copy">
+                      <span class="study-plan-link-title">${escapeHtml(group.group)}</span>
+                      <span class="study-plan-link-description">${escapeHtml(weekCountLabel)}</span>
+                    </span>
+                    <span class="study-plan-link-icon" aria-hidden="true">${isExpandedWeek ? '−' : '+'}</span>
                   </button>
                   <div class="study-plan-submenu" ${isExpandedWeek ? '' : 'hidden'}>
                     <div class="study-plan-list study-plan-list-nested">
@@ -294,7 +298,20 @@
       button.addEventListener('click', () => {
         const weekLabel = button.getAttribute('data-plan-week');
         if (!weekLabel || weekLabel === expandedPlanWeek) return;
+
+        const nextWeekGroup = studyPlans
+          .flatMap((plan) => plan.files)
+          .flatMap((file) => file.lessons || [])
+          .find((group) => group.group === weekLabel);
+
         expandedPlanWeek = weekLabel;
+
+        const nextLessonId = nextWeekGroup?.items?.[0]?.id;
+        if (nextLessonId) {
+          setPlanFile(nextLessonId);
+          return;
+        }
+
         renderPlanMenu();
       });
     });

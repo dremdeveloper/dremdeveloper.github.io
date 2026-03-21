@@ -108,6 +108,28 @@
     .menu-button:hover { background: #f6f9fd; border-color: #dbe7f4; transform: translateY(-1px); }
     .menu-button.active { background: var(--primary-soft); border-color: #c9dcf5; }
     .menu-title { display: block; font-size: .95rem; font-weight: 700; line-height: 1.45; }
+    .week-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .week-label-copy {
+      display: grid;
+      gap: 2px;
+    }
+    .week-meta {
+      color: var(--muted-soft);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+    .week-toggle-icon {
+      flex: 0 0 auto;
+      color: var(--primary);
+      font-size: 1rem;
+      font-weight: 900;
+      line-height: 1;
+    }
 
     .viewer { overflow: hidden; }
     .viewer-head {
@@ -339,7 +361,11 @@
       return `
         <section class="week-group">
           <button class="menu-button week-label ${isExpandedWeek ? 'active' : ''}" type="button" data-week-btn="${group.week}" aria-expanded="${String(isExpandedWeek)}">
-            <span class="menu-title">${group.week}</span>
+            <span class="week-label-copy">
+              <span class="menu-title">${group.week}</span>
+              <span class="week-meta">${group.items.length}개 과제</span>
+            </span>
+            <span class="week-toggle-icon" aria-hidden="true">${isExpandedWeek ? '−' : '+'}</span>
           </button>
           <div class="menu-list week-list" ${isExpandedWeek ? '' : 'hidden'}>
             ${group.items.map((item) => `
@@ -591,16 +617,7 @@
       linkifyProblemReferences(viewerBody);
       menuButtons.forEach((button) => button.classList.toggle('active', button.dataset.lessonBtn === lesson.id));
       expandedWeek = lesson.week;
-      weekButtons.forEach((button) => {
-        const isExpandedWeek = button.dataset.weekBtn === expandedWeek;
-        button.classList.toggle('active', isExpandedWeek);
-        button.setAttribute('aria-expanded', String(isExpandedWeek));
-      });
-      document.querySelectorAll('.week-list').forEach((list) => {
-        const group = list.closest('.week-group');
-        const weekButton = group?.querySelector('[data-week-btn]');
-        list.hidden = weekButton?.dataset.weekBtn !== expandedWeek;
-      });
+      syncExpandedWeek();
       viewerBody.scrollTop = 0;
       window.scrollTo?.({ top: 0, behavior: 'auto' });
       if (updateUrl) {
@@ -613,21 +630,32 @@
       setTimeout(notifyHeight, 120);
     }
 
+    function syncExpandedWeek() {
+      weekButtons.forEach((node) => {
+        const isExpandedWeek = node.dataset.weekBtn === expandedWeek;
+        node.classList.toggle('active', isExpandedWeek);
+        node.setAttribute('aria-expanded', String(isExpandedWeek));
+        const icon = node.querySelector('.week-toggle-icon');
+        if (icon) icon.textContent = isExpandedWeek ? '−' : '+';
+      });
+      document.querySelectorAll('.week-list').forEach((list) => {
+        const group = list.closest('.week-group');
+        const weekButton = group?.querySelector('[data-week-btn]');
+        list.hidden = weekButton?.dataset.weekBtn !== expandedWeek;
+      });
+    }
+
     weekButtons.forEach((button) => {
       button.addEventListener('click', () => {
         const nextWeek = button.dataset.weekBtn;
         if (!nextWeek || nextWeek === expandedWeek) return;
         expandedWeek = nextWeek;
-        weekButtons.forEach((node) => {
-          const isExpandedWeek = node.dataset.weekBtn === expandedWeek;
-          node.classList.toggle('active', isExpandedWeek);
-          node.setAttribute('aria-expanded', String(isExpandedWeek));
-        });
-        document.querySelectorAll('.week-list').forEach((list) => {
-          const group = list.closest('.week-group');
-          const weekButton = group?.querySelector('[data-week-btn]');
-          list.hidden = weekButton?.dataset.weekBtn !== expandedWeek;
-        });
+        const nextLesson = groups.find((group) => group.week === nextWeek)?.items?.[0];
+        if (nextLesson) {
+          selectLesson(nextLesson.id);
+          return;
+        }
+        syncExpandedWeek();
       });
     });
 
