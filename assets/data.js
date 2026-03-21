@@ -65,6 +65,24 @@ window.siteData = {
       ]
     }
   },
+  studyPlans: [
+    {
+      key: 'learning-plan',
+      label: '학습 플랜',
+      typeLabel: 'Embedded HTML',
+      title: '파이썬 학습 플랜 문서 모음',
+      summary: '공부자료 메뉴 안에서 파이썬 학습 플랜 파일을 왼쪽 메뉴로 고르고, 오른쪽에서 바로 열어볼 수 있도록 구성한 섹션입니다.',
+      files: [
+        {
+          id: 'python-weekly-docs',
+          label: '파이썬 주차별 문서',
+          description: '1주차부터 4주차까지 이어지는 파이썬 코딩 테스트 학습 플랜 문서를 주차별 메뉴와 함께 볼 수 있습니다.',
+          path: 'python-weekly-docs.html?embed=1',
+          metaLabel: '학습 플랜 · HTML 문서'
+        }
+      ]
+    }
+  ],
   studyMaterials: [
     {
       key: 'python-flow-visualizer',

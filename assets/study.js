@@ -3,28 +3,42 @@
   const groupSelect = document.getElementById('study-group-select');
   const scenarioSelect = document.getElementById('study-scenario-select');
   const visualizationToggle = document.getElementById('study-visualization-toggle');
+  const learningPlanToggle = document.getElementById('study-learning-plan-toggle');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
   const visualizationPanel = document.getElementById('study-visualization-panel');
+  const learningPlanPanel = document.getElementById('study-learning-plan-panel');
   const selectorCard = document.getElementById('study-selector-card');
+  const planMenuRoot = document.getElementById('study-plan-menu');
+  const planFrame = document.getElementById('study-plan-frame');
+  const planMetaNode = document.getElementById('study-plan-meta');
+  const planHeadingNode = document.getElementById('study-plan-heading');
+  const planDescriptionNode = document.getElementById('study-plan-description');
+  const planViewerMetaNode = document.getElementById('study-plan-viewer-meta');
+  const planViewerTitleNode = document.getElementById('study-plan-viewer-title');
+  const planViewerSummaryNode = document.getElementById('study-plan-viewer-summary');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
-
-  if (!frame || !groupSelect || !scenarioSelect || !visualizationToggle || !visualizationPanel || !selectorCard) return;
 
   const studyMaterials = Array.isArray(window.siteData?.studyMaterials)
     ? window.siteData.studyMaterials.filter((material) => Array.isArray(material.groups) && material.groups.length)
     : [];
+  const studyPlans = Array.isArray(window.siteData?.studyPlans)
+    ? window.siteData.studyPlans.filter((plan) => Array.isArray(plan.files) && plan.files.length)
+    : [];
 
-  if (!studyMaterials.length) return;
+  if (!studyMaterials.length && !studyPlans.length) return;
 
   let currentMaterialKey = '';
   let currentGroupKey = '';
   let currentScenarioId = '';
+  let currentPlanKey = '';
+  let currentPlanFileId = '';
   let resizeObserver = null;
   let mutationObserver = null;
   let rafId = null;
   let boundFrameWindow = null;
   let hasLoadedVisualization = false;
+  let hasLoadedPlan = false;
   let pendingScrollAnchorTop = null;
   let pendingScrollAnchorTimeout = null;
   let submenuCloseTimer = null;
@@ -50,6 +64,34 @@
 
   function getCurrentGroup(material = getCurrentMaterial()) {
     return material.groups.find((group) => group.key === currentGroupKey) || material.groups[0];
+  }
+
+  function ensureInitialPlanSelection() {
+    if (currentPlanKey && currentPlanFileId) return;
+
+    const defaultPlan = studyPlans[0];
+    const defaultFile = defaultPlan?.files[0];
+
+    if (!defaultPlan || !defaultFile) return;
+
+    currentPlanKey = defaultPlan.key;
+    currentPlanFileId = defaultFile.id;
+  }
+
+  function getCurrentPlan() {
+    ensureInitialPlanSelection();
+    return studyPlans.find((plan) => plan.key === currentPlanKey) || studyPlans[0];
+  }
+
+  function findPlanFileInfo(fileId) {
+    for (const plan of studyPlans) {
+      for (const file of plan.files) {
+        if (file.id === fileId) {
+          return { plan, file };
+        }
+      }
+    }
+    return null;
   }
 
   function findScenarioInfo(id) {
@@ -85,12 +127,35 @@
     toolbarTitleNode.textContent = `${currentInfo.material.label} · ${currentInfo.group.label} · ${currentInfo.item.label}`;
   }
 
+  function updatePlanViewer() {
+    const currentInfo = findPlanFileInfo(currentPlanFileId);
+    if (!currentInfo) return;
+
+    const { plan, file } = currentInfo;
+
+    if (planMetaNode) planMetaNode.textContent = `${plan.label} 파일`;
+    if (planHeadingNode) planHeadingNode.textContent = plan.title;
+    if (planDescriptionNode) planDescriptionNode.textContent = plan.summary;
+    if (planViewerMetaNode) planViewerMetaNode.textContent = file.metaLabel || `${plan.label} 뷰어`;
+    if (planViewerTitleNode) planViewerTitleNode.textContent = file.label;
+    if (planViewerSummaryNode) planViewerSummaryNode.textContent = file.description || plan.summary;
+  }
+
   function setVisualizationExpanded(isExpanded) {
+    if (!visualizationToggle || !visualizationPanel) return;
+
     visualizationToggle.classList.toggle('is-active', isExpanded);
     visualizationToggle.setAttribute('aria-expanded', String(isExpanded));
     visualizationPanel.hidden = !isExpanded;
 
+    if (learningPlanToggle && learningPlanPanel && isExpanded) {
+      learningPlanToggle.classList.remove('is-active');
+      learningPlanToggle.setAttribute('aria-expanded', 'false');
+      learningPlanPanel.hidden = true;
+    }
+
     if (!isExpanded) return;
+    if (!studyMaterials.length) return;
 
     ensureInitialSelection();
     renderSelectors();
@@ -102,7 +167,35 @@
     }
   }
 
+  function setLearningPlanExpanded(isExpanded) {
+    if (!learningPlanToggle || !learningPlanPanel) return;
+
+    learningPlanToggle.classList.toggle('is-active', isExpanded);
+    learningPlanToggle.setAttribute('aria-expanded', String(isExpanded));
+    learningPlanPanel.hidden = !isExpanded;
+
+    if (visualizationToggle && visualizationPanel && isExpanded) {
+      visualizationToggle.classList.remove('is-active');
+      visualizationToggle.setAttribute('aria-expanded', 'false');
+      visualizationPanel.hidden = true;
+    }
+
+    if (!isExpanded) return;
+    if (!studyPlans.length) return;
+
+    ensureInitialPlanSelection();
+    renderPlanMenu();
+    updatePlanViewer();
+
+    if (!hasLoadedPlan) {
+      loadPlanFile(true);
+      hasLoadedPlan = true;
+    }
+  }
+
   function renderSelectors() {
+    if (!groupSelect || !scenarioSelect || !studyMaterials.length) return;
+
     const material = getCurrentMaterial();
     const group = getCurrentGroup(material);
 
@@ -115,6 +208,66 @@
       <option value="${item.id}" ${item.id === currentScenarioId ? 'selected' : ''}>${escapeHtml(item.label)}</option>
     `).join('');
     scenarioSelect.value = currentScenarioId;
+  }
+
+  function renderPlanMenu() {
+    if (!planMenuRoot || !studyPlans.length) return;
+
+    planMenuRoot.innerHTML = studyPlans.map((plan) => `
+      <section class="study-plan-group">
+        <p class="study-plan-group-label">${escapeHtml(plan.label)}</p>
+        <div class="study-plan-list">
+          ${plan.files.map((file) => `
+            <button
+              class="study-plan-link ${file.id === currentPlanFileId ? 'is-active' : ''}"
+              type="button"
+              data-plan-file="${escapeHtml(file.id)}"
+              role="tab"
+              aria-selected="${String(file.id === currentPlanFileId)}"
+            >
+              <span class="study-plan-link-title">${escapeHtml(file.label)}</span>
+              <span class="study-plan-link-description">${escapeHtml(file.description || plan.summary || '')}</span>
+            </button>
+          `).join('')}
+        </div>
+      </section>
+    `).join('');
+
+    planMenuRoot.querySelectorAll('[data-plan-file]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextFileId = button.getAttribute('data-plan-file');
+        if (!nextFileId) return;
+        setPlanFile(nextFileId);
+      });
+    });
+  }
+
+  function loadPlanFile(forceReload = false) {
+    if (!planFrame) return;
+
+    const currentInfo = findPlanFileInfo(currentPlanFileId);
+    if (!currentInfo) return;
+
+    if (forceReload || planFrame.dataset.loadedFile !== currentInfo.file.id) {
+      planFrame.src = currentInfo.file.path;
+      planFrame.dataset.loadedFile = currentInfo.file.id;
+    }
+  }
+
+  function setPlanFile(nextFileId, forceReload = false) {
+    if (!nextFileId) return;
+
+    const currentInfo = findPlanFileInfo(nextFileId);
+    if (!currentInfo) return;
+
+    currentPlanKey = currentInfo.plan.key;
+    currentPlanFileId = currentInfo.file.id;
+
+    renderPlanMenu();
+    updatePlanViewer();
+    if (!learningPlanPanel?.hidden) {
+      loadPlanFile(forceReload);
+    }
   }
 
   function setScenario(nextScenarioId, forceReload = false) {
@@ -448,6 +601,8 @@
   }
 
   function loadScenario(forceReload) {
+    if (!frame || !studyMaterials.length) return;
+
     const material = getCurrentMaterial();
     const samePageLoaded = frame.dataset.loadedMaterial === material.key;
     if (forceReload || !samePageLoaded) {
@@ -465,6 +620,24 @@
       }
     } catch (error) {
       frame.src = buildFrameUrl(material, currentScenarioId);
+    }
+  }
+
+  function syncPlanFrameHeight() {
+    if (!planFrame) return;
+
+    try {
+      const doc = planFrame.contentDocument || planFrame.contentWindow?.document;
+      if (!doc) return;
+      const nextHeight = Math.max(
+        doc.body ? doc.body.scrollHeight : 0,
+        doc.documentElement ? doc.documentElement.scrollHeight : 0,
+      );
+      if (nextHeight) {
+        planFrame.style.height = `${nextHeight + 12}px`;
+      }
+    } catch (error) {
+      // same-origin access only
     }
   }
 
@@ -497,23 +670,37 @@
     }, 220);
   }
 
-  groupSelect.addEventListener('change', () => {
-    captureScrollAnchor();
-    setGroup(groupSelect.value);
-  });
+  if (groupSelect) {
+    groupSelect.addEventListener('change', () => {
+      captureScrollAnchor();
+      setGroup(groupSelect.value);
+    });
+  }
 
-  scenarioSelect.addEventListener('change', () => {
-    const nextScenarioId = scenarioSelect.value;
-    if (!nextScenarioId) return;
-    captureScrollAnchor();
-    setScenario(nextScenarioId);
-  });
+  if (scenarioSelect) {
+    scenarioSelect.addEventListener('change', () => {
+      const nextScenarioId = scenarioSelect.value;
+      if (!nextScenarioId) return;
+      captureScrollAnchor();
+      setScenario(nextScenarioId);
+    });
+  }
 
-  visualizationToggle.addEventListener('click', () => {
-    const shouldExpand = visualizationToggle.getAttribute('aria-expanded') !== 'true';
-    setVisualizationExpanded(shouldExpand);
-    if (shouldExpand) toggleSubmenu(false);
-  });
+  if (visualizationToggle) {
+    visualizationToggle.addEventListener('click', () => {
+      const shouldExpand = visualizationToggle.getAttribute('aria-expanded') !== 'true';
+      setVisualizationExpanded(shouldExpand);
+      if (shouldExpand) toggleSubmenu(false);
+    });
+  }
+
+  if (learningPlanToggle) {
+    learningPlanToggle.addEventListener('click', () => {
+      const shouldExpand = learningPlanToggle.getAttribute('aria-expanded') !== 'true';
+      setLearningPlanExpanded(shouldExpand);
+      if (shouldExpand) toggleSubmenu(false);
+    });
+  }
 
   if (submenuToggle && submenuPanel) {
     const submenuContainer = submenuToggle.parentElement;
@@ -550,27 +737,56 @@
     });
   }
 
-  frame.addEventListener('load', () => {
-    injectViewerTheme();
-    bindFrameObservers();
-    try {
-      if (frame.contentWindow?.visualizerApi?.setScenario) {
-        frame.contentWindow.visualizerApi.setScenario(currentScenarioId);
+  if (frame) {
+    frame.addEventListener('load', () => {
+      injectViewerTheme();
+      bindFrameObservers();
+      try {
+        if (frame.contentWindow?.visualizerApi?.setScenario) {
+          frame.contentWindow.visualizerApi.setScenario(currentScenarioId);
+        }
+      } catch (error) {
+        // ignore api call errors
       }
-    } catch (error) {
-      // ignore api call errors
-    }
-    queueHeightSync();
-  });
+      queueHeightSync();
+    });
+  }
+
+  if (planFrame) {
+    planFrame.addEventListener('load', () => {
+      syncPlanFrameHeight();
+      window.setTimeout(syncPlanFrameHeight, 80);
+      window.setTimeout(syncPlanFrameHeight, 220);
+    });
+  }
 
   window.addEventListener('message', (event) => {
     const data = event.data;
-    if (!data || data.type !== 'kp-visualizer-height') return;
-    if (typeof data.height === 'number' && data.height > 0) {
+    if (!data || typeof data !== 'object') return;
+
+    if (data.type === 'kp-visualizer-height' && frame && typeof data.height === 'number' && data.height > 0) {
       frame.style.height = `${Math.round(data.height + 12)}px`;
       restoreScrollAnchor();
+      return;
+    }
+
+    if (data.type === 'kp-study-docs-height' && planFrame && typeof data.height === 'number' && data.height > 0) {
+      planFrame.style.height = `${Math.round(data.height + 12)}px`;
     }
   });
 
+  window.addEventListener('resize', () => {
+    if (hasLoadedPlan) syncPlanFrameHeight();
+  });
+
+  if (!studyMaterials.length && visualizationToggle) {
+    visualizationToggle.hidden = true;
+  }
+
+  if (!studyPlans.length && learningPlanToggle) {
+    learningPlanToggle.hidden = true;
+  }
+
   setVisualizationExpanded(false);
+  setLearningPlanExpanded(false);
 })();
