@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공부자료 | 박경록</title>
-  <meta name="description" content="박경록 공부자료 페이지. 상단 서브메뉴와 넓어진 시각화 영역으로 공부자료를 살펴볼 수 있습니다." />
+  <title>코테자료 | 박경록</title>
+  <meta name="description" content="박경록 코테자료 페이지. 상단 서브메뉴와 넓어진 시각화 영역으로 코테자료를 살펴볼 수 있습니다." />
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
@@ -21,6 +21,7 @@
       </button>
 
       <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
+        <a href="articles.html">Article</a>
         <a href="lectures.html">강의</a>
         <a href="free-posts.html">자유글</a>
         <div class="site-nav-study" id="study-nav-item">
@@ -32,10 +33,10 @@
             aria-haspopup="true"
             aria-controls="study-top-submenu"
           >
-            공부자료
+            코테자료
           </button>
 
-          <section id="study-top-submenu" class="study-top-submenu" aria-label="공부자료 서브메뉴">
+          <section id="study-top-submenu" class="study-top-submenu" aria-label="코테자료 서브메뉴">
             <div id="study-submenu-roots" class="study-submenu-roots" role="list">
               <button
                 id="study-visualization-toggle"
@@ -82,7 +83,7 @@
 
         <article class="card study-viewer-card study-viewer-shell">
           <div class="study-frame-wrap study-frame-wrap-embedded study-frame-wrap-expanded">
-            <iframe id="study-frame" title="공부자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
+            <iframe id="study-frame" title="코테자료 시뮬레이션" loading="lazy" scrolling="no"></iframe>
           </div>
         </article>
       </section>

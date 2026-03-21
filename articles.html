@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article | 박경록</title>
+  <meta name="description" content="논문과 아티클용 마크다운 파일을 articles 폴더에 올리면 자동으로 목록에 표시되는 페이지입니다." />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="홈으로 이동">
+        <span class="brand-text">
+          <strong>Home</strong>
+        </span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
+        <a class="is-active" href="articles.html">Article</a>
+        <a href="lectures.html">강의</a>
+        <a href="free-posts.html">자유글</a>
+        <div class="site-nav-study" id="study-nav-item">
+          <button
+            id="study-nav-toggle"
+            class="site-nav-study-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="study-top-submenu"
+          >
+            코테자료
+          </button>
+
+          <section id="study-top-submenu" class="study-top-submenu" aria-label="코테자료 서브메뉴">
+            <div class="study-submenu-roots" role="list">
+              <a class="study-submenu-root" href="study.html?view=visualization">
+                <span class="study-submenu-root-label">시각화</span>
+              </a>
+              <a class="study-submenu-root" href="study.html?view=plan">
+                <span class="study-submenu-root-label">학습 플랜</span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </nav>
+    </header>
+
+    <main class="page-shell section-tight stack-gap article-page-shell">
+      <section class="browser-layout article-layout">
+        <aside class="browser-sidebar card panel-pad-md article-sidebar">
+          <div class="sidebar-meta article-sidebar-meta">
+            <h2>Articles</h2>
+            <p id="article-count-label">불러오는 중...</p>
+          </div>
+          <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
+        </aside>
+
+        <section class="browser-main">
+          <article class="card panel-pad-lg article-viewer-card">
+            <div id="article-status" class="article-status" aria-live="polite">GitHub 저장소의 articles 폴더를 확인하는 중입니다.</div>
+            <div id="article-viewer" class="article-viewer markdown-body" hidden></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Copyright © <span id="year"></span> Kyungrok Park (ultrasuperrok@gmail.com)</p>
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+  <script src="assets/articles.js"></script>
+</body>
+</html>

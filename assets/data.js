@@ -1,4 +1,17 @@
 window.siteData = {
+  articles: {
+    owner: 'dremdeveloper',
+    repo: 'dremdeveloper.github.io',
+    branch: 'main',
+    articlesPath: 'articles',
+    defaultFile: '2026-03-21-sample-article.md',
+    files: [
+      {
+        name: '2026-03-21-sample-article.md',
+        title: 'sample article'
+      }
+    ]
+  },
   lectures: {
     python: {
       key: 'python',
@@ -71,7 +84,7 @@ window.siteData = {
       label: '학습 플랜',
       typeLabel: 'Embedded HTML',
       title: '파이썬 학습 플랜 문서 모음',
-      summary: '공부자료 메뉴 안에서 파이썬 학습 플랜 파일을 왼쪽 메뉴로 고르고, 오른쪽에서 바로 열어볼 수 있도록 구성한 섹션입니다.',
+      summary: '코테자료 메뉴 안에서 파이썬 학습 플랜 파일을 왼쪽 메뉴로 고르고, 오른쪽에서 바로 열어볼 수 있도록 구성한 섹션입니다.',
       files: [
         {
           id: 'python-weekly-docs',
@@ -126,7 +139,7 @@ window.siteData = {
       label: '시각화',
       typeLabel: 'Interactive HTML',
       title: '파이썬 알고리즘 실행 흐름 시각화',
-      summary: '강의 페이지의 기존 서브메뉴는 유지한 채, 공부자료에서만 정렬, 그래프 탐색, 트리 탐색, 트리 순회, 재귀, 스택, 큐, 힙 정렬, N-Queen을 단계별로 볼 수 있게 구성한 자료입니다.',
+      summary: '강의 페이지의 기존 서브메뉴는 유지한 채, 코테자료에서만 정렬, 그래프 탐색, 트리 탐색, 트리 순회, 재귀, 스택, 큐, 힙 정렬, N-Queen을 단계별로 볼 수 있게 구성한 자료입니다.',
       detailA: '형식',
       valueA: 'HTML / CSS / JavaScript',
       detailB: '주제',
