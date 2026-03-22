@@ -2,18 +2,42 @@
 
   <url>
     <loc>https://dremdeveloper.github.io/</loc>
+    <lastmod>2026-03-22</lastmod>
   </url>
 
   <url>
     <loc>https://dremdeveloper.github.io/articles.html</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://dremdeveloper.github.io/free-posts.html</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://dremdeveloper.github.io/lectures.html</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://dremdeveloper.github.io/study.html</loc>
+    <lastmod>2026-03-22</lastmod>
   </url>
 
   <url>
     <loc>https://dremdeveloper.github.io/boj-archive-search.html</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://dremdeveloper.github.io/python-weekly-docs.html</loc>
+    <lastmod>2026-03-22</lastmod>
   </url>
 
   <url>
     <loc>https://dremdeveloper.github.io/projects/python-flow-visualizer.html</loc>
+    <lastmod>2026-03-22</lastmod>
   </url>
 
 </urlset>
