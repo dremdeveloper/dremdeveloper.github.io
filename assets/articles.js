@@ -172,10 +172,62 @@
     statusNode.classList.toggle('is-error', isError);
   }
 
-  function showViewer(html) {
-    viewerNode.innerHTML = html;
-    viewerNode.hidden = false;
-    statusNode.hidden = true;
+  function upsertMeta(selector, attributeName, value) {
+    const node = document.head.querySelector(selector);
+    if (node) {
+      node.setAttribute(attributeName, value);
+      return node;
+    }
+
+    const meta = document.createElement('meta');
+    const match = selector.match(/\[(name|property)="([^"]+)"\]/);
+    if (match) {
+      meta.setAttribute(match[1], match[2]);
+    }
+    meta.setAttribute(attributeName, value);
+    document.head.appendChild(meta);
+    return meta;
+  }
+
+  function updateArticleSeo(title) {
+    const articleTitle = title || 'Article';
+    document.title = `${articleTitle} | DremDeveloper`;
+
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', articleTitle);
+    }
+
+    upsertMeta('meta[property="og:title"]', 'content', articleTitle);
+    upsertMeta('meta[property="og:description"]', 'content', articleTitle);
+    upsertMeta('meta[name="twitter:title"]', 'content', articleTitle);
+    upsertMeta('meta[name="twitter:description"]', 'content', articleTitle);
+    upsertMeta('meta[property="og:url"]', 'content', window.location.href);
+
+    const canonicalLink = document.querySelector('link[rel="canonical"]') || document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    canonicalLink.setAttribute('href', window.location.href);
+    if (!canonicalLink.parentNode) {
+      document.head.appendChild(canonicalLink);
+    }
+
+    document.querySelectorAll('script[data-article-structured-data="true"]').forEach((node) => node.remove());
+
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: articleTitle,
+      author: {
+        '@type': 'Person',
+        name: '박경록'
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.dataset.articleStructuredData = 'true';
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
   }
 
   function stripFrontMatter(markdown) {
@@ -351,6 +403,8 @@
       viewerNode.innerHTML = renderMarkdown(sanitizedMarkdown);
       viewerNode.hidden = false;
       statusNode.hidden = true;
+      const title = document.querySelector('#article-viewer h1')?.innerText || renderedTitle || 'Article';
+      updateArticleSeo(title);
       closeSidebarOnMobile();
       await typesetMath();
     } catch (error) {
