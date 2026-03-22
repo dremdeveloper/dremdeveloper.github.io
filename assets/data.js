@@ -8,6 +8,58 @@ window.siteData = {
     defaultFile: 'articles/생각정리/2026-03-21-sample-article.md',
     files: [
       {
+        name: 'articles/AI 논문/attention_is_all_you_need_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/dpo_direct_preference_optimization_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/instructgpt_annotated_expansion.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/instructgpt_rlhf_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/instruction_tuning_survey_section6_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/lecture_summary_replacement_payload.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/llama2_open_foundation_chat_models_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/llm_rl_paper_glossary_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/lora_low_rank_adaptation.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/mixture_of_experts_in_large_language_models.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/ppo_algorithms_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/rl_state_transition_conditional_reward_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
+        name: 'articles/AI 논문/rlver_noisy_rewards_mathjax.md',
+        category: 'AI 논문'
+      },
+      {
         name: 'articles/instruction_tuning_survey_section6_mathjax.md',
         category: 'AI 논문'
       },
