@@ -307,8 +307,63 @@
     breaks: true
   });
 
+  function protectMathSegments(markdown) {
+    const placeholders = [];
+    let placeholderIndex = 0;
+
+    const createPlaceholder = (mathSource, isBlock = false) => {
+      const placeholder = isBlock
+        ? `<div class="math-placeholder" data-math-placeholder="${placeholderIndex}"></div>`
+        : `<span class="math-placeholder" data-math-placeholder="${placeholderIndex}"></span>`;
+      placeholders.push({ placeholder, mathSource });
+      placeholderIndex += 1;
+      return placeholder;
+    };
+
+    const processSegment = (segment) => segment
+      .replace(/\$\$[\s\S]+?\$\$/g, (match) => createPlaceholder(match, true))
+      .replace(/\\\[[\s\S]+?\\\]/g, (match) => createPlaceholder(match, true))
+      .replace(/\\\([\s\S]+?\\\)/g, (match) => createPlaceholder(match, false));
+
+    const protectedMarkdown = segmentMarkdownByCodeFence(markdown)
+      .map((segment) => (segment.type === 'code' ? segment.content : processSegment(segment.content)))
+      .join('');
+
+    return { protectedMarkdown, placeholders };
+  }
+
+  function segmentMarkdownByCodeFence(markdown) {
+    const fencePattern = /(```[\s\S]*?```|~~~[\s\S]*?~~~)/g;
+    const segments = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = fencePattern.exec(markdown)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: markdown.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'code', content: match[0] });
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < markdown.length) {
+      segments.push({ type: 'text', content: markdown.slice(lastIndex) });
+    }
+
+    return segments;
+  }
+
+  function restoreMathPlaceholders(html, placeholders) {
+    return placeholders.reduce(
+      (restoredHtml, entry) => restoredHtml.replace(entry.placeholder, entry.mathSource),
+      html
+    );
+  }
+
   function renderMarkdown(md) {
-    return DOMPurify.sanitize(marked.parse(md));
+    const { protectedMarkdown, placeholders } = protectMathSegments(md);
+    const sanitizedHtml = DOMPurify.sanitize(marked.parse(protectedMarkdown));
+    return restoreMathPlaceholders(sanitizedHtml, placeholders);
   }
 
   function setSearchResultsVisibility(isVisible) {
