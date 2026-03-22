@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>코테자료 | 문제 검색 | 박경록</title>
+  <meta name="description" content="백준 문제를 번호, 제목, 티어 그룹, 알고리즘, 컬렉션 주제로 검색할 수 있는 정적 HTML 페이지입니다.">
+  <link rel="stylesheet" href="boj-archive.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="site-header">
+      <div class="nav-row">
+        <a href="index.html">Home</a>
+        <a href="articles.html">Article</a>
+        <a href="lectures.html">강의</a>
+      </div>
+      <div class="nav-row">
+        <span class="nav-label">코테자료</span>
+        <a href="study.html?view=visualization">시각화</a>
+        <a href="study.html?view=plan">학습 플랜</a>
+        <a href="boj-archive-search.html" class="active">문제 검색</a>
+      </div>
+    </header>
+
+    <main class="page-stack">
+      <section class="panel toolbar-panel">
+        <div class="control-grid">
+          <div class="field field-search">
+            <label for="searchInput">통합 검색</label>
+            <input id="searchInput" class="input" type="search" placeholder="문제 번호, 제목, 알고리즘, 컬렉션명">
+          </div>
+          <div class="field">
+            <label for="tierSelect">티어 그룹</label>
+            <select id="tierSelect" class="select">
+              <option value="">전체</option>
+              <option value="Sprout">Sprout</option>
+              <option value="Bronze">Bronze</option>
+              <option value="Silver">Silver</option>
+              <option value="Gold">Gold</option>
+              <option value="Platinum">Platinum</option>
+              <option value="Diamond">Diamond</option>
+              <option value="Ruby">Ruby</option>
+              <option value="Unrated">Unrated</option>
+              <option value="Not ratable">Not ratable</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="topicInput">컬렉션 주제</label>
+            <input id="topicInput" class="input" list="topicOptions" placeholder="주제명 입력">
+            <datalist id="topicOptions"></datalist>
+          </div>
+          <div class="field">
+            <label for="algoInput">알고리즘</label>
+            <input id="algoInput" class="input" list="algoOptions" placeholder="알고리즘명 입력">
+            <datalist id="algoOptions"></datalist>
+          </div>
+        </div>
+
+        <div class="search-summary">
+          <div class="result-count" id="resultCount">로딩 중...</div>
+          <div class="result-note" id="resultNote">문제 목록을 준비하고 있습니다.</div>
+        </div>
+      </section>
+
+      <section class="panel results-panel">
+        <div class="results-header" aria-hidden="true">
+          <div>문제</div>
+          <div>티어</div>
+          <div>정답률</div>
+          <div>맞힌 사람</div>
+          <div>링크</div>
+        </div>
+        <div id="results" class="results-list"></div>
+
+        <div id="emptyState" class="empty-state hidden">
+          현재 조건에 맞는 문제가 없습니다. 검색어를 줄이거나 티어/주제/알고리즘 조건을 비워 보세요.
+        </div>
+
+        <div id="loadMoreWrap" class="button-row centered hidden">
+          <button id="loadMoreBtn" class="btn" type="button">더 보기</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Copyright © Kyungrok Park (ultrasuperrok@gmail.com)
+    </footer>
+  </div>
+
+  <script src="boj-archive-data.js"></script>
+  <script>
+    (function () {
+      const data = window.BOJ_ARCHIVE_DATA;
+      if (!data || !Array.isArray(data.problems)) return;
+
+      const fmt = new Intl.NumberFormat('ko-KR');
+      const pageSize = 100;
+      const elements = {
+        searchInput: document.getElementById('searchInput'),
+        tierSelect: document.getElementById('tierSelect'),
+        topicInput: document.getElementById('topicInput'),
+        algoInput: document.getElementById('algoInput'),
+        topicOptions: document.getElementById('topicOptions'),
+        algoOptions: document.getElementById('algoOptions'),
+        resultCount: document.getElementById('resultCount'),
+        resultNote: document.getElementById('resultNote'),
+        results: document.getElementById('results'),
+        emptyState: document.getElementById('emptyState'),
+        loadMoreWrap: document.getElementById('loadMoreWrap'),
+        loadMoreBtn: document.getElementById('loadMoreBtn')
+      };
+
+      let filtered = [];
+      let visibleCount = pageSize;
+
+      function normalize(value) {
+        return String(value || '')
+          .toLowerCase()
+          .replace(/\s+/g, '')
+          .replace(/[^\p{L}\p{N}]+/gu, '');
+      }
+
+      function escapeHtml(value) {
+        return String(value || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function tierBucket(tier) {
+        if (!tier) return '';
+        if (tier === 'Unrated' || tier === 'Not ratable') return tier;
+        return String(tier).split(' ')[0];
+      }
+
+      function formatPercent(value) {
+        if (value == null || Number.isNaN(Number(value))) return '-';
+        return Number(value).toFixed(1).replace(/\.0$/, '') + '%';
+      }
+
+      data.problems.forEach(problem => {
+        problem._bucket = tierBucket(problem.tier);
+        problem._search = normalize([
+          problem.id,
+          problem.title,
+          problem.tier,
+          problem.time_limit,
+          problem.memory_limit,
+          Array.isArray(problem.algorithms) ? problem.algorithms.join(' ') : '',
+          Array.isArray(problem.topics) ? problem.topics.join(' ') : ''
+        ].join(' '));
+        problem._topicsNormalized = (problem.topics || []).map(normalize);
+        problem._algorithmsNormalized = (problem.algorithms || []).map(normalize);
+      });
+
+      data.problems.sort((a, b) => a.id - b.id);
+
+      elements.topicOptions.innerHTML = data.allTopics
+        .map(item => `<option value="${escapeHtml(item.name)}"></option>`)
+        .join('');
+      elements.algoOptions.innerHTML = data.topAlgorithms
+        .concat((data.allAlgorithms || []).filter(item => !data.topAlgorithms.some(top => top.name === item.name)))
+        .map(item => `<option value="${escapeHtml(item.name)}"></option>`)
+        .join('');
+
+      function readStateFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        elements.searchInput.value = params.get('q') || '';
+        elements.tierSelect.value = params.get('tier') || '';
+        elements.topicInput.value = params.get('topic') || '';
+        elements.algoInput.value = params.get('algo') || '';
+      }
+
+      function writeStateToUrl() {
+        const params = new URLSearchParams();
+        const q = elements.searchInput.value.trim();
+        const tier = elements.tierSelect.value;
+        const topic = elements.topicInput.value.trim();
+        const algo = elements.algoInput.value.trim();
+
+        if (q) params.set('q', q);
+        if (tier) params.set('tier', tier);
+        if (topic) params.set('topic', topic);
+        if (algo) params.set('algo', algo);
+
+        const query = params.toString();
+        const next = `${window.location.pathname}${query ? '?' + query : ''}`;
+        history.replaceState(null, '', next);
+      }
+
+      function matchesAll(problem) {
+        const query = elements.searchInput.value.trim();
+        const topic = elements.topicInput.value.trim();
+        const algo = elements.algoInput.value.trim();
+        const tier = elements.tierSelect.value;
+        const queryTokens = query ? query.split(/\s+/).map(normalize).filter(Boolean) : [];
+
+        if (queryTokens.length && !queryTokens.every(token => problem._search.includes(token))) {
+          return false;
+        }
+        if (tier && problem._bucket !== tier && problem.tier !== tier) {
+          return false;
+        }
+        if (topic) {
+          const normalizedTopic = normalize(topic);
+          if (!problem._topicsNormalized.some(value => value.includes(normalizedTopic))) {
+            return false;
+          }
+        }
+        if (algo) {
+          const normalizedAlgo = normalize(algo);
+          if (!problem._algorithmsNormalized.some(value => value.includes(normalizedAlgo))) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function widthForSolved(value, maxValue) {
+        const numericValue = Number(value) || 0;
+        if (!numericValue || !maxValue) return 0;
+        return Math.max(2, (numericValue / maxValue) * 100);
+      }
+
+      function renderResults() {
+        const visible = filtered.slice(0, visibleCount);
+        const solvedMax = Math.max(...filtered.map(problem => Number(problem.solved) || 0), 1);
+
+        elements.results.innerHTML = visible.map(problem => {
+          const acceptanceWidth = Math.max(0, Math.min(100, Number(problem.acceptance_rate) || 0));
+          const solvedWidth = widthForSolved(problem.solved, solvedMax);
+          const tierGroup = problem._bucket || 'Unrated';
+
+          return `
+            <article class="result-row">
+              <div class="cell problem-cell" data-label="문제">
+                <a class="problem-link" href="${problem.url}" target="_blank" rel="noopener">
+                  <span class="problem-id">${problem.id}</span>
+                  <span class="problem-title">${escapeHtml(problem.title)}</span>
+                </a>
+                <div class="problem-meta">
+                  <span>${escapeHtml(problem.time_limit || '-')}</span>
+                  <span>${escapeHtml(problem.memory_limit || '-')}</span>
+                  <span>제출 ${fmt.format(problem.submissions || 0)}회</span>
+                </div>
+              </div>
+
+              <div class="cell tier-cell" data-label="티어">
+                <span class="tier-pill" data-group="${escapeHtml(tierGroup)}">${escapeHtml(problem.tier || '티어 없음')}</span>
+              </div>
+
+              <div class="cell metric-cell" data-label="정답률">
+                <div class="metric-top">
+                  <strong>${formatPercent(problem.acceptance_rate)}</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true">
+                  <span class="metric-fill accept" style="width:${acceptanceWidth}%"></span>
+                </div>
+              </div>
+
+              <div class="cell metric-cell" data-label="맞힌 사람">
+                <div class="metric-top">
+                  <strong>${fmt.format(problem.solved || 0)}명</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true">
+                  <span class="metric-fill solved" style="width:${solvedWidth}%"></span>
+                </div>
+              </div>
+
+              <div class="cell link-cell" data-label="링크">
+                <a class="open-link" href="${problem.url}" target="_blank" rel="noopener">열기</a>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        elements.emptyState.classList.toggle('hidden', filtered.length > 0);
+        elements.loadMoreWrap.classList.toggle('hidden', visibleCount >= filtered.length || filtered.length === 0);
+      }
+
+      function updateSummary() {
+        const total = filtered.length;
+        const shown = Math.min(visibleCount, total);
+        elements.resultCount.textContent = `${fmt.format(total)}개 문제`;
+
+        if (!total) {
+          elements.resultNote.textContent = '조건에 맞는 문제가 없습니다.';
+          return;
+        }
+
+        elements.resultNote.textContent = `${fmt.format(shown)}개 표시 중 · 전체 ${fmt.format(data.stats.finalUniqueProblems)}개 · 맞힌 사람 막대는 현재 결과 기준입니다.`;
+      }
+
+      function runSearch(resetPage) {
+        if (resetPage) visibleCount = pageSize;
+        writeStateToUrl();
+        filtered = data.problems.filter(matchesAll);
+        updateSummary();
+        renderResults();
+      }
+
+      elements.searchInput.addEventListener('input', () => runSearch(true));
+      elements.tierSelect.addEventListener('change', () => runSearch(true));
+      elements.topicInput.addEventListener('input', () => runSearch(true));
+      elements.algoInput.addEventListener('input', () => runSearch(true));
+      elements.loadMoreBtn.addEventListener('click', () => {
+        visibleCount += pageSize;
+        updateSummary();
+        renderResults();
+      });
+
+      readStateFromUrl();
+      runSearch(true);
+    })();
+  </script>
+</body>
+</html>
