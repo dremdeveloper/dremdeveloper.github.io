@@ -85,6 +85,11 @@
               <h2>Articles</h2>
               <p id="article-count-label">불러오는 중...</p>
             </div>
+            <div class="search-container article-search-container">
+              <label class="sr-only" for="article-search-input">아티클 검색</label>
+              <input id="article-search-input" class="article-search-input" type="search" placeholder="제목이나 카테고리로 빠르게 찾기" autocomplete="off" />
+              <div id="article-search-results" class="search-results" aria-label="검색 결과" hidden></div>
+            </div>
             <div id="article-list" class="menu-list" aria-label="Article 목록"></div>
           </div>
         </aside>
