@@ -497,11 +497,11 @@ p {
 
 .study-top-submenu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   right: 0;
-  min-width: 120px;
+  min-width: 188px;
   width: max-content;
-  padding: 6px 0 0;
+  padding: 0;
   background: transparent;
   border: 0;
   border-radius: 0;
@@ -524,31 +524,43 @@ p {
 }
 
 .study-submenu-roots {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  display: grid;
+  gap: 10px;
+  justify-items: stretch;
   width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(22, 28, 41, 0.98), rgba(15, 19, 29, 0.98));
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.34);
+  backdrop-filter: blur(18px);
 }
 
 .study-submenu-root {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  width: auto;
-  padding: 9px 12px;
-  border: 0;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.96);
-  color: var(--muted);
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.92), rgba(17, 24, 39, 0.92));
+  color: var(--text);
   text-align: left;
   cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: background var(--ease), color var(--ease);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.18);
+  white-space: nowrap;
+  transition: background var(--ease), color var(--ease), border-color var(--ease), transform var(--ease), box-shadow var(--ease);
 }
 
 .study-submenu-root:hover,
 .study-submenu-root.is-active {
-  color: var(--text);
+  color: var(--text-strong);
+  border-color: rgba(129, 140, 248, 0.46);
+  background: linear-gradient(180deg, rgba(49, 46, 129, 0.96), rgba(30, 41, 59, 0.96));
+  box-shadow: 0 16px 32px rgba(49, 46, 129, 0.24);
+  transform: translateY(-1px);
 }
 
 .study-submenu-root::after {
@@ -556,8 +568,12 @@ p {
 }
 
 .study-submenu-root-label {
-  font-weight: 600;
+  display: block;
+  font-weight: 700;
   font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .study-submenu-selector {
