@@ -25,6 +25,15 @@
   const defaultFile = config.defaultFile || '';
   const configuredFiles = Array.isArray(config.files) ? config.files : [];
   const configuredCategoryOrder = Array.isArray(config.categoryOrder) ? config.categoryOrder : [];
+  const categoryLabelMap = {
+    'AI 논문': 'AI 논문',
+    '생각정리': '생각',
+    '생각 정리': '생각',
+    '생각': '생각',
+    '유용한 지식 및 팁': '지식 정리',
+    '지식 정리': '지식 정리',
+    '트러블 슈팅': '트러블 슈팅'
+  };
 
   const contentsApiBaseUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
   const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}`;
@@ -83,11 +92,16 @@
       .trim();
   }
 
+  function normalizeCategoryLabel(category) {
+    const normalizedCategory = String(category || '').trim();
+    return categoryLabelMap[normalizedCategory] || normalizedCategory || '미분류';
+  }
+
   function buildArticleEntry(item) {
     const fileKey = normalizeFileKey(item.path || item.name || item.file || '');
     const safeFileName = fileKey.split('/').pop() || '';
     const categoryParts = fileKey.split('/').slice(1, -1);
-    const category = item.category || categoryParts.join(' / ') || '미분류';
+    const category = normalizeCategoryLabel(item.category || categoryParts.join(' / ') || '미분류');
     const encodedPath = encodePath(fileKey);
     const localPath = item.localPath || encodeURI(fileKey);
     const githubRawUrl = item.githubRawUrl || item.download_url || `${rawBaseUrl}/${encodedPath}`;
