@@ -359,12 +359,11 @@
     let placeholderIndex = 0;
 
     const createPlaceholder = (mathSource, isBlock = false) => {
-      const placeholder = isBlock
-        ? `<div class="math-placeholder" data-math-placeholder="${placeholderIndex}"></div>`
-        : `<span class="math-placeholder" data-math-placeholder="${placeholderIndex}"></span>`;
-      placeholders.push({ placeholder, mathSource });
+      const placeholderId = String(placeholderIndex);
+      const token = `CODEXMATHPLACEHOLDER${isBlock ? 'BLOCK' : 'INLINE'}${placeholderId}TOKEN`;
+      placeholders.push({ id: placeholderId, token, mathSource, isBlock });
       placeholderIndex += 1;
-      return placeholder;
+      return isBlock ? `\n\n${token}\n\n` : token;
     };
 
     const processSegment = (segment) => segment
@@ -482,18 +481,45 @@
       .join('');
   }
 
-  function restoreMathPlaceholders(html, placeholders) {
-    return placeholders.reduce(
-      (restoredHtml, entry) => restoredHtml.replace(entry.placeholder, entry.mathSource),
-      html
+  function restoreMathPlaceholdersInHtml(html, placeholders) {
+    return placeholders.reduce((restoredHtml, entry) => {
+      const placeholderMarkup = entry.isBlock
+        ? `<div class="math-placeholder" data-math-placeholder="${entry.id}"></div>`
+        : `<span class="math-placeholder" data-math-placeholder="${entry.id}"></span>`;
+
+      if (entry.isBlock) {
+        const wrappedTokenPattern = new RegExp(`<p>\\s*${entry.token}\\s*<\\/p>`, 'g');
+        return restoredHtml
+          .replace(wrappedTokenPattern, placeholderMarkup)
+          .replaceAll(entry.token, placeholderMarkup);
+      }
+
+      return restoredHtml.replaceAll(entry.token, placeholderMarkup);
+    }, html);
+  }
+
+  function restoreMathPlaceholders(rootNode, placeholders) {
+    if (!rootNode || !placeholders.length) return;
+
+    const placeholderMap = new Map(
+      placeholders.map((entry) => [entry.id, entry])
     );
+
+    rootNode.querySelectorAll('[data-math-placeholder]').forEach((node) => {
+      const entry = placeholderMap.get(node.getAttribute('data-math-placeholder'));
+      if (!entry) return;
+      const mathNode = document.createElement(entry.isBlock ? 'div' : 'span');
+      mathNode.className = entry.isBlock ? 'math-render-source math-render-source-block' : 'math-render-source';
+      mathNode.textContent = entry.mathSource;
+      node.replaceWith(mathNode);
+    });
   }
 
   function renderMarkdown(md) {
     const normalizedMarkdown = normalizeStandaloneMathBlocks(md);
     const { protectedMarkdown, placeholders } = protectMathSegments(normalizedMarkdown);
     const sanitizedHtml = DOMPurify.sanitize(marked.parse(protectedMarkdown));
-    return restoreMathPlaceholders(sanitizedHtml, placeholders);
+    return { html: restoreMathPlaceholdersInHtml(sanitizedHtml, placeholders), placeholders };
   }
 
   function setSearchResultsVisibility(isVisible) {
@@ -654,11 +680,13 @@
       const markdown = await fetchMarkdown(file);
       const sanitizedMarkdown = sanitizeMarkdown(markdown);
       const renderedTitle = extractTitle(sanitizedMarkdown, file.fileName || file.name);
+      const { html, placeholders } = renderMarkdown(sanitizedMarkdown);
       file.title = renderedTitle;
       renderList();
       updateSearchResults();
       updateSidebarCurrentLabel();
-      viewerNode.innerHTML = `<div id="article-content" class="article-container">${renderMarkdown(sanitizedMarkdown)}</div>`;
+      viewerNode.innerHTML = `<div id="article-content" class="article-container">${html}</div>`;
+      restoreMathPlaceholders(viewerNode, placeholders);
       viewerNode.hidden = false;
       statusNode.hidden = true;
       const title = document.querySelector('#article-viewer h1')?.innerText || renderedTitle || 'Article';
