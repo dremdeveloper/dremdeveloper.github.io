@@ -323,133 +323,13 @@
 
     .summary-item,
     .callout-box,
-    .menu-button,
-    .grammar-card,
-    .grammar-tip {
+    .menu-button {
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-color .18s ease;
     }
     .summary-item:hover,
-    .callout-box:hover,
-    .grammar-card:hover,
-    .grammar-tip:hover {
+    .callout-box:hover {
       transform: translateY(-2px);
       box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
-    }
-
-    .doc-enhancement {
-      margin: 28px 0 0;
-      padding: 22px;
-      border: 1px solid #d8e5f4;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(234, 242, 253, 0.72), rgba(255, 255, 255, 0.96));
-      overflow: hidden;
-    }
-    .doc-enhancement-head {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-    .doc-enhancement-copy {
-      flex: 1 1 320px;
-      min-width: 0;
-    }
-    .doc-enhancement-copy p:last-child { margin-bottom: 0; }
-    .doc-enhancement-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid #d7e2ef;
-      color: var(--primary);
-      font-size: .84rem;
-      font-weight: 800;
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
-      animation: badgeFloat 3.6s ease-in-out infinite;
-    }
-    .doc-enhancement-badge::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #0969da, #58a6ff);
-      box-shadow: 0 0 0 6px rgba(9, 105, 218, 0.08);
-    }
-    .grammar-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-    .grammar-card {
-      position: relative;
-      min-height: 100%;
-      padding: 18px;
-      border: 1px solid #d7e2ef;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: 0 14px 26px rgba(15, 23, 42, 0.05);
-      animation: cardFloat 5s ease-in-out infinite;
-    }
-    .grammar-card:nth-child(2n) { animation-delay: -.8s; }
-    .grammar-card:nth-child(3n) { animation-delay: -1.6s; }
-    .grammar-card h3 {
-      margin-bottom: 8px;
-      font-size: 1rem;
-    }
-    .grammar-card p {
-      margin-bottom: 12px;
-      color: var(--muted);
-      font-size: .95rem;
-      line-height: 1.78;
-    }
-    .grammar-chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .grammar-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: #eef4fb;
-      color: #345176;
-      font-size: .78rem;
-      font-weight: 800;
-    }
-    .grammar-card pre {
-      margin: 0;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-    .grammar-tips {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-    .grammar-tip {
-      padding: 14px 15px;
-      border: 1px solid #d7e2ef;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.84);
-    }
-    .grammar-tip strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: .92rem;
-    }
-    .grammar-tip p {
-      margin: 0;
-      color: var(--muted);
-      font-size: .9rem;
-      line-height: 1.72;
     }
 
     @keyframes docFadeUp {
@@ -462,29 +342,16 @@
         transform: translateY(0);
       }
     }
-    @keyframes badgeFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-    @keyframes cardFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
 
     @media (prefers-reduced-motion: reduce) {
-      .viewer-body.is-entering .doc-prose > *,
-      .doc-enhancement-badge,
-      .grammar-card {
+      .viewer-body.is-entering .doc-prose > * {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;
       }
       .summary-item,
       .callout-box,
-      .menu-button,
-      .grammar-card,
-      .grammar-tip {
+      .menu-button {
         transition: none;
       }
     }
@@ -496,10 +363,6 @@
     }
     @media (max-width: 720px) {
       .summary-grid { grid-template-columns: 1fr; }
-
-      .grammar-grid,
-      .grammar-tips { grid-template-columns: 1fr; }
-      .doc-enhancement { padding: 18px; }
 
       .viewer-head { padding: 18px 18px 16px; }
       .viewer-body { padding: 22px 16px 42px; }
@@ -543,138 +406,6 @@
     const viewerBody = document.getElementById('viewerBody');
 
 
-
-    const pythonBasicsCards = [
-      {
-        title: '입출력 + 언패킹',
-        chips: ['input()', 'map()', '*args'],
-        description: '대량 입력과 여러 값 언패킹은 코테 초반 속도를 좌우합니다. 입력 형식을 읽는 순간 한 줄 템플릿으로 바로 연결되도록 익혀 두세요.',
-        code: `import sys
-input = sys.stdin.readline
-
-n, m = map(int, input().split())
-nums = list(map(int, input().split()))
-first, *middle, last = nums`
-      },
-      {
-        title: '조건식 + 컴프리헨션',
-        chips: ['if/elif', 'comprehension', 'filter'],
-        description: '짧게 쓰는 것이 목적이 아니라, 상태 변환을 한 줄로 안전하게 표현하는 것이 핵심입니다. 조건이 두 번 이상 꼬이면 일반 for문으로 되돌아가는 기준도 같이 가져가세요.',
-        code: `scores = [88, 71, 96, 65]
-passed = [score for score in scores if score >= 80]
-label = 'pass' if len(passed) >= 2 else 'review'`
-      },
-      {
-        title: 'dict / set / Counter',
-        chips: ['hash', 'counting', 'membership'],
-        description: '빈도 계산, 중복 제거, 빠른 존재 여부 확인은 거의 매 주차 반복됩니다. list로 가능한 문제라도 해시 구조로 바꾸면 설계가 단순해지는지 먼저 따져 보세요.',
-        code: `from collections import Counter
-
-words = ['a', 'b', 'a', 'c']
-count = Counter(words)
-unique = set(words)
-lookup = {word: idx for idx, word in enumerate(unique)}`
-      },
-      {
-        title: '정렬 + key 함수',
-        chips: ['sort()', 'sorted()', 'lambda'],
-        description: '문자열 길이, 튜플 우선순위, 다중 조건 정렬은 코테에서 빠지지 않습니다. 원본 유지가 필요하면 sorted, 제자리 정렬이면 sort를 택하는 습관을 들이세요.',
-        code: `students = [('kim', 2, 91), ('lee', 1, 91), ('park', 3, 84)]
-students.sort(key=lambda x: (-x[2], x[1], x[0]))
-# 점수 내림차순 -> 반 오름차순 -> 이름 오름차순`
-      },
-      {
-        title: 'deque / heapq',
-        chips: ['BFS', 'queue', 'priority queue'],
-        description: '큐는 deque, 우선순위 기반 선택은 heapq로 바로 연결되는 경우가 많습니다. list.pop(0)처럼 비효율적인 연산을 피하는 기준까지 함께 외워 두면 좋습니다.',
-        code: `from collections import deque
-import heapq
-
-queue = deque([1])
-queue.append(2)
-front = queue.popleft()
-
-heap = []
-heapq.heappush(heap, (3, 'task'))
-priority, task = heapq.heappop(heap)`
-      },
-      {
-        title: '반복문 + enumerate / zip',
-        chips: ['enumerate', 'zip', 'parallel scan'],
-        description: '인덱스가 필요한지, 두 배열을 나란히 볼지 먼저 정하면 반복문 실수를 크게 줄일 수 있습니다. 오프바이원 오류를 줄이는 데도 매우 효과적입니다.',
-        code: `a = [2, 4, 6]
-b = [1, 3, 5]
-
-for idx, value in enumerate(a):
-    print(idx, value)
-
-for left, right in zip(a, b):
-    print(left + right)`
-      }
-    ];
-
-    const pythonBasicsTips = [
-      {
-        title: '기억 기준 1',
-        body: '문법 자체를 외우기보다 “어떤 입력/상태에서 꺼내 쓰는지”를 문제 상황과 함께 기억하면 실전에서 훨씬 빨리 떠오릅니다.'
-      },
-      {
-        title: '기억 기준 2',
-        body: '한 줄 코드가 길어지면 디버깅이 어려워집니다. 컴프리헨션과 lambda는 짧고 명확할 때만 쓰고, 아니면 평범한 반복문으로 분해하세요.'
-      },
-      {
-        title: '기억 기준 3',
-        body: 'deque, heapq, Counter처럼 자주 쓰는 표준 라이브러리는 손으로 2~3번 다시 입력해 두면 구현 속도 차이가 크게 납니다.'
-      }
-    ];
-
-    function createPythonBasicsSection() {
-      const section = document.createElement('section');
-      section.className = 'doc-enhancement';
-      section.innerHTML = `
-        <div class="doc-enhancement-head">
-          <div class="doc-enhancement-copy">
-            <p class="eyebrow">꼭 알아야 할 파이썬 기본 문법</p>
-            <h2 class="section-heading" style="margin:0 0 10px; padding-top:0; border-top:0;">실전에서 바로 꺼내 쓰는 핵심 문법 카드</h2>
-            <p class="lead" style="margin:0; font-size:1rem;">기존 주차별 학습 흐름은 유지하되, 1주차 시작 문서 안에서 가장 자주 쓰는 파이썬 문법을 한 번 더 빠르게 훑을 수 있도록 요약 카드를 추가했습니다.</p>
-          </div>
-          <span class="doc-enhancement-badge">Subtle Motion Enabled</span>
-        </div>
-        <div class="grammar-grid">
-          ${pythonBasicsCards.map((card) => `
-            <article class="grammar-card">
-              <div class="grammar-chip-row">${card.chips.map((chip) => `<span class="grammar-chip">${chip}</span>`).join('')}</div>
-              <h3>${card.title}</h3>
-              <p>${card.description}</p>
-              <pre><code>${card.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
-            </article>
-          `).join('')}
-        </div>
-        <div class="grammar-tips">
-          ${pythonBasicsTips.map((tip) => `
-            <article class="grammar-tip">
-              <strong>${tip.title}</strong>
-              <p>${tip.body}</p>
-            </article>
-          `).join('')}
-        </div>
-      `;
-      return section;
-    }
-
-    function enhanceLessonContent(lesson) {
-      if (lesson.id !== 'w1-a01') return;
-      const docRoot = viewerBody.querySelector('.doc-prose');
-      if (!docRoot || docRoot.querySelector('.doc-enhancement')) return;
-      const sectionHeadings = Array.from(docRoot.querySelectorAll('.section-heading'));
-      const targetHeading = sectionHeadings.find((heading) => heading.textContent.includes('학습 목표'));
-      const enhancement = createPythonBasicsSection();
-      if (targetHeading) {
-        targetHeading.insertAdjacentElement('beforebegin', enhancement);
-        return;
-      }
-      docRoot.appendChild(enhancement);
-    }
 
     function triggerViewerAnimation() {
       viewerBody.classList.remove('is-entering');
@@ -956,7 +687,6 @@ for left, right in zip(a, b):
       currentId = lesson.id;
       viewerTitle.textContent = lesson.displayTitle;
       viewerBody.innerHTML = docs[lesson.id] || '<div class="doc-prose"><p class="doc-empty">문서를 불러오지 못했습니다.</p></div>';
-      enhanceLessonContent(lesson);
       linkifyRepoReferences(viewerBody);
       linkifyProblemReferences(viewerBody);
       triggerViewerAnimation();
