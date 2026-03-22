@@ -5338,6 +5338,20 @@ function exposePublicApi() {
     `;
   }
 
+  function getEmbedDocumentHeight() {
+    const appShell = document.querySelector('.app-shell');
+    if (appShell) {
+      return Math.ceil(appShell.getBoundingClientRect().height);
+    }
+
+    const body = document.body;
+    const root = document.documentElement;
+    return Math.ceil(Math.max(
+      body ? body.offsetHeight : 0,
+      root ? root.offsetHeight : 0,
+    ));
+  }
+
   function renderStep() {
     const scenario = getCurrentScenario();
     const step = scenario.steps[APP.stepIndex];
@@ -5352,7 +5366,7 @@ function exposePublicApi() {
     try {
       window.parent && window.parent !== window && window.parent.postMessage({
         type: 'kp-visualizer-height',
-        height: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight),
+        height: getEmbedDocumentHeight(),
         scenario: APP.currentScenario,
       }, '*');
     } catch (error) {
