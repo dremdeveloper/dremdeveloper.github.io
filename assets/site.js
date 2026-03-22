@@ -4,7 +4,6 @@
 
   const menuToggle = document.querySelector('.menu-toggle');
   const siteNav = document.querySelector('.site-nav');
-  const visualizationToggle = document.getElementById('study-visualization-toggle');
   const desktopMediaQuery = window.matchMedia('(min-width: 861px)');
   const dropdownConfigs = [
     {
@@ -45,7 +44,7 @@
     });
   }
 
-  if (visualizationToggle || dropdownConfigs.length === 0) return;
+  if (dropdownConfigs.length === 0) return;
 
   const closeTimers = new Map();
 
@@ -74,6 +73,7 @@
   dropdownConfigs.forEach(({ item, toggle }) => {
     toggle.addEventListener('click', (event) => {
       event.preventDefault();
+      event.stopPropagation();
       const nextOpen = !item.classList.contains('is-open');
       clearCloseTimer(item);
       setDropdownOpen(item, nextOpen);

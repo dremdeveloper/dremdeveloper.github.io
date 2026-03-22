@@ -113,7 +113,7 @@ button:hover {
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 }
 .site-nav a {
   display: inline-flex;
@@ -446,7 +446,7 @@ p {
   flex: 1;
   justify-content: flex-end;
   align-items: flex-start;
-  gap: 4px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -507,9 +507,10 @@ p {
 .site-top-submenu,
 .study-top-submenu {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 164px;
+  top: calc(100% + 10px);
+  left: 0;
+  right: auto;
+  min-width: 184px;
   width: max-content;
   padding: 0;
   background: transparent;
@@ -521,6 +522,7 @@ p {
   pointer-events: none;
   transform: translateY(-4px);
   transition: opacity var(--ease), transform var(--ease), visibility var(--ease);
+  z-index: 30;
 }
 
 .site-nav-dropdown:hover .site-top-submenu,
@@ -539,6 +541,7 @@ p {
 .site-submenu-roots,
 .study-submenu-roots {
   display: grid;
+  grid-auto-flow: row;
   gap: 8px;
   justify-items: stretch;
   width: 100%;
