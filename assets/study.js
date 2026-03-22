@@ -4,12 +4,15 @@
   const scenarioSelect = document.getElementById('study-scenario-select');
   const visualizationToggle = document.getElementById('study-visualization-toggle');
   const learningPlanToggle = document.getElementById('study-learning-plan-toggle');
+  const solutionsToggle = document.getElementById('study-solutions-toggle');
   const toolbarTitleNode = document.getElementById('study-toolbar-title');
   const visualizationPanel = document.getElementById('study-visualization-panel');
   const learningPlanPanel = document.getElementById('study-learning-plan-panel');
+  const solutionsPanel = document.getElementById('study-solutions-panel');
   const selectorCard = document.getElementById('study-selector-card');
   const planMenuRoot = document.getElementById('study-plan-menu');
   const planFrame = document.getElementById('study-plan-frame');
+  const solutionsFrame = document.getElementById('study-solutions-frame');
   const submenuPanel = document.getElementById('study-top-submenu');
   const submenuToggle = document.getElementById('study-nav-toggle');
 
@@ -20,7 +23,7 @@
     ? window.siteData.studyPlans.filter((plan) => Array.isArray(plan.files) && plan.files.length)
     : [];
 
-  if (!studyMaterials.length && !studyPlans.length) return;
+  if (!studyMaterials.length && !studyPlans.length && !solutionsToggle) return;
 
   let currentMaterialKey = '';
   let currentGroupKey = '';
@@ -34,6 +37,7 @@
   let boundFrameWindow = null;
   let hasLoadedVisualization = false;
   let hasLoadedPlan = false;
+  let hasLoadedSolutions = false;
   let pendingScrollAnchorTop = null;
   let pendingScrollAnchorTimeout = null;
   let pendingPlanScrollAnchorTop = null;
@@ -46,6 +50,7 @@
     const normalizedValue = String(value).trim().toLowerCase();
     if (['visualization', 'visual', 'viz'].includes(normalizedValue)) return 'visualization';
     if (['plan', 'learning-plan', 'learning_plan'].includes(normalizedValue)) return 'plan';
+    if (['solutions', 'solution', 'study-solutions'].includes(normalizedValue)) return 'solutions';
     return '';
   }
 
@@ -182,6 +187,12 @@
       learningPlanPanel.hidden = true;
     }
 
+    if (solutionsToggle && solutionsPanel && isExpanded) {
+      solutionsToggle.classList.remove('is-active');
+      solutionsToggle.setAttribute('aria-expanded', 'false');
+      solutionsPanel.hidden = true;
+    }
+
     if (!isExpanded) return;
     if (!studyMaterials.length) return;
 
@@ -209,6 +220,12 @@
       visualizationPanel.hidden = true;
     }
 
+    if (solutionsToggle && solutionsPanel && isExpanded) {
+      solutionsToggle.classList.remove('is-active');
+      solutionsToggle.setAttribute('aria-expanded', 'false');
+      solutionsPanel.hidden = true;
+    }
+
     if (!isExpanded) return;
     if (!studyPlans.length) return;
 
@@ -219,6 +236,38 @@
       loadPlanFile(true);
       hasLoadedPlan = true;
     }
+  }
+
+
+  function setSolutionsExpanded(isExpanded) {
+    if (!solutionsToggle || !solutionsPanel) return;
+
+    solutionsToggle.classList.toggle('is-active', isExpanded);
+    solutionsToggle.setAttribute('aria-expanded', String(isExpanded));
+    solutionsPanel.hidden = !isExpanded;
+
+    if (visualizationToggle && visualizationPanel && isExpanded) {
+      visualizationToggle.classList.remove('is-active');
+      visualizationToggle.setAttribute('aria-expanded', 'false');
+      visualizationPanel.hidden = true;
+    }
+
+    if (learningPlanToggle && learningPlanPanel && isExpanded) {
+      learningPlanToggle.classList.remove('is-active');
+      learningPlanToggle.setAttribute('aria-expanded', 'false');
+      learningPlanPanel.hidden = true;
+    }
+
+    if (!isExpanded) return;
+
+    updateViewQuery('solutions');
+    if (!hasLoadedSolutions) {
+      loadSolutions(true);
+      hasLoadedSolutions = true;
+      return;
+    }
+
+    syncSolutionsFrameHeight();
   }
 
   function renderSelectors() {
@@ -754,6 +803,28 @@
     setFrameHeight(planFrame, nextHeight, restorePlanScrollAnchor);
   }
 
+  function loadSolutions(forceReload = false) {
+    if (!solutionsFrame) return;
+
+    const frameUrl = 'code-solution-hub/study-solutions.html?embed=1';
+    if (forceReload || solutionsFrame.dataset.loaded !== 'true') {
+      solutionsFrame.src = frameUrl;
+      solutionsFrame.dataset.loaded = 'true';
+      return;
+    }
+
+    syncSolutionsFrameHeight();
+  }
+
+  function syncSolutionsFrameHeight() {
+    if (!solutionsFrame) return;
+
+    const nextHeight = getEmbeddedFrameContentHeight(solutionsFrame);
+    if (!nextHeight) return;
+
+    setFrameHeight(solutionsFrame, nextHeight);
+  }
+
   function toggleSubmenu(forceOpen) {
     if (!submenuToggle) return;
     const shouldOpen = typeof forceOpen === 'boolean'
@@ -811,6 +882,14 @@
     learningPlanToggle.addEventListener('click', () => {
       const shouldExpand = learningPlanToggle.getAttribute('aria-expanded') !== 'true';
       setLearningPlanExpanded(shouldExpand);
+      if (shouldExpand) toggleSubmenu(false);
+    });
+  }
+
+  if (solutionsToggle) {
+    solutionsToggle.addEventListener('click', () => {
+      const shouldExpand = solutionsToggle.getAttribute('aria-expanded') !== 'true';
+      setSolutionsExpanded(shouldExpand);
       if (shouldExpand) toggleSubmenu(false);
     });
   }
@@ -873,6 +952,14 @@
     });
   }
 
+  if (solutionsFrame) {
+    solutionsFrame.addEventListener('load', () => {
+      syncSolutionsFrameHeight();
+      window.setTimeout(syncSolutionsFrameHeight, 80);
+      window.setTimeout(syncSolutionsFrameHeight, 220);
+    });
+  }
+
   window.addEventListener('message', (event) => {
     const data = event.data;
     if (!data || typeof data !== 'object') return;
@@ -894,11 +981,17 @@
       currentPlanFileId = currentInfo.lesson?.id || currentInfo.file.id;
       expandedPlanWeek = findPlanWeekByFileId(currentPlanFileId) || expandedPlanWeek;
       renderPlanMenu();
+      return;
+    }
+
+    if (data.type === 'kp-study-solutions-height' && solutionsFrame && typeof data.height === 'number' && data.height > 0) {
+      setFrameHeight(solutionsFrame, data.height);
     }
   });
 
   window.addEventListener('resize', () => {
     if (hasLoadedPlan) syncPlanFrameHeight();
+    if (hasLoadedSolutions) syncSolutionsFrameHeight();
   });
 
   if (!studyMaterials.length && visualizationToggle) {
@@ -910,17 +1003,24 @@
   }
 
   const initialView = normalizeRequestedView(requestedView);
-  const defaultView = studyMaterials.length ? 'visualization' : (studyPlans.length ? 'plan' : '');
+  const defaultView = studyMaterials.length ? 'visualization' : (studyPlans.length ? 'plan' : (solutionsToggle ? 'solutions' : ''));
   const activeInitialView = initialView || defaultView;
 
   if (activeInitialView === 'plan' && studyPlans.length) {
     setVisualizationExpanded(false);
+    setSolutionsExpanded(false);
     setLearningPlanExpanded(true);
+  } else if (activeInitialView === 'solutions' && solutionsToggle) {
+    setVisualizationExpanded(false);
+    setLearningPlanExpanded(false);
+    setSolutionsExpanded(true);
   } else if (activeInitialView === 'visualization' && studyMaterials.length) {
     setLearningPlanExpanded(false);
+    setSolutionsExpanded(false);
     setVisualizationExpanded(true);
   } else {
     setVisualizationExpanded(false);
     setLearningPlanExpanded(false);
+    setSolutionsExpanded(false);
   }
 })();
