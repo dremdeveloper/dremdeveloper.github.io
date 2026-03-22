@@ -1845,6 +1845,10 @@ body {
   animation: sceneFadeSoft 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.scene-stable {
+  animation: none;
+}
+
 .visual-guide {
   border-radius: 18px;
   border: 1px solid rgba(99, 164, 255, 0.22);
@@ -4865,6 +4869,10 @@ body {
       return true;
     }
 
+    function formatRowStack() {
+      return callStack.length ? callStack.map((stackRow) => `row ${stackRow}`).join(' → ') : '비어 있음';
+    }
+
     function push(lines, title, summary, detail, row, col, safe, solutionFound) {
       steps.push(createStep({
         lines,
@@ -4875,7 +4883,7 @@ body {
           metric('현재 row', row === null ? '없음' : row),
           metric('현재 col', col === null ? '없음' : col),
           metric('배치 상태', board.map((queenCol, queenRow) => queenCol === -1 ? `r${queenRow}: -` : `r${queenRow}: c${queenCol}`).join('\n')),
-          metric('호출 스택', callStack.length ? callStack.join(' → ') : '비어 있음'),
+          metric('호출 스택', formatRowStack()),
         ],
         visual: {
           size: n,
@@ -4890,7 +4898,7 @@ body {
     }
 
     function solve(row) {
-      callStack.push(`row ${row}`);
+      callStack.push(row);
       push([1], '행 진입', `${row}번째 행에 퀸을 둘 위치를 찾습니다.`, '한 행에 퀸 하나만 두고, 충돌하면 다음 열을 시도하거나 이전 행으로 되돌아갑니다.', row, null, null, false);
 
       if (row === n) {
@@ -7240,6 +7248,16 @@ function visualHint(scenario, step) {
   return '현재 강조된 요소와 화살표를 따라가면 이번 단계에서 어디를 보고, 다음에 어디로 이동하는지 바로 확인할 수 있습니다.';
 }
 
+function getSceneMotionClass(renderer, visual = {}) {
+  if (Array.isArray(visual.stack) || Array.isArray(visual.callStack) || visual.structureType === 'stack') {
+    return 'scene-stable';
+  }
+  if (renderer === 'tree-traversal' || renderer === 'factorial-recursion' || renderer === 'recursion' || renderer === 'pruning-tree' || renderer === 'nqueen') {
+    return 'scene-stable';
+  }
+  return 'scene-fade';
+}
+
 function renderSortingVisual(visual, renderer, step) {
   const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
   const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
@@ -7274,7 +7292,7 @@ function renderSortingVisual(visual, renderer, step) {
   }
 
   return `
-    <div class="sort-layout scene-fade">
+    <div class="sort-layout ${getSceneMotionClass(renderer, visual)}">
       ${renderDirectionStrip(infoCards)}
       ${renderArrayTable(visual.items, {
         title: '배열 상태',
@@ -7302,7 +7320,7 @@ function renderCountingVisual(visual, step) {
     { tag: 'output', label: visual.output.length ? `현재 길이 ${visual.output.length}` : '아직 비어 있음', tone: 'good' },
   ];
   return `
-    <div class="count-layout scene-fade">
+    <div class="count-layout ${getSceneMotionClass('counting', visual)}">
       ${renderDirectionStrip(cards)}
       ${renderArrayTable(visual.input, {
         title: '입력 배열',
@@ -7340,7 +7358,7 @@ function renderGraphVisual(visual, step) {
   ];
 
   return `
-    <div class="graph-layout scene-fade">
+    <div class="graph-layout ${getSceneMotionClass('graph', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="graph-stage compact-stage">
         <svg viewBox="0 0 460 220" role="img" aria-label="graph">
@@ -7416,7 +7434,7 @@ function renderTreeSearchVisual(visual, step) {
   ];
 
   return `
-    <div class="tree-layout scene-fade">
+    <div class="tree-layout ${getSceneMotionClass('tree-search', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="tree-stage compact-stage">
         <svg viewBox="0 0 600 410" role="img" aria-label="tree-search">
@@ -7480,7 +7498,7 @@ function renderTreeTraversalVisual(visual, step) {
   ];
 
   return `
-    <div class="tree-layout scene-fade">
+    <div class="tree-layout ${getSceneMotionClass('tree-traversal', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="tree-stage compact-stage">
         <svg viewBox="0 0 600 320" role="img" aria-label="traversal-tree">
@@ -7658,7 +7676,7 @@ function renderPruningTreeVisual(visual, step) {
   ];
 
   return `
-    <div class="recursion-layout pruning-layout scene-fade">
+    <div class="recursion-layout pruning-layout ${getSceneMotionClass('pruning-tree', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="recursion-stage compact-stage pruning-stage">
         <svg viewBox="0 0 ${fitted.width} ${fitted.height}" role="img" aria-label="pruning-tree">
@@ -7738,7 +7756,7 @@ function renderNQueenVisual(visual, step) {
   }).join('')).join('');
 
   return `
-    <div class="nqueen-layout scene-fade">
+    <div class="nqueen-layout ${getSceneMotionClass('nqueen', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="board-frame">
         <div class="board-grid">${board}</div>
@@ -7775,7 +7793,7 @@ function renderHeapVisual(visual, step) {
     { tag: '정렬 결과', label: visual.output.length ? fmtArray(visual.output) : '아직 없음', tone: 'good' },
   ];
   return `
-    <div class="heap-layout scene-fade">
+    <div class="heap-layout ${getSceneMotionClass('heap-sort', visual)}">
       ${renderDirectionStrip(cards)}
       <div class="heap-stage compact-stage">
         ${visual.heap.length ? `
