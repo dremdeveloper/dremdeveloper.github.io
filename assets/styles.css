@@ -1136,6 +1136,7 @@ p {
 
 .lecture-layout {
   align-items: start;
+  grid-template-columns: minmax(312px, 372px) minmax(0, 1fr);
 }
 .track-switch {
   display: grid;
@@ -1164,20 +1165,21 @@ p {
 .sidebar-meta p { margin: 0; }
 .menu-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
   max-height: 640px;
   overflow: auto;
-  padding-right: 4px;
+  padding-right: 8px;
 }
 .menu-item {
   width: 100%;
   text-align: left;
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
-  padding: 12px 12px 13px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px 15px;
+  min-height: 58px;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: #fff;
@@ -1196,8 +1198,8 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  min-height: 28px;
+  width: 42px;
+  min-height: 30px;
   border-radius: 8px;
   background: #fff;
   border: 1px solid var(--line-soft);
@@ -1219,10 +1221,10 @@ p {
   min-width: 0;
   width: 100%;
   white-space: normal;
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.94rem;
+  line-height: 1.45;
   overflow-wrap: anywhere;
-  word-break: break-word;
+  word-break: keep-all;
 }
 
 .summary-topline {
