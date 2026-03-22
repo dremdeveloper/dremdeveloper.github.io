@@ -1161,7 +1161,7 @@ p {
   grid-template-columns: 36px minmax(0, 1fr);
   gap: 10px;
   align-items: start;
-  padding: 12px;
+  padding: 12px 12px 13px;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: #fff;
@@ -1193,12 +1193,14 @@ p {
 .menu-item-copy {
   display: grid;
   min-width: 0;
+  align-content: center;
+  padding-block: 1px 2px;
 }
 .menu-item-copy strong {
   display: block;
   min-width: 0;
   font-size: 0.92rem;
-  line-height: 1.4;
+  line-height: 1.5;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -2305,7 +2307,8 @@ textarea:disabled {
 
 .menu-item {
   grid-template-columns: 40px minmax(0, 1fr);
-  padding: 13px 14px;
+  align-items: start;
+  padding: 14px 14px 15px;
   border-radius: 14px;
   background: rgba(18, 23, 34, 0.98);
 }
