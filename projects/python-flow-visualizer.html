@@ -911,23 +911,23 @@ svg {
 .call-node text {
   fill: #f8fbff;
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 700;
   text-anchor: middle;
   dominant-baseline: central;
   paint-order: stroke;
-  stroke: rgba(7, 16, 30, 0.72);
-  stroke-width: 3px;
+  stroke: rgba(7, 16, 30, 0.56);
+  stroke-width: 1.6px;
   stroke-linejoin: round;
 }
 
 .call-node .result-text {
   font-size: 11px;
-  fill: #d9e7ff;
-  font-weight: 700;
+  fill: #e6f0ff;
+  font-weight: 600;
   dominant-baseline: hanging;
   paint-order: stroke;
-  stroke: rgba(7, 16, 30, 0.72);
-  stroke-width: 2px;
+  stroke: rgba(7, 16, 30, 0.48);
+  stroke-width: 1.2px;
 }
 
 .graph-node.frontier circle,
@@ -1083,9 +1083,9 @@ svg {
 
 .board-cell.candidate {
   box-shadow:
-    inset 0 0 0 100vmax rgba(255, 191, 95, 0.16),
-    0 0 0 3px rgba(255, 191, 95, 0.12);
-  border-color: rgba(255, 191, 95, 0.46);
+    inset 0 0 0 100vmax rgba(255, 107, 129, 0.18),
+    0 0 0 3px rgba(255, 107, 129, 0.18);
+  border: 3px solid rgba(255, 107, 129, 0.92);
 }
 
 @media (max-width: 1400px) {
@@ -1522,7 +1522,7 @@ body {
 
 /* v4 clarity upgrades */
 .scene-fade {
-  animation: sceneFade 0.28s ease;
+  animation: none;
 }
 
 @keyframes sceneFade {
@@ -1651,7 +1651,10 @@ body {
 
 .stack-slot.current-slot,
 .queue-slot.front-slot {
-  box-shadow: inset 0 0 0 1px rgba(255, 191, 95, 0.2);
+  border-width: 3px;
+  border-color: rgba(255, 107, 129, 0.94);
+  background: linear-gradient(180deg, rgba(255, 107, 129, 0.16), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(255, 107, 129, 0.2), 0 0 0 2px rgba(255, 107, 129, 0.12);
 }
 
 .stack-slot.focus-slot,
@@ -1662,10 +1665,10 @@ body {
 
 .stack-slot.focus-slot,
 .queue-slot.focus-slot {
-  background: linear-gradient(180deg, rgba(99, 164, 255, 0.1), rgba(255, 255, 255, 0.06));
+  background: linear-gradient(180deg, rgba(99, 164, 255, 0.08), rgba(255, 255, 255, 0.05));
   box-shadow:
-    inset 0 0 0 1px rgba(99, 164, 255, 0.16),
-    0 0 0 3px rgba(99, 164, 255, 0.08);
+    inset 0 0 0 1px rgba(99, 164, 255, 0.12),
+    0 0 0 2px rgba(99, 164, 255, 0.06);
 }
 
 .stack-slot.empty,
@@ -1744,7 +1747,7 @@ body {
 .svg-badge text {
   fill: var(--text);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   text-anchor: middle;
   dominant-baseline: central;
 }
@@ -1842,7 +1845,7 @@ body {
 
 /* v5 calm visual updates */
 .scene-fade {
-  animation: sceneFadeSoft 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: none;
 }
 
 .scene-stable {
@@ -2089,26 +2092,20 @@ body {
 .array-cell.comparing,
 .stack-slot.current-slot,
 .queue-slot.front-slot,
-.factorial-card.current {
-  animation: focusPulse 1.6s ease-in-out infinite;
-  transform-origin: center;
-}
-
+.factorial-card.current,
 .graph-node.frontier circle,
 .tree-node.path circle,
 .call-node.waiting circle,
 .array-cell.key,
+.array-cell.pivot,
+.array-cell.fixed,
 .queue-slot.rear-slot,
 .factorial-card.waiting,
-.heap-node.checking circle {
-  animation: supportPulse 2.2s ease-in-out infinite;
-  transform-origin: center;
-}
-
+.heap-node.checking circle,
 .array-cell.shifted,
 .heap-node.swap circle,
 .call-node.split circle {
-  animation: alertPulse 1.05s ease-in-out infinite;
+  animation: none;
   transform-origin: center;
 }
 
@@ -2352,24 +2349,31 @@ body {
 }
 
 .array-cell.current {
-  border-width: 3px;
-  border-color: rgba(255, 191, 95, 0.82);
-  background: rgba(255, 191, 95, 0.08);
-  box-shadow: inset 0 0 0 2px rgba(255, 191, 95, 0.2), 0 0 0 2px rgba(255, 191, 95, 0.16);
+  border-width: 4px;
+  border-color: rgba(255, 107, 129, 0.96);
+  background: linear-gradient(180deg, rgba(255, 107, 129, 0.16), rgba(255, 191, 95, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(255, 107, 129, 0.34), 0 0 0 2px rgba(255, 107, 129, 0.12);
 }
 
 .array-cell.comparing {
   border-width: 3px;
-  border-color: rgba(255, 191, 95, 0.72);
-  background: rgba(255, 191, 95, 0.06);
-  box-shadow: inset 0 0 0 2px rgba(255, 191, 95, 0.16), 0 0 0 2px rgba(255, 191, 95, 0.1);
+  border-color: rgba(255, 191, 95, 0.76);
+  background: rgba(255, 191, 95, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 191, 95, 0.18), 0 0 0 1px rgba(255, 191, 95, 0.08);
 }
 
 .array-cell.key {
   border-width: 3px;
-  border-color: rgba(124, 92, 255, 0.75);
-  background: rgba(124, 92, 255, 0.07);
-  box-shadow: inset 0 0 0 2px rgba(124, 92, 255, 0.16), 0 0 0 2px rgba(124, 92, 255, 0.1);
+  border-color: rgba(90, 215, 255, 0.82);
+  background: rgba(90, 215, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(90, 215, 255, 0.18), 0 0 0 1px rgba(90, 215, 255, 0.08);
+}
+
+.array-cell.pivot {
+  border-width: 3px;
+  border-color: rgba(124, 92, 255, 0.86);
+  background: rgba(124, 92, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.2), 0 0 0 1px rgba(124, 92, 255, 0.08);
 }
 
 .array-cell.shifted {
@@ -2379,12 +2383,25 @@ body {
   box-shadow: inset 0 0 0 2px rgba(255, 107, 129, 0.16), 0 0 0 2px rgba(255, 107, 129, 0.1);
 }
 
-.array-cell.done,
+.array-cell.done {
+  border-width: 4px;
+  border-color: rgba(255, 107, 129, 0.9);
+  background: rgba(255, 107, 129, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 107, 129, 0.18), 0 0 0 2px rgba(255, 107, 129, 0.08);
+}
+
 .array-cell.success {
   border-width: 3px;
   border-color: rgba(50, 213, 131, 0.72);
   background: rgba(50, 213, 131, 0.08);
-  box-shadow: inset 0 0 0 2px rgba(50, 213, 131, 0.14), 0 0 0 2px rgba(50, 213, 131, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(50, 213, 131, 0.16), 0 0 0 1px rgba(50, 213, 131, 0.08);
+}
+
+.array-cell.fixed {
+  border-width: 4px;
+  border-color: rgba(255, 107, 129, 0.9);
+  background: rgba(255, 107, 129, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 107, 129, 0.18), 0 0 0 2px rgba(255, 107, 129, 0.08);
 }
 
 .array-cell.candidate {
@@ -2426,6 +2443,8 @@ body {
 .array-cell.current,
 .array-cell.comparing,
 .array-cell.key,
+.array-cell.pivot,
+.array-cell.fixed,
 .array-cell.shifted,
 .array-cell.done,
 .array-cell.success,
@@ -2433,7 +2452,7 @@ body {
 .array-cell.danger,
 .array-cell.front,
 .array-cell.rear {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-1px);
 }
 
 .workspace-box .array-table-panel {
@@ -2605,12 +2624,12 @@ body {
 .heap-node text {
   fill: #f8fbff;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   text-anchor: middle;
   dominant-baseline: central;
   paint-order: stroke;
-  stroke: rgba(7, 16, 30, 0.78);
-  stroke-width: 3px;
+  stroke: rgba(7, 16, 30, 0.56);
+  stroke-width: 1.6px;
   stroke-linejoin: round;
 }
 
@@ -2618,8 +2637,8 @@ body {
   font-size: 10px;
   fill: #d7e3fb;
   dominant-baseline: hanging;
-  stroke: rgba(7, 16, 30, 0.72);
-  stroke-width: 2px;
+  stroke: rgba(7, 16, 30, 0.46);
+  stroke-width: 1px;
 }
 
 .heap-node.current circle {
@@ -5263,7 +5282,7 @@ body {
           currentNodeId,
           callStack: stack.slice(),
           recursionKind: 'fibonacci',
-          explanation: 'fib(n)은 n번째 피보나치 수를 뜻하며, fib(n-1)과 fib(n-2)를 더해 만듭니다.',
+          explanation: 'fib(n)은 n번째 피보나치 수입니다. 기저값은 fib(0)=0, fib(1)=1 이고, 그 이후는 fib(n-1)+fib(n-2)로 만듭니다.',
         },
       }));
     }
@@ -5369,7 +5388,7 @@ body {
           currentNodeId,
           callStack: stack.slice(),
           recursionKind: 'combination',
-          explanation: 'C(n, k)는 n개 중 k개를 고르는 경우의 수입니다. 왼쪽은 선택, 오른쪽은 선택하지 않음을 뜻합니다.',
+          explanation: 'C(n, k)는 n개 중 k개를 고르는 경우의 수입니다. 예를 들어 C(4,2)는 4개 중 2개를 뽑는 방법 수이고, 왼쪽 가지는 선택, 오른쪽 가지는 선택하지 않음을 뜻합니다.',
         },
       }));
     }
@@ -6168,17 +6187,15 @@ function exposePublicApi() {
     const isStack = visual.structureType === 'stack';
     const cards = isStack
       ? [
-          { tag: '현재 동작', label: visual.operation || 'init', tone: 'highlight' },
-          { tag: '연산 위치', label: 'push / pop은 top에서만 일어남', tone: 'warn' },
-          { tag: '현재 값', label: visual.focusValue === null || visual.focusValue === undefined ? '없음' : String(visual.focusValue), tone: 'good' },
+          { tag: '현재 값', label: visual.focusValue === null || visual.focusValue === undefined ? '없음' : String(visual.focusValue), tone: 'highlight' },
+          { tag: '핵심 규칙', label: 'push / pop은 top 한 곳에서만 일어남', tone: 'warn' },
         ]
       : [
-          { tag: '현재 동작', label: visual.operation || 'init', tone: 'highlight' },
-          { tag: '연산 위치', label: 'dequeue는 front, enqueue는 rear', tone: 'warn' },
-          { tag: '현재 값', label: visual.focusValue === null || visual.focusValue === undefined ? '없음' : String(visual.focusValue), tone: 'good' },
+          { tag: '현재 값', label: visual.focusValue === null || visual.focusValue === undefined ? '없음' : String(visual.focusValue), tone: 'highlight' },
+          { tag: '핵심 규칙', label: 'enqueue는 rear, dequeue는 front', tone: 'warn' },
         ];
     return `
-      <div class="structure-layout scene-fade">
+      <div class="structure-layout scene-stable">
         ${renderDirectionStrip(cards)}
         <div class="structure-stage compact-stage">
           ${isStack
@@ -6602,7 +6619,7 @@ function exposePublicApi() {
     ];
 
     return `
-      <div class="recursion-layout scene-fade">
+      <div class="recursion-layout scene-stable">
         ${renderDirectionStrip(cards)}
         <div class="recursion-stage compact-stage">
           <svg viewBox="0 0 ${fitted.width} ${fitted.height}" role="img" aria-label="recursion-tree">
@@ -6673,11 +6690,12 @@ function exposePublicApi() {
     const cards = [
       { tag: '현재 분기', label: currentLabel, tone: 'highlight' },
       { tag: '다음 분기', label: nextLabel, tone: 'warn' },
+      { tag: '원 하나의 의미', label: '각 원은 (현재 합 sum, 다음 인덱스 i) 상태를 뜻함', tone: 'range' },
       { tag: '가지치기 의미', label: '조건을 만족하지 못하면 그 아래는 더 보지 않음', tone: 'good' },
     ];
 
     return `
-      <div class="recursion-layout pruning-layout scene-fade">
+      <div class="recursion-layout pruning-layout scene-stable">
         ${renderDirectionStrip(cards)}
         <div class="recursion-stage compact-stage pruning-stage">
           <svg viewBox="0 0 ${fitted.width} ${fitted.height}" role="img" aria-label="pruning-tree">
@@ -6720,7 +6738,8 @@ function exposePublicApi() {
         <div class="workspace-box">
           <div class="workspace-card">
             <div class="workspace-head">숫자 목록 / 목표</div>
-            <div class="token-row">${renderTokens(visual.nums.map((num) => String(num)).concat([`target=${visual.target}`]))}</div>
+            <div class="token-row">${renderTokens(visual.nums.map((num, index) => `${index}:${num}`).concat([`target=${visual.target}`]))}</div>
+            <div class="heap-note">각 원의 큰 숫자는 현재까지 만든 합(sum), 아래 설명은 다음에 볼 숫자의 인덱스(i)입니다.</div>
           </div>
           <div class="workspace-card structure-card">
             <div class="workspace-head">현재 호출 스택</div>
@@ -6854,9 +6873,10 @@ function arrayStateClasses(index, options) {
   addIf('comparing', options.comparingIndices);
   addIf('current', options.currentIndices);
   addIf('key', options.keyIndices);
+  addIf('pivot', options.pivotIndices);
   addIf('shifted', options.shiftedIndices);
   addIf('done', options.sortedIndices);
-  addIf('done', options.fixedIndices);
+  addIf('fixed', options.fixedIndices);
   addIf('candidate', options.candidateIndices);
   addIf('danger', options.dangerIndices);
   addIf('success', options.successIndices);
@@ -7939,7 +7959,8 @@ function renderSortingVisual(visual, renderer, step) {
         dimIndices,
         comparingIndices: visual.comparing || [],
         currentIndices: [visual.currentWrite].filter((value) => value !== null && value !== undefined),
-        keyIndices: [visual.keyIndex, visual.pivotIndex].filter((value) => value !== null && value !== undefined),
+        keyIndices: [visual.keyIndex].filter((value) => value !== null && value !== undefined),
+        pivotIndices: [visual.pivotIndex].filter((value) => value !== null && value !== undefined),
         shiftedIndices: visual.shifted || [],
         sortedIndices: visual.sorted || [],
         fixedIndices: visual.fixed || [],
@@ -8020,8 +8041,8 @@ function renderGraphVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(nodes[visual.current], currentLabel, 'current', 42, -10) : ''}
-          ${visual.neighbor ? renderSvgBadge(nodes[visual.neighbor], neighborLabel, visual.backtracking ? 'done' : 'next', 0, 28) : ''}
+          ${visual.current ? renderSvgBadge(nodes[visual.current], currentLabel, 'current', 0, -42) : ''}
+          ${visual.neighbor ? renderSvgBadge(nodes[visual.neighbor], neighborLabel, visual.backtracking ? 'done' : 'next', 0, 34) : ''}
         </svg>
       </div>
 
@@ -8095,9 +8116,9 @@ function renderTreeSearchVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(tree[visual.current], '현재', 'current', 42, -10) : ''}
-          ${visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 28) : ''}
-          ${visual.found ? renderSvgBadge(tree[visual.found], '찾음', 'done', 0, 30) : ''}
+          ${visual.current ? renderSvgBadge(tree[visual.current], '현재', 'current', 0, -44) : ''}
+          ${visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 34) : ''}
+          ${visual.found ? renderSvgBadge(tree[visual.found], '찾음', 'done', 0, 34) : ''}
         </svg>
       </div>
       <div class="workspace-box">
@@ -8171,9 +8192,9 @@ function renderTreeTraversalVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', 0, -40) : ''}
-          ${visual.backtracking && visual.returnTarget ? renderSvgBadge(tree[visual.returnTarget], '돌아갈 곳', 'done', 0, 30) : ''}
-          ${!visual.backtracking && visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 30) : ''}
+          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', 0, -44) : ''}
+          ${visual.backtracking && visual.returnTarget ? renderSvgBadge(tree[visual.returnTarget], '돌아갈 곳', 'done', 0, 34) : ''}
+          ${!visual.backtracking && visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 34) : ''}
         </svg>
       </div>
       <div class="workspace-box">
@@ -8310,11 +8331,12 @@ function renderPruningTreeVisual(visual, step) {
   const cards = [
     { tag: '현재 분기', label: currentLabel, tone: 'highlight' },
     { tag: '다음 분기', label: nextLabel, tone: 'warn' },
+    { tag: '원 하나의 의미', label: '각 원은 (현재 합 sum, 다음 인덱스 i) 상태를 뜻함', tone: 'range' },
     { tag: '가지치기 의미', label: '조건을 만족하지 못하면 그 아래는 더 보지 않음', tone: 'good' },
   ];
 
   return `
-    <div class="recursion-layout pruning-layout ${getSceneMotionClass('pruning-tree', visual)}">
+    <div class="recursion-layout pruning-layout scene-stable">
       ${renderDirectionStrip(cards)}
       <div class="recursion-stage compact-stage pruning-stage">
         <svg viewBox="0 0 ${fitted.width} ${fitted.height}" role="img" aria-label="pruning-tree">
@@ -8350,16 +8372,20 @@ function renderPruningTreeVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.currentNodeId && allNodes[visual.currentNodeId] ? renderSvgBadge(allNodes[visual.currentNodeId], '현재', 'current', 42, -10) : ''}
-          ${visual.edge && visual.edge[1] && allNodes[visual.edge[1]] ? renderSvgBadge(allNodes[visual.edge[1]], '다음', 'next', 0, 28) : ''}
+          ${visual.currentNodeId && allNodes[visual.currentNodeId] ? renderSvgBadge(allNodes[visual.currentNodeId], '현재', 'current', 0, -44) : ''}
+          ${visual.edge && visual.edge[1] && allNodes[visual.edge[1]] ? renderSvgBadge(allNodes[visual.edge[1]], '다음', 'next', 0, 34) : ''}
         </svg>
       </div>
       <div class="workspace-box">
-        ${renderArrayTable(visual.nums, {
-          title: '숫자 목록',
-          arrayName: 'nums',
-          currentIndices: visual.currentNodeId ? [allNodes[visual.currentNodeId].meta.idx].filter((idx) => idx !== undefined && idx !== null && idx < visual.nums.length) : [],
-        })}
+        <div class="workspace-card">
+          <div class="workspace-head">숫자 목록 / 상태 의미</div>
+          ${renderArrayTable(visual.nums, {
+            title: '숫자 목록',
+            arrayName: 'nums',
+            currentIndices: visual.currentNodeId ? [allNodes[visual.currentNodeId].meta.idx].filter((idx) => idx !== undefined && idx !== null && idx < visual.nums.length) : [],
+          })}
+          <div class="heap-note">각 원의 큰 숫자는 현재까지 만든 합(sum), 아래 보조 텍스트는 다음에 볼 숫자의 인덱스(i)입니다.</div>
+        </div>
         <div class="workspace-card structure-card">
           <div class="workspace-head">현재 호출 스택</div>
           ${renderStackBox(visual.callStack, { compact: true, topLabel: 'TOP · 지금 내려가는 분기', bottomLabel: 'BOTTOM', currentIndex: visual.callStack.length - 1, focusValue: visual.callStack.length ? visual.callStack[visual.callStack.length - 1] : null })}
@@ -8464,7 +8490,7 @@ function renderHeapVisual(visual, step) {
                 </g>
               `;
             }).join('')}
-            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 0, -46) : ''}
+            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 0, -58) : ''}
           </svg>
         ` : `<div class="empty-text">현재 힙이 비어 있습니다.</div>`}
       </div>
