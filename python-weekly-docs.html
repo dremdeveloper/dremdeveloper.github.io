@@ -622,6 +622,12 @@
       window.parent?.postMessage({ type: 'kp-study-docs-selection', lessonId: id }, '*');
     }
 
+    function resetViewerScroll() {
+      viewerBody.scrollTop = 0;
+      if (isEmbed) return;
+      window.scrollTo?.({ top: 0, behavior: 'auto' });
+    }
+
     function selectLesson(id, updateUrl = true) {
       const lesson = lessonMap.get(id);
       if (!lesson) return;
@@ -633,8 +639,7 @@
       menuButtons.forEach((button) => button.classList.toggle('active', button.dataset.lessonBtn === lesson.id));
       expandedWeek = lesson.week;
       syncExpandedWeek();
-      viewerBody.scrollTop = 0;
-      window.scrollTo?.({ top: 0, behavior: 'auto' });
+      resetViewerScroll();
       if (updateUrl) {
         const url = new URL(window.location.href);
         url.searchParams.set(isEmbed ? 'lesson' : 'scenario', lesson.id);
