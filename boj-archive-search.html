@@ -85,13 +85,17 @@
       </section>
 
       <section class="card panel-pad-lg search-filter-card" aria-label="문제 검색 필터">
+        <div class="search-filter-header">
+          <h2>검색 필터</h2>
+          <p>번호, 제목, 티어, 알고리즘, 컬렉션 주제로 원하는 문제만 빠르게 좁혀 보세요.</p>
+        </div>
         <div class="search-filter-grid">
-          <label class="search-field search-field-wide" for="searchInput">
-            <span class="search-field-label">통합 검색</span>
+          <div class="search-field search-field-wide">
+            <label class="search-field-label" for="searchInput">통합 검색</label>
             <input id="searchInput" class="search-input" type="search" placeholder="문제 번호, 제목, 알고리즘, 컬렉션명" />
-          </label>
-          <label class="search-field" for="tierSelect">
-            <span class="search-field-label">티어 그룹</span>
+          </div>
+          <div class="search-field">
+            <label class="search-field-label" for="tierSelect">티어 그룹</label>
             <select id="tierSelect" class="search-input">
               <option value="">전체</option>
               <option value="Sprout">Sprout</option>
@@ -104,17 +108,17 @@
               <option value="Unrated">Unrated</option>
               <option value="Not ratable">Not ratable</option>
             </select>
-          </label>
-          <label class="search-field" for="topicInput">
-            <span class="search-field-label">컬렉션 주제</span>
+          </div>
+          <div class="search-field">
+            <label class="search-field-label" for="topicInput">컬렉션 주제</label>
             <input id="topicInput" class="search-input" list="topicOptions" placeholder="주제명 입력" />
             <datalist id="topicOptions"></datalist>
-          </label>
-          <label class="search-field" for="algoInput">
-            <span class="search-field-label">알고리즘</span>
+          </div>
+          <div class="search-field">
+            <label class="search-field-label" for="algoInput">알고리즘</label>
             <input id="algoInput" class="search-input" list="algoOptions" placeholder="알고리즘명 입력" />
             <datalist id="algoOptions"></datalist>
-          </label>
+          </div>
         </div>
       </section>
 
