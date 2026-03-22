@@ -32,8 +32,9 @@ window.siteData = {
         category: 'AI 논문'
       },
       {
-        name: 'articles/AI 논문/llama2_open_foundation_chat_models_mathjax.md',
-        category: 'AI 논문'
+        name: 'articles/AI 논문/Llama 2.md',
+        category: 'AI 논문',
+        title: 'Llama 2'
       },
       {
         name: 'articles/AI 논문/llm_rl_paper_glossary_mathjax.md',
@@ -48,8 +49,9 @@ window.siteData = {
         category: 'AI 논문'
       },
       {
-        name: 'articles/AI 논문/ppo_algorithms_mathjax.md',
-        category: 'AI 논문'
+        name: 'articles/AI 논문/PPO.md',
+        category: 'AI 논문',
+        title: 'PPO'
       },
       {
         name: 'articles/AI 논문/rl_state_transition_conditional_reward_mathjax.md',
@@ -57,10 +59,6 @@ window.siteData = {
       },
       {
         name: 'articles/AI 논문/rlver_noisy_rewards_mathjax.md',
-        category: 'AI 논문'
-      },
-      {
-        name: 'articles/instruction_tuning_survey_section6_mathjax.md',
         category: 'AI 논문'
       },
       {
