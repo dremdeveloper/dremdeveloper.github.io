@@ -162,14 +162,29 @@
     updateSearchResults();
   }
 
-  function mergeArticleFiles(primaryFiles, secondaryFiles = []) {
+  function mergeArticleFiles(primaryFiles, secondaryFiles = [], options = {}) {
+    const { includeSecondaryOnly = false } = options;
     const merged = new Map();
 
-    [...primaryFiles, ...secondaryFiles].forEach((item) => {
+    primaryFiles.forEach((item) => {
       const key = normalizeFileKey(item?.path || item?.name);
       if (!key) return;
-      const existing = merged.get(key) || {};
-      merged.set(key, { ...item, ...existing, path: key, name: key });
+      merged.set(key, { ...item, path: key, name: key });
+    });
+
+    secondaryFiles.forEach((item) => {
+      const key = normalizeFileKey(item?.path || item?.name);
+      if (!key) return;
+
+      const existing = merged.get(key);
+      if (existing) {
+        merged.set(key, { ...item, ...existing, path: key, name: key });
+        return;
+      }
+
+      if (includeSecondaryOnly || !primaryFiles.length) {
+        merged.set(key, { ...item, path: key, name: key });
+      }
     });
 
     return Array.from(merged.values());
