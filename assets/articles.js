@@ -9,6 +9,8 @@
   const sidebarNode = document.querySelector('.article-sidebar');
   const sidebarToggle = document.getElementById('article-sidebar-toggle');
   const sidebarCurrentNode = document.getElementById('article-sidebar-current');
+  const searchInput = document.getElementById('article-search-input');
+  const searchResultsNode = document.getElementById('article-search-results');
   const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
 
   if (!listNode || !countNode || !statusNode || !viewerNode) return;
@@ -29,6 +31,7 @@
   let articleFiles = [];
   let currentFile = '';
   let mathJaxLoader = null;
+  let searchMatches = [];
 
   window.MathJax = window.MathJax || {
     tex: {
@@ -124,6 +127,7 @@
     countNode.textContent = `${articleFiles.length}개의 md 파일`;
     updateSidebarCurrentLabel();
     renderList();
+    updateSearchResults();
   }
 
   function mergeArticleFiles(primaryFiles, secondaryFiles = []) {
@@ -307,6 +311,62 @@
     return DOMPurify.sanitize(marked.parse(md));
   }
 
+  function setSearchResultsVisibility(isVisible) {
+    if (!searchResultsNode) return;
+    searchResultsNode.hidden = !isVisible;
+  }
+
+  function getSearchMatches(query) {
+    const normalizedQuery = String(query || '').trim().toLowerCase();
+    if (!normalizedQuery) return [];
+
+    return articleFiles
+      .filter((entry) => {
+        const haystack = `${entry.title} ${entry.category} ${entry.fileName}`.toLowerCase();
+        return haystack.includes(normalizedQuery);
+      })
+      .slice(0, 8);
+  }
+
+  function renderSearchResults() {
+    if (!searchResultsNode) return;
+
+    if (!searchMatches.length) {
+      searchResultsNode.innerHTML = '<div class="search-item" aria-disabled="true"><strong>검색 결과가 없습니다</strong><span>다른 키워드로 다시 찾아보세요.</span></div>';
+      setSearchResultsVisibility(Boolean(searchInput?.value.trim()));
+      return;
+    }
+
+    searchResultsNode.innerHTML = '';
+    searchMatches.forEach((file) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `search-item${file.name === currentFile ? ' is-active' : ''}`;
+      button.innerHTML = `
+        <strong>${escapeHtml(file.title)}</strong>
+        <span>${escapeHtml(file.category)}</span>
+      `;
+      button.addEventListener('click', () => {
+        loadArticle(file.name);
+        if (searchInput) {
+          searchInput.value = '';
+        }
+        searchMatches = [];
+        renderSearchResults();
+        setSearchResultsVisibility(false);
+      });
+      searchResultsNode.appendChild(button);
+    });
+
+    setSearchResultsVisibility(true);
+  }
+
+  function updateSearchResults() {
+    if (!searchInput || !searchResultsNode) return;
+    searchMatches = getSearchMatches(searchInput.value);
+    renderSearchResults();
+  }
+
   function resolveInitialFileName() {
     return articleFiles.find((file) => file.name === requestedFile)?.name
       || articleFiles.find((file) => file.name === defaultFile)?.name
@@ -390,6 +450,7 @@
 
     currentFile = file.name;
     renderList();
+    updateSearchResults();
     setStatus('아티클 내용을 불러오는 중입니다.');
     updateQuery(file.name);
 
@@ -399,8 +460,9 @@
       const renderedTitle = extractTitle(sanitizedMarkdown, file.fileName || file.name);
       file.title = renderedTitle;
       renderList();
+      updateSearchResults();
       updateSidebarCurrentLabel();
-      viewerNode.innerHTML = renderMarkdown(sanitizedMarkdown);
+      viewerNode.innerHTML = `<div id="article-content" class="article-container">${renderMarkdown(sanitizedMarkdown)}</div>`;
       viewerNode.hidden = false;
       statusNode.hidden = true;
       const title = document.querySelector('#article-viewer h1')?.innerText || renderedTitle || 'Article';
@@ -454,6 +516,27 @@
   sidebarToggle?.addEventListener('click', () => {
     const isOpen = sidebarToggle.getAttribute('aria-expanded') !== 'true';
     setSidebarState(isOpen);
+  });
+
+  searchInput?.addEventListener('input', () => {
+    updateSearchResults();
+  });
+
+  searchInput?.addEventListener('focus', () => {
+    updateSearchResults();
+  });
+
+  searchInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setSearchResultsVisibility(false);
+      searchInput.blur();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!searchResultsNode || !searchInput) return;
+    if (searchResultsNode.contains(event.target) || searchInput.contains(event.target)) return;
+    setSearchResultsVisibility(false);
   });
 
   mobileMediaQuery.addEventListener?.('change', (event) => {
