@@ -2643,6 +2643,159 @@ body {
   line-height: 1.6;
 }
 
+.syntax-showcase {
+  display: grid;
+  gap: 16px;
+}
+
+.syntax-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(99, 164, 255, 0.2);
+  background:
+    radial-gradient(circle at top right, rgba(90, 215, 255, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(99, 164, 255, 0.12), rgba(124, 92, 255, 0.1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.syntax-hero-copy {
+  flex: 1 1 360px;
+}
+
+.syntax-hero-copy h3 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.syntax-hero-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.syntax-language-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 215, 255, 0.24);
+  background: rgba(7, 16, 30, 0.45);
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 28px rgba(8, 15, 32, 0.26);
+  animation: syntaxFloat 4s ease-in-out infinite;
+}
+
+.syntax-language-pill::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  box-shadow: 0 0 0 6px rgba(90, 215, 255, 0.08);
+}
+
+.syntax-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.syntax-card {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.syntax-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 164, 255, 0.34);
+  box-shadow: 0 18px 32px rgba(2, 6, 23, 0.26);
+}
+
+.syntax-card h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.syntax-card p,
+.syntax-card li {
+  color: var(--muted);
+  line-height: 1.72;
+}
+
+.syntax-card p {
+  margin: 0;
+}
+
+.syntax-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.syntax-card-label {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.syntax-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.syntax-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 164, 255, 0.22);
+  background: rgba(99, 164, 255, 0.12);
+  color: #d8e7ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.syntax-card-primary {
+  background: linear-gradient(180deg, rgba(99, 164, 255, 0.12), rgba(124, 92, 255, 0.08));
+  border-color: rgba(99, 164, 255, 0.24);
+}
+
+.syntax-card-accent {
+  background: linear-gradient(180deg, rgba(90, 215, 255, 0.09), rgba(50, 213, 131, 0.06));
+}
+
+.syntax-card-warning {
+  background: linear-gradient(180deg, rgba(255, 191, 95, 0.09), rgba(255, 107, 129, 0.04));
+}
+
+@keyframes syntaxFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 @media (max-width: 1280px) {
   .factorial-card {
     min-height: 148px;
@@ -2651,6 +2804,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .scene-fade,
+  .syntax-language-pill,
   .motion-dot.warn,
   .motion-dot.good,
   .graph-edge.active,
@@ -2680,6 +2834,10 @@ body {
 }
 
 @media (max-width: 900px) {
+  .syntax-card-grid {
+    grid-template-columns: 1fr;
+  }
+
   .factorial-chain {
     grid-template-columns: 1fr;
   }
@@ -2756,7 +2914,7 @@ body {
 
           <div class="panel-head">
             <div class="panel-head-main">
-              <div class="panel-title">실행 흐름 시각화</div>
+              <div class="panel-title" id="visualPanelTitle">실행 흐름 시각화</div>
               <div class="toolbar-actions">
                 <button class="control-btn" id="prevBtn">이전</button>
                 <button class="control-btn control-btn-primary" id="playBtn">재생</button>
@@ -2776,7 +2934,7 @@ body {
           </article>
 
           <article class="panel-card glass panel-card-code" id="codePanel">
-            <div class="panel-title">실행 중인 Python 코드</div>
+            <div class="panel-title" id="codePanelTitle">실행 중인 Python 코드</div>
             <div id="codeArea"></div>
           </article>
         </div>
@@ -2821,6 +2979,11 @@ body {
       label: '재귀',
       summary: '호출이 내려가고 값이 다시 올라오는 흐름을 호출 스택과 재귀 트리로 보여줍니다.',
       navDesc: '팩토리얼, 피보나치, 조합',
+    },
+    syntax: {
+      label: '코테 문법',
+      summary: '파이썬과 C++에서 코딩테스트에 자주 쓰는 핵심 문법을 카드형 시각화로 빠르게 복습합니다.',
+      navDesc: 'Python, C++ 핵심 문법',
     },
   };
 
@@ -5272,7 +5435,7 @@ body {
       'algorithmTabs',
       'prevBtn', 'playBtn', 'nextBtn', 'resetBtn', 'stepMeta', 'stepRange',
       'speedLabel', 'speedRange', 'visualArea', 'legendArea',
-      'codeArea', 'stateArea',
+      'codeArea', 'stateArea', 'visualPanelTitle', 'codePanelTitle',
     ];
     ids.forEach((id) => {
       els[id] = document.getElementById(id);
@@ -5581,6 +5744,7 @@ function exposePublicApi() {
 
   function getStageLabel(scenario, step) {
     const visual = step.visual || {};
+    if (scenario.renderer === 'syntax-reference') return visual.stageLabel || '문법 포인트 정리';
     if (scenario.renderer === 'graph') return visual.structureType === 'stack' ? 'DFS 진행 중' : 'BFS 진행 중';
     if (scenario.renderer === 'linear-structure') return visual.structureType === 'stack' ? '스택 연산 확인' : '큐 연산 확인';
     if (scenario.renderer === 'tree-traversal') return visual.backtracking ? '재귀 복귀(백트래킹)' : '재귀 방문 진행';
@@ -5597,6 +5761,7 @@ function exposePublicApi() {
 
   function getCurrentFocusLabel(scenario, step) {
     const visual = step.visual || {};
+    if (scenario.renderer === 'syntax-reference') return visual.focusLabel || step.title;
     if (scenario.renderer.startsWith('sorting')) {
       if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) return `pivot idx ${visual.pivotIndex}`;
       if (visual.keyIndex !== undefined && visual.keyIndex !== null) return `key idx ${visual.keyIndex}`;
@@ -5615,6 +5780,7 @@ function exposePublicApi() {
 
   function getNextFocusLabel(scenario, step) {
     const visual = step.visual || {};
+    if (scenario.renderer === 'syntax-reference') return visual.nextFocus || '다음 문법 카드';
     if (visual.edge && visual.edge[1] !== undefined && visual.edge[1] !== null) return String(visual.edge[1]);
     if (scenario.renderer === 'graph') {
       if (visual.structureType === 'stack') return visual.stack && visual.stack.length ? `stack top ${visual.stack[visual.stack.length - 1]}` : '스택 비움';
@@ -5630,6 +5796,7 @@ function exposePublicApi() {
   function renderStatePanel(scenario, step) {
     if (!els.stateArea) return;
     const progress = scenario.steps.length ? Math.round(((APP.stepIndex + 1) / scenario.steps.length) * 100) : 0;
+    const overviewLabel = scenario.overviewLabel || '알고리즘 개요';
     els.stateArea.innerHTML = `
       <div class="description-card">
         <div class="description-top">
@@ -5650,7 +5817,7 @@ function exposePublicApi() {
         </div>
         <div class="state-grid">
           <div class="state-card">
-            <div class="state-label">알고리즘 개요</div>
+            <div class="state-label">${escapeHtml(overviewLabel)}</div>
             <div class="state-value">${escapeHtml(scenario.subtitle)}</div>
           </div>
           <div class="state-card">
@@ -5687,6 +5854,7 @@ function exposePublicApi() {
     els.stepRange.value = APP.stepIndex;
     els.stepMeta.textContent = `${APP.stepIndex + 1} / ${scenario.steps.length} · ${step.title}`;
     els.speedLabel.textContent = speedLabel(APP.speed);
+    renderPanelTitles(scenario, step);
     renderCode(scenario, step);
     renderLegend(scenario);
     renderStatePanel(scenario, step);
@@ -5702,11 +5870,25 @@ function exposePublicApi() {
     }
   }
 
+  function renderPanelTitles(scenario, step) {
+    if (els.visualPanelTitle) {
+      els.visualPanelTitle.textContent = scenario.visualPanelTitle || '실행 흐름 시각화';
+    }
+    if (els.codePanelTitle) {
+      const fallback = scenario.renderer === 'syntax-reference'
+        ? `실전 ${step.visual?.language || ''} 템플릿`.trim()
+        : '실행 중인 Python 코드';
+      els.codePanelTitle.textContent = scenario.codePanelTitle || fallback;
+    }
+  }
+
   function renderCode(scenario, step) {
+    const codeLines = step.codeLines || scenario.code;
+    const activeLines = step.lines && step.lines.length ? step.lines : codeLines.map((_, index) => index + 1);
     els.codeArea.innerHTML = `
       <div class="code-block">
-        ${scenario.code.map((line, index) => `
-          <div class="code-line ${step.lines.includes(index + 1) ? 'active' : ''}">
+        ${codeLines.map((line, index) => `
+          <div class="code-line ${activeLines.includes(index + 1) ? 'active' : ''}">
             <div class="code-line-num">${index + 1}</div>
             <div class="code-line-text">${escapeHtml(line || ' ')}</div>
           </div>
@@ -7140,6 +7322,455 @@ function buildTraversalScenario(type) {
   });
 }
 
+function makeSyntaxStep({
+  title,
+  summary,
+  detail,
+  codeLines,
+  language,
+  chips,
+  useCase,
+  pitfall,
+  checklist,
+  nextFocus,
+  focusLabel,
+  metrics,
+}) {
+  return {
+    lines: codeLines.map((_, index) => index + 1),
+    title,
+    summary,
+    detail,
+    codeLines,
+    metrics,
+    visual: {
+      language,
+      chips,
+      useCase,
+      pitfall,
+      checklist,
+      nextFocus,
+      focusLabel,
+      stageLabel: `${language} 핵심 문법`,
+      hint: '위 카드는 언제 꺼내 쓰는지, 오른쪽 코드 패널은 바로 다시 타이핑하기 좋은 최소 템플릿을 보여줍니다.',
+    },
+  };
+}
+
+function buildPythonSyntaxScenario() {
+  const steps = [
+    makeSyntaxStep({
+      title: '빠른 입력과 언패킹',
+      summary: '많은 입력을 읽을 때는 sys.stdin.readline과 map, 언패킹을 바로 연결하는 습관이 중요합니다.',
+      detail: '입력 형식을 읽는 순간 변수 개수와 리스트 변환 여부를 정하면 구현 속도와 실수율이 함께 좋아집니다.',
+      language: 'Python',
+      chips: ['input()', 'map()', '언패킹'],
+      useCase: '대량 입력, 첫 줄 n/m 분리, 나머지 배열 처리처럼 거의 모든 코테 시작 구간에서 바로 사용합니다.',
+      pitfall: 'input()과 readline()을 섞어 쓸 때 개행 처리나 strip() 여부를 놓치면 문자열 비교에서 틀리기 쉽습니다.',
+      checklist: [
+        '정수 한 줄: map(int, input().split())',
+        '배열 한 줄: list(map(int, input().split()))',
+        '앞/중간/뒤 분리: first, *mid, last',
+      ],
+      focusLabel: '입력 템플릿',
+      nextFocus: '조건/반복 표현 단순화',
+      metrics: [
+        { label: '빈출도', value: '매 문제 시작' },
+        { label: '핵심', value: '입력 속도 + 변수 배치' },
+        { label: '실전 연결', value: '배열/그래프 입력' },
+      ],
+      codeLines: [
+        'import sys',
+        'input = sys.stdin.readline',
+        '',
+        'n, m = map(int, input().split())',
+        'nums = list(map(int, input().split()))',
+        'first, *middle, last = nums',
+      ],
+    }),
+    makeSyntaxStep({
+      title: '조건식과 리스트 컴프리헨션',
+      summary: '조건 필터링과 상태 변환은 짧게 쓸 수 있지만, 읽기 어려워지면 과감히 for문으로 돌아가야 합니다.',
+      detail: '한 줄에 담을 수 있는 범위까지만 압축하고, 중첩 조건이 많아지면 디버깅 가능한 형태로 풀어 쓰는 기준이 필요합니다.',
+      language: 'Python',
+      chips: ['if/else', 'comprehension', 'filtering'],
+      useCase: '정답 후보만 추리기, 문자열/배열 전처리, 좌표 목록 생성처럼 반복되는 데이터를 만들 때 유용합니다.',
+      pitfall: '조건이 두 겹 이상 중첩되면 가독성이 급격히 나빠집니다. 실전에서는 짧은 코드보다 틀리지 않는 코드가 더 중요합니다.',
+      checklist: [
+        '필터만 필요하면 comprehension',
+        '조건이 길면 일반 for문 분해',
+        '삼항식은 반환값이 짧을 때만 사용',
+      ],
+      focusLabel: '한 줄 변환',
+      nextFocus: '해시 기반 카운팅',
+      metrics: [
+        { label: '빈출도', value: '높음' },
+        { label: '핵심', value: '전처리 압축' },
+        { label: '실전 연결', value: '구현/문자열 문제' },
+      ],
+      codeLines: [
+        'scores = [88, 71, 96, 65]',
+        'passed = [score for score in scores if score >= 80]',
+        "label = 'pass' if len(passed) >= 2 else 'review'",
+        '',
+        'coords = [(r, c) for r in range(2) for c in range(3)]',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'dict · set · Counter',
+      summary: '중복 제거, 빈도 계산, 빠른 존재 여부 확인은 대부분 list보다 해시 구조가 더 자연스럽습니다.',
+      detail: '문제를 읽을 때 “찾기/세기/중복 제거”가 보이면 dict, set, Counter를 우선 후보로 올리는 것이 좋습니다.',
+      language: 'Python',
+      chips: ['dict', 'set', 'Counter'],
+      useCase: '완주하지 못한 선수, 빈도 정렬, 방문 체크, 문자열 카운팅처럼 해시 기반 사고가 필요한 문제에 자주 연결됩니다.',
+      pitfall: '존재하지 않는 키를 바로 접근하면 KeyError가 납니다. get 또는 defaultdict/Counter 패턴을 떠올려야 합니다.',
+      checklist: [
+        '중복 제거: set(values)',
+        '빈도 계산: Counter(values)',
+        '인덱스 매핑: {value: idx for ...}',
+      ],
+      focusLabel: '해시 자료구조',
+      nextFocus: '정렬 기준 만들기',
+      metrics: [
+        { label: '빈출도', value: '매우 높음' },
+        { label: '핵심', value: '카운팅 / membership' },
+        { label: '실전 연결', value: '해시 / 문자열' },
+      ],
+      codeLines: [
+        'from collections import Counter',
+        '',
+        "words = ['a', 'b', 'a', 'c']",
+        'count = Counter(words)',
+        'unique = set(words)',
+        'index_of = {word: idx for idx, word in enumerate(unique)}',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'sort / sorted 와 key',
+      summary: '정렬은 오름차순만 외우는 것이 아니라, 어떤 기준으로 비교할지를 lambda로 빠르게 표현하는 능력이 핵심입니다.',
+      detail: '제자리 정렬은 sort, 원본 유지가 필요하면 sorted를 쓰고, 다중 기준은 튜플 key로 정리하면 실수가 크게 줄어듭니다.',
+      language: 'Python',
+      chips: ['sort()', 'sorted()', 'lambda'],
+      useCase: '점수/길이/사전순 같은 다중 조건 정렬, 그리디 전처리, 좌표 정렬 문제에서 거의 항상 등장합니다.',
+      pitfall: '내림차순과 오름차순이 섞인 다중 정렬에서 부호 처리(-x[0])를 빼먹는 실수가 많습니다.',
+      checklist: [
+        '제자리 정렬: arr.sort(...)',
+        '복사 정렬: sorted(arr, ...)',
+        '다중 기준: key=lambda x: (-x[0], x[1])',
+      ],
+      focusLabel: '정렬 기준',
+      nextFocus: 'deque / heapq 선택',
+      metrics: [
+        { label: '빈출도', value: '매우 높음' },
+        { label: '핵심', value: 'key 함수' },
+        { label: '실전 연결', value: '정렬 / 그리디' },
+      ],
+      codeLines: [
+        "students = [('kim', 2, 91), ('lee', 1, 91), ('park', 3, 84)]",
+        'students.sort(key=lambda x: (-x[2], x[1], x[0]))',
+        '',
+        'ordered = sorted(students, key=lambda x: (x[1], x[0]))',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'deque 와 heapq',
+      summary: '큐가 필요하면 deque, 우선순위가 필요하면 heapq로 바로 연결하는 판단이 중요합니다.',
+      detail: 'list.pop(0)처럼 겉보기엔 쉬워 보여도 비효율적인 연산을 피하는 것만으로도 시간 초과를 크게 줄일 수 있습니다.',
+      language: 'Python',
+      chips: ['deque', 'heapq', 'BFS'],
+      useCase: 'BFS, 작업 스케줄링, 최소/최대값 우선 처리, 다익스트라 초기 템플릿에서 바로 쓰입니다.',
+      pitfall: 'heapq는 최소 힙 기준입니다. 최대 힙처럼 쓰려면 음수 부호를 붙이거나 튜플 우선순위를 조정해야 합니다.',
+      checklist: [
+        'queue.popleft()는 O(1)',
+        'heapq.heappush / heappop',
+        '우선순위는 (거리, 노드) 튜플로 표현',
+      ],
+      focusLabel: '큐 / 우선순위 큐',
+      nextFocus: '반복문 패턴 정리',
+      metrics: [
+        { label: '빈출도', value: '높음' },
+        { label: '핵심', value: '자료구조 선택' },
+        { label: '실전 연결', value: 'BFS / 힙 문제' },
+      ],
+      codeLines: [
+        'from collections import deque',
+        'import heapq',
+        '',
+        'queue = deque([1])',
+        'queue.append(2)',
+        'front = queue.popleft()',
+        '',
+        'heap = []',
+        "heapq.heappush(heap, (3, 'task'))",
+        'priority, task = heapq.heappop(heap)',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'enumerate 와 zip',
+      summary: '인덱스가 필요한지, 두 배열을 나란히 볼지 먼저 정하면 반복문 실수와 오프바이원 오류를 크게 줄일 수 있습니다.',
+      detail: '반복문의 목적이 “값만 볼지 / 인덱스도 볼지 / 두 자료를 동시에 볼지”로 나뉘는 순간 코드가 훨씬 안정됩니다.',
+      language: 'Python',
+      chips: ['enumerate', 'zip', 'loop'],
+      useCase: '투 포인터 준비, 병렬 배열 비교, 좌표/문자열 순회, DP 테이블 순회 전에 루프를 정리할 때 유용합니다.',
+      pitfall: 'zip은 더 짧은 쪽 길이에 맞춰 끊기므로, 길이가 다른 배열을 다루는 상황에서는 누락이 없는지 반드시 확인해야 합니다.',
+      checklist: [
+        '인덱스 + 값: enumerate(arr)',
+        '병렬 순회: zip(a, b)',
+        '길이 차이 확인: 필요하면 len 비교',
+      ],
+      focusLabel: '반복 패턴',
+      nextFocus: 'Python 문법 복습 완료',
+      metrics: [
+        { label: '빈출도', value: '높음' },
+        { label: '핵심', value: '루프 안정성' },
+        { label: '실전 연결', value: '구현 / DP' },
+      ],
+      codeLines: [
+        'a = [2, 4, 6]',
+        'b = [1, 3, 5]',
+        '',
+        'for idx, value in enumerate(a):',
+        '    print(idx, value)',
+        '',
+        'for left, right in zip(a, b):',
+        '    print(left + right)',
+      ],
+    }),
+  ];
+
+  return baseScenario({
+    id: 'python-syntax',
+    label: 'Python 핵심 문법',
+    subtitle: '코딩테스트 시작 전에 바로 떠올라야 하는 파이썬 문법 패턴만 골라 빠르게 복습합니다.',
+    complexity: '복습 6단계',
+    spaceComplexity: '핵심 문법 요약',
+    badges: ['입출력', '해시', '정렬', '반복문'],
+    code: steps[0].codeLines,
+    renderer: 'syntax-reference',
+    legend: [
+      { label: '핵심 문법 카드', tone: 'highlight' },
+      { label: '실전 사용 맥락', tone: 'range' },
+      { label: '주의 포인트', tone: 'warn' },
+      { label: '바로 써볼 체크리스트', tone: 'good' },
+    ],
+    notes: [],
+    steps,
+    extra: {
+      visualPanelTitle: '문법 카드 시각화',
+      codePanelTitle: '실전 Python 템플릿',
+      overviewLabel: '문법 개요',
+    },
+  });
+}
+
+function buildCppSyntaxScenario() {
+  const steps = [
+    makeSyntaxStep({
+      title: '빠른 입출력과 기본 구조',
+      summary: 'C++ 코테는 입출력 최적화와 main 템플릿을 익숙하게 여는 것부터 시작합니다.',
+      detail: '문제를 읽자마자 빠른 입력 설정, 자주 쓰는 헤더, 자료형 별칭까지 손이 바로 가야 구현이 부드럽습니다.',
+      language: 'C++',
+      chips: ['ios::sync_with_stdio', 'cin.tie', 'using'],
+      useCase: '입력량이 많은 그래프/시뮬레이션 문제에서 기본 템플릿으로 매번 사용합니다.',
+      pitfall: 'sync_with_stdio(false)를 쓴 뒤 scanf/printf와 섞으면 예상치 못한 문제가 생길 수 있습니다.',
+      checklist: [
+        '빠른 입력 2줄 고정',
+        'long long 필요 여부 확인',
+        'vector, pair 별칭 준비',
+      ],
+      focusLabel: '입출력 템플릿',
+      nextFocus: 'vector / pair 조합',
+      metrics: [
+        { label: '빈출도', value: '매 문제 시작' },
+        { label: '핵심', value: '입출력 최적화' },
+        { label: '실전 연결', value: '대용량 입력' },
+      ],
+      codeLines: [
+        '#include <bits/stdc++.h>',
+        'using namespace std;',
+        '',
+        'int main() {',
+        '    ios::sync_with_stdio(false);',
+        '    cin.tie(nullptr);',
+        '    int n, m;',
+        '    cin >> n >> m;',
+        '}',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'vector · pair · range-for',
+      summary: '배열과 좌표/간선을 다룰 때 vector와 pair, range-for 조합은 거의 기본 문법처럼 사용됩니다.',
+      detail: '2차원 데이터, 간선 정보, 정렬 대상 묶음을 pair나 struct로 묶어 두면 구현이 훨씬 간단해집니다.',
+      language: 'C++',
+      chips: ['vector', 'pair', 'range-for'],
+      useCase: '그래프 인접 리스트, 좌표 목록, 정렬 전 데이터 묶음 구성에서 반복적으로 등장합니다.',
+      pitfall: 'pair의 first/second 의미를 코드에서 명확히 정하지 않으면 나중에 읽을 때 헷갈리기 쉽습니다.',
+      checklist: [
+        'vector<int> / vector<pair<int,int>>',
+        'push_back 또는 emplace_back',
+        'for (auto &x : arr) 순회',
+      ],
+      focusLabel: '기본 컨테이너',
+      nextFocus: '정렬 comparator',
+      metrics: [
+        { label: '빈출도', value: '매우 높음' },
+        { label: '핵심', value: '데이터 묶기' },
+        { label: '실전 연결', value: '그래프 / 정렬' },
+      ],
+      codeLines: [
+        'vector<pair<int, int>> edges;',
+        'edges.push_back({1, 3});',
+        'edges.emplace_back(2, 5);',
+        '',
+        'for (const auto &edge : edges) {',
+        '    cout << edge.first << " " << edge.second << "\\n";',
+        '}',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'sort 와 lambda comparator',
+      summary: '정렬 기준을 람다로 직접 적을 수 있으면 C++ 정렬 문제 풀이 속도가 크게 올라갑니다.',
+      detail: '기본 오름차순뿐 아니라 다중 조건 정렬을 자연스럽게 쓰는 것이 코테 문법 실전력의 핵심입니다.',
+      language: 'C++',
+      chips: ['sort', 'lambda', 'comparator'],
+      useCase: '점수/길이/좌표 정렬, 그리디 전처리, 우선순위 기준 정렬 문제에서 거의 매번 활용됩니다.',
+      pitfall: '람다 비교 함수는 “앞 원소가 뒤보다 먼저 와야 하는가”를 반환한다는 점을 헷갈리면 기준이 뒤집힙니다.',
+      checklist: [
+        'sort(begin, end)',
+        '다중 기준은 if 체인 또는 tie',
+        '캡처 목록 필요 여부 확인',
+      ],
+      focusLabel: '정렬 기준',
+      nextFocus: 'stack / queue / priority_queue',
+      metrics: [
+        { label: '빈출도', value: '매우 높음' },
+        { label: '핵심', value: '커스텀 정렬' },
+        { label: '실전 연결', value: '정렬 / 그리디' },
+      ],
+      codeLines: [
+        'vector<pair<int, int>> students = {{91, 2}, {91, 1}, {84, 3}};',
+        'sort(students.begin(), students.end(), [](const auto &a, const auto &b) {',
+        '    if (a.first != b.first) return a.first > b.first;',
+        '    return a.second < b.second;',
+        '});',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'stack · queue · priority_queue',
+      summary: '자료구조 선택이 곧 문제 분류입니다. LIFO/FIFO/우선순위 처리를 문법 수준에서 바로 꺼낼 수 있어야 합니다.',
+      detail: '같은 컨테이너처럼 보여도 push/pop 위치가 다르므로, 어떤 문제에 어떤 자료구조가 맞는지 문법과 함께 기억해야 합니다.',
+      language: 'C++',
+      chips: ['stack', 'queue', 'priority_queue'],
+      useCase: '괄호, DFS/BFS, 다익스트라, 스케줄링 같은 자료구조 문제군 전체와 연결됩니다.',
+      pitfall: 'priority_queue는 기본이 최대 힙입니다. 최소 힙이 필요하면 greater를 따로 지정해야 합니다.',
+      checklist: [
+        'stack.top / pop',
+        'queue.front / pop',
+        'priority_queue<int, vector<int>, greater<int>>',
+      ],
+      focusLabel: '자료구조 템플릿',
+      nextFocus: 'unordered_map / unordered_set',
+      metrics: [
+        { label: '빈출도', value: '높음' },
+        { label: '핵심', value: '문제 분류' },
+        { label: '실전 연결', value: '스택 / 큐 / 힙' },
+      ],
+      codeLines: [
+        'stack<int> st;',
+        'queue<int> q;',
+        'priority_queue<int, vector<int>, greater<int>> pq;',
+        '',
+        'st.push(3);',
+        'q.push(7);',
+        'pq.push(5);',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'unordered_map · unordered_set',
+      summary: 'C++에서도 빠른 탐색과 카운팅이 필요하면 해시 컨테이너를 먼저 떠올리는 것이 좋습니다.',
+      detail: '빈도 계산, 방문 여부 체크, 문자열/정수 매핑 문제는 map보다 unordered_map / unordered_set이 더 자연스러운 경우가 많습니다.',
+      language: 'C++',
+      chips: ['unordered_map', 'unordered_set', 'counting'],
+      useCase: '완주하지 못한 선수류 카운팅, 방문 체크, 중복 제거, 좌표 압축 전처리 등에서 자주 사용됩니다.',
+      pitfall: '존재하지 않는 키를 []로 접근하면 기본값이 생성됩니다. 의도한 동작인지 반드시 구분해야 합니다.',
+      checklist: [
+        '존재 확인: mp.find(key) != mp.end()',
+        '개수 체크: mp[key]++',
+        '중복 제거: unordered_set.insert',
+      ],
+      focusLabel: '해시 컨테이너',
+      nextFocus: '반복/탐색 보조 문법',
+      metrics: [
+        { label: '빈출도', value: '높음' },
+        { label: '핵심', value: '카운팅 / membership' },
+        { label: '실전 연결', value: '해시 / 문자열' },
+      ],
+      codeLines: [
+        'unordered_map<string, int> freq;',
+        'unordered_set<int> visited;',
+        '',
+        'freq["kim"]++;',
+        'visited.insert(3);',
+        'bool hasKim = freq.find("kim") != freq.end();',
+      ],
+    }),
+    makeSyntaxStep({
+      title: 'lower_bound 와 binary search 패턴',
+      summary: '이분 탐색 문제는 알고리즘보다도 STL 탐색 함수를 정확히 꺼내 쓰는 능력이 실전 속도를 좌우합니다.',
+      detail: '정렬된 구간에서 원하는 위치를 찾는 lower_bound / upper_bound를 익히면 구현 실수를 크게 줄일 수 있습니다.',
+      language: 'C++',
+      chips: ['lower_bound', 'upper_bound', 'binary search'],
+      useCase: '정렬된 배열 탐색, LIS 보조 배열, 범위 개수 계산, 파라메트릭 서치 전처리에서 자주 연결됩니다.',
+      pitfall: '반환값이 iterator라는 점을 잊고 바로 값처럼 쓰면 오류가 납니다. begin()과의 차이로 인덱스를 계산해야 합니다.',
+      checklist: [
+        '정렬 후 lower_bound 사용',
+        '인덱스 = it - vec.begin()',
+        '끝 iterator인지 확인',
+      ],
+      focusLabel: '탐색 보조 문법',
+      nextFocus: 'C++ 문법 복습 완료',
+      metrics: [
+        { label: '빈출도', value: '중~높음' },
+        { label: '핵심', value: '정렬 배열 탐색' },
+        { label: '실전 연결', value: '이분 탐색 / LIS' },
+      ],
+      codeLines: [
+        'vector<int> arr = {1, 3, 3, 7, 9};',
+        'auto it = lower_bound(arr.begin(), arr.end(), 3);',
+        'int idx = int(it - arr.begin());',
+        '',
+        'if (it != arr.end()) {',
+        '    cout << idx << "\\n";',
+        '}',
+      ],
+    }),
+  ];
+
+  return baseScenario({
+    id: 'cpp-syntax',
+    label: 'C++ 핵심 문법',
+    subtitle: '실전 코딩테스트에서 자주 만나는 C++ 문법 패턴을 빠르게 훑고 바로 다시 칠 수 있게 정리합니다.',
+    complexity: '복습 6단계',
+    spaceComplexity: '핵심 문법 요약',
+    badges: ['입출력', 'STL', '정렬', '해시'],
+    code: steps[0].codeLines,
+    renderer: 'syntax-reference',
+    legend: [
+      { label: '핵심 문법 카드', tone: 'highlight' },
+      { label: '실전 사용 맥락', tone: 'range' },
+      { label: '주의 포인트', tone: 'warn' },
+      { label: '바로 써볼 체크리스트', tone: 'good' },
+    ],
+    notes: [],
+    steps,
+    extra: {
+      visualPanelTitle: '문법 카드 시각화',
+      codePanelTitle: '실전 C++ 템플릿',
+      overviewLabel: '문법 개요',
+    },
+  });
+}
+
 function buildScenarios() {
   const sections = {
     sorting: [
@@ -7176,6 +7807,10 @@ function buildScenarios() {
       buildFibonacciScenario(),
       buildCombinationScenario(),
     ],
+    syntax: [
+      buildPythonSyntaxScenario(),
+      buildCppSyntaxScenario(),
+    ],
   };
 
   const byId = {};
@@ -7193,6 +7828,9 @@ function buildScenarios() {
 function visualHint(scenario, step) {
   const visual = step.visual || {};
   const renderer = scenario.renderer;
+  if (renderer === 'syntax-reference') {
+    return visual.hint || '문법 카드는 개념, 사용 맥락, 실수 포인트를 동시에 보여 주도록 구성했습니다.';
+  }
   if (renderer === 'graph') {
     if (visual.structureType === 'stack' && visual.backtracking) {
       return '노란 노드는 지금 스택에서 꺼내 처리하는 노드입니다. 화살표로 가리키는 노드 즉 스택 TOP이 실제 다음 차례입니다.';
@@ -7857,8 +8495,53 @@ function renderVisual(scenario, step) {
     body = renderNQueenVisual(step.visual, step);
   } else if (scenario.renderer === 'heap-sort') {
     body = renderHeapVisual(step.visual, step);
+  } else if (scenario.renderer === 'syntax-reference') {
+    body = renderSyntaxReferenceVisual(step.visual, step);
   }
   els.visualArea.innerHTML = renderVisualGuide(scenario, step) + renderMetricStrip(step) + body;
+}
+
+function renderSyntaxReferenceVisual(visual, step) {
+  const chips = visual.chips || [];
+  const checklist = visual.checklist || [];
+  return `
+    <div class="syntax-showcase">
+      <section class="syntax-hero">
+        <div class="syntax-hero-copy">
+          <h3>${escapeHtml(step.title)}</h3>
+          <p>${escapeHtml(step.detail || step.summary)}</p>
+        </div>
+        <div class="syntax-language-pill">${escapeHtml(visual.language || 'Syntax')}</div>
+      </section>
+
+      <section class="syntax-card-grid">
+        <article class="syntax-card syntax-card-primary">
+          <div class="syntax-card-label">핵심 용도</div>
+          <h4>${escapeHtml(visual.focusLabel || step.title)}</h4>
+          <p>${escapeHtml(visual.useCase || step.summary)}</p>
+        </article>
+
+        <article class="syntax-card syntax-card-accent">
+          <div class="syntax-card-label">자주 같이 쓰는 키워드</div>
+          <div class="syntax-chip-row">
+            ${chips.map((chip) => `<span class="syntax-chip">${escapeHtml(chip)}</span>`).join('')}
+          </div>
+        </article>
+
+        <article class="syntax-card">
+          <div class="syntax-card-label">실전 체크리스트</div>
+          <ul>
+            ${checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+          </ul>
+        </article>
+
+        <article class="syntax-card syntax-card-warning">
+          <div class="syntax-card-label">실수 포인트</div>
+          <p>${escapeHtml(visual.pitfall || '문법을 짧게 쓰는 것보다 실전에서 다시 읽기 쉬운지 먼저 확인하세요.')}</p>
+        </article>
+      </section>
+    </div>
+  `;
 }
 /* ===== end v6 overrides ===== */
 
