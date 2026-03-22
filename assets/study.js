@@ -252,7 +252,7 @@
           <div class="study-plan-list">
             ${file.lessons.map((group, index) => {
               const isExpandedWeek = group.group === expandedPlanWeek;
-              const weekCountLabel = `${group.items.length}개 과제`;
+              const weekCountLabel = `${group.group}-${group.items.length}개 과제`;
               return `
                 <section class="study-plan-group-block">
                   <button
@@ -264,10 +264,7 @@
                     aria-selected="${String(isExpandedWeek)}"
                     aria-expanded="${String(isExpandedWeek)}"
                   >
-                    <span class="study-plan-link-copy">
-                      <span class="study-plan-link-title">${escapeHtml(group.group)}</span>
-                      <span class="study-plan-link-description">${escapeHtml(weekCountLabel)}</span>
-                    </span>
+                    <span class="study-plan-link-title study-plan-link-title-inline">${escapeHtml(weekCountLabel)}</span>
                   </button>
                   <div class="study-plan-submenu" ${isExpandedWeek ? '' : 'hidden'}>
                     <div class="study-plan-list study-plan-list-nested">
