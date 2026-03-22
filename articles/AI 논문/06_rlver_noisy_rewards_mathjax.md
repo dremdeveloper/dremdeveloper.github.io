@@ -1,5 +1,5 @@
 ---
-title: "RLVεR: Reinforcement Learning with Verifiable Noisy Rewards"
+title: "Rate or Fate? RLVεR: Reinforcement Learning with Verifiable Noisy Rewards"
 math: true
 ---
 
@@ -23,7 +23,7 @@ window.MathJax = {
 
 ## 핵심 요약
 
-- 이 문서는 **검증 가능한 noisy reward**가 있는 RLVR 환경에서 학습이 언제 제대로 작동하고 언제 무너지는지를 분석한다.
+- 이 글은 **노이즈가 섞인 검증 보상**이 주어지는 RLVR 환경에서 학습이 언제 안정적으로 진행되고, 언제 붕괴하는지를 분석한다.
 - 핵심 지표는 **\(J = \mathrm{TPR} - \mathrm{FPR}\)** 이며, 검증기가 랜덤보다 나은지만 먼저 확인하면 학습 가능성을 빠르게 판단할 수 있다.
 - 저자들은 **\(J>0\)** 이면 노이즈가 있어도 학습은 진행되고, **\(J<0\)** 이면 잘못된 방향으로 강화되어 붕괴할 수 있음을 보인다.
 - 즉 노이즈는 단순히 속도만 늦추는 경우도 있지만, 검증기가 너무 나쁘면 **학습 자체의 방향을 뒤집을 수 있다**는 것이 요지다.

@@ -23,10 +23,10 @@ window.MathJax = {
 
 ## 핵심 요약
 
-- 이 문서는 instruction tuning survey의 Section 6을 중심으로, **도메인별 instruction tuning이 어떻게 달라지는지**를 정리한다.
+- 이 글은 *Instruction Tuning for Large Language Models: A Survey*의 Section 6을 중심으로, **도메인별 instruction tuning의 차이**를 정리한다.
 - 의료, 정보추출, 글쓰기, 감성분석, 코드, 산술처럼 도메인이 바뀌면 **출력 형식, 위험도, 평가 방식**도 함께 바뀐다.
 - 따라서 도메인 특화는 단순히 데이터를 더 넣는 문제가 아니라, **무엇을 맞는 답으로 볼지 다시 정의하는 작업**에 가깝다.
-- 이 절은 개별 모델 이름보다 **도메인에 따라 supervision interface가 어떻게 변하는지**를 보는 데 의미가 있다.
+- 이 절의 핵심은 개별 모델 나열보다, **데이터 구성·정답 형식·평가 기준이 어떻게 달라지는지**를 이해하는 데 있다.
 
 ## Section 6. Domain-specific Instruction Tuning
 - 원문: *Instruction Tuning for Large Language Models: A Survey* (arXiv:2308.10792v10)
