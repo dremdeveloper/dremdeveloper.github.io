@@ -1842,7 +1842,7 @@ body {
 
 /* v5 calm visual updates */
 .scene-fade {
-  animation: none !important;
+  animation: sceneFadeSoft 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .visual-guide {
@@ -1908,6 +1908,9 @@ body {
 .motion-dot.warn,
 .motion-dot.good {
   filter: drop-shadow(0 0 6px rgba(255,255,255,0.15));
+  animation: flowPulse 1.35s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .factorial-stage {
@@ -2059,6 +2062,8 @@ body {
 .tree-edge.active,
 .call-edge.active {
   stroke-width: 3.5;
+  stroke-dasharray: 8 10;
+  animation: edgeFlow 0.9s linear infinite;
 }
 
 .graph-edge.arrow,
@@ -2070,6 +2075,37 @@ body {
 .motion-dot.warn,
 .motion-dot.good {
   filter: drop-shadow(0 0 4px rgba(255,255,255,0.12));
+}
+
+.graph-node.current circle,
+.tree-node.current circle,
+.call-node.current circle,
+.heap-node.current circle,
+.array-cell.current,
+.array-cell.comparing,
+.stack-slot.current-slot,
+.queue-slot.front-slot,
+.factorial-card.current {
+  animation: focusPulse 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.graph-node.frontier circle,
+.tree-node.path circle,
+.call-node.waiting circle,
+.array-cell.key,
+.queue-slot.rear-slot,
+.factorial-card.waiting,
+.heap-node.checking circle {
+  animation: supportPulse 2.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.array-cell.shifted,
+.heap-node.swap circle,
+.call-node.split circle {
+  animation: alertPulse 1.05s ease-in-out infinite;
+  transform-origin: center;
 }
 
 .visual-guide-title {
@@ -2099,6 +2135,67 @@ body {
 
 .bar-track {
   height: 110px;
+}
+
+@keyframes sceneFadeSoft {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes focusPulse {
+  0%, 100% {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: inherit;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.035);
+  }
+}
+
+@keyframes supportPulse {
+  0%, 100% {
+    transform: translateY(-3px) scale(1.02);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.028);
+    opacity: 0.92;
+  }
+}
+
+@keyframes alertPulse {
+  0%, 100% {
+    transform: translateY(-3px) scale(1.02);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.045);
+  }
+}
+
+@keyframes flowPulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.82;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+@keyframes edgeFlow {
+  from {
+    stroke-dashoffset: 18;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .bar-fill {
@@ -2549,6 +2646,36 @@ body {
 @media (max-width: 1280px) {
   .factorial-card {
     min-height: 148px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-fade,
+  .motion-dot.warn,
+  .motion-dot.good,
+  .graph-edge.active,
+  .tree-edge.active,
+  .call-edge.active,
+  .graph-node.current circle,
+  .tree-node.current circle,
+  .call-node.current circle,
+  .heap-node.current circle,
+  .graph-node.frontier circle,
+  .tree-node.path circle,
+  .call-node.waiting circle,
+  .heap-node.checking circle,
+  .heap-node.swap circle,
+  .call-node.split circle,
+  .array-cell.current,
+  .array-cell.comparing,
+  .array-cell.key,
+  .array-cell.shifted,
+  .stack-slot.current-slot,
+  .queue-slot.front-slot,
+  .queue-slot.rear-slot,
+  .factorial-card.current,
+  .factorial-card.waiting {
+    animation: none !important;
   }
 }
 
