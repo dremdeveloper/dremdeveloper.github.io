@@ -909,17 +909,25 @@ svg {
 .graph-node text,
 .tree-node text,
 .call-node text {
-  fill: var(--text);
+  fill: #f8fbff;
   font-size: 17px;
   font-weight: 800;
   text-anchor: middle;
   dominant-baseline: central;
+  paint-order: stroke;
+  stroke: rgba(7, 16, 30, 0.72);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 
 .call-node .result-text {
   font-size: 11px;
-  fill: var(--muted);
-  dominant-baseline: auto;
+  fill: #d9e7ff;
+  font-weight: 700;
+  dominant-baseline: hanging;
+  paint-order: stroke;
+  stroke: rgba(7, 16, 30, 0.72);
+  stroke-width: 2px;
 }
 
 .graph-node.frontier circle,
@@ -1723,7 +1731,7 @@ body {
 
 .queue-lane {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
   gap: 8px;
 }
 
@@ -2155,11 +2163,6 @@ body {
   color: var(--muted);
 }
 
-.array-table-title span {
-  font-size: 11px;
-  color: var(--muted-2);
-}
-
 .array-table-badge {
   flex-shrink: 0;
   align-self: center;
@@ -2222,14 +2225,6 @@ body {
   font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1.2;
-}
-
-.array-index-label small {
-  display: block;
-  margin-bottom: 1px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 .array-cell {
@@ -2311,12 +2306,10 @@ body {
 
 .array-value {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   word-break: keep-all;
 }
 
@@ -2325,18 +2318,7 @@ body {
   font-weight: 900;
 }
 
-.array-value-meta {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--muted-2);
-}
-
 .array-value.muted {
-  color: var(--muted);
-}
-
-.array-value.muted .array-value-meta {
   color: var(--muted);
 }
 
@@ -2493,7 +2475,7 @@ body {
 .heap-stage svg {
   width: auto;
   max-width: 100%;
-  max-height: 300px;
+  max-height: 340px;
   margin: 0 auto;
   display: block;
 }
@@ -2520,17 +2502,23 @@ body {
 }
 
 .heap-node text {
-  fill: var(--text);
+  fill: #f8fbff;
   font-size: 16px;
   font-weight: 800;
   text-anchor: middle;
   dominant-baseline: central;
+  paint-order: stroke;
+  stroke: rgba(7, 16, 30, 0.78);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 
 .heap-node .heap-index {
   font-size: 10px;
-  fill: var(--muted);
-  dominant-baseline: auto;
+  fill: #d7e3fb;
+  dominant-baseline: hanging;
+  stroke: rgba(7, 16, 30, 0.72);
+  stroke-width: 2px;
 }
 
 .heap-node.current circle {
@@ -3238,6 +3226,127 @@ body {
     });
   }
 
+  function buildSelectionSortScenario() {
+    const input = [9, 4, 7, 3, 6];
+    const arr = input.slice();
+    const steps = [];
+
+    const sortedPrefix = (count) => Array.from({ length: count }, (_, idx) => idx);
+    const makeMetrics = (i, minIndex, scanIndex) => [
+      metric('배열 상태', fmtArray(arr)),
+      metric('정렬된 왼쪽 구간', sortedPrefix(i).length ? sortedPrefix(i).join(', ') : '없음'),
+      metric('현재 최소 후보', minIndex === null ? '없음' : `idx ${minIndex}`),
+      metric('스캔 위치 j', scanIndex === null ? '없음' : scanIndex),
+    ];
+
+    steps.push(createStep({
+      lines: [1],
+      title: '정렬 준비',
+      summary: '맨 왼쪽 자리부터 하나씩 최솟값을 골라 채울 준비를 합니다.',
+      detail: '선택 정렬은 아직 정렬되지 않은 구간에서 최솟값을 찾아 앞쪽의 확정 구간 뒤에 놓는 방식입니다.',
+      metrics: makeMetrics(0, null, null),
+      visual: { items: arr.slice(), sorted: [], activeRange: [0, arr.length - 1] },
+    }));
+
+    for (let i = 0; i < arr.length - 1; i++) {
+      let minIndex = i;
+      steps.push(createStep({
+        lines: [2, 3],
+        title: `${i}번 자리에 들어갈 최솟값 찾기`,
+        summary: `현재는 arr[${i}] = ${arr[i]}를 최소 후보로 두고 오른쪽 구간을 검사합니다.`,
+        detail: '선택 정렬은 한 패스마다 최솟값 후보를 하나 잡고, 오른쪽을 끝까지 보면서 더 작은 값이 있는지 확인합니다.',
+        metrics: makeMetrics(i, minIndex, null),
+        visual: { items: arr.slice(), sorted: sortedPrefix(i), keyIndex: minIndex, activeRange: [i, arr.length - 1] },
+      }));
+
+      for (let j = i + 1; j < arr.length; j++) {
+        steps.push(createStep({
+          lines: [4, 5],
+          title: '최소 후보와 비교',
+          summary: `${arr[j]}와 현재 최소 후보 ${arr[minIndex]}를 비교합니다.`,
+          detail: '더 작은 값이 나오면 최소 후보 위치를 그 인덱스로 바꿉니다.',
+          metrics: makeMetrics(i, minIndex, j),
+          visual: { items: arr.slice(), sorted: sortedPrefix(i), comparing: [minIndex, j], keyIndex: minIndex, activeRange: [i, arr.length - 1] },
+        }));
+
+        if (arr[j] < arr[minIndex]) {
+          minIndex = j;
+          steps.push(createStep({
+            lines: [6],
+            title: '최소 후보 갱신',
+            summary: `${arr[minIndex]}가 더 작으므로 새로운 최소 후보가 됩니다.`,
+            detail: '이 패스가 끝날 때까지 가장 작은 값을 기억해 두었다가 마지막에 한 번만 swap합니다.',
+            metrics: makeMetrics(i, minIndex, j),
+            visual: { items: arr.slice(), sorted: sortedPrefix(i), comparing: [i, minIndex], keyIndex: minIndex, activeRange: [i, arr.length - 1] },
+          }));
+        }
+      }
+
+      if (minIndex !== i) {
+        const leftValue = arr[i];
+        const minValue = arr[minIndex];
+        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+        steps.push(createStep({
+          lines: [7],
+          title: '최솟값을 앞으로 이동',
+          summary: `${minValue}를 인덱스 ${i}로 보내고 ${leftValue}와 자리를 바꿉니다.`,
+          detail: '선택 정렬은 비교를 모두 마친 뒤, 최솟값을 현재 확정 자리로 한 번만 옮깁니다.',
+          metrics: makeMetrics(i + 1, i, null),
+          visual: { items: arr.slice(), sorted: sortedPrefix(i + 1), shifted: [i, minIndex], keyIndex: i, activeRange: [i + 1, arr.length - 1] },
+        }));
+      } else {
+        steps.push(createStep({
+          lines: [7],
+          title: '이미 가장 작은 값',
+          summary: `arr[${i}]가 이미 현재 구간의 최솟값이라 자리를 바꾸지 않습니다.`,
+          detail: '최소 후보가 처음 위치 그대로라면 swap 없이 다음 자리로 넘어갑니다.',
+          metrics: makeMetrics(i + 1, i, null),
+          visual: { items: arr.slice(), sorted: sortedPrefix(i + 1), keyIndex: i, activeRange: [i + 1, arr.length - 1] },
+        }));
+      }
+    }
+
+    steps.push(createStep({
+      lines: [8],
+      title: '정렬 완료',
+      summary: '왼쪽부터 차례대로 최솟값을 채워 배열이 모두 정렬되었습니다.',
+      detail: '선택 정렬은 정렬된 구간이 왼쪽에서 오른쪽으로 한 칸씩 늘어나는 모습을 보면 이해하기 쉽습니다.',
+      metrics: makeMetrics(arr.length, null, null),
+      visual: { items: arr.slice(), sorted: Array.from({ length: arr.length }, (_, idx) => idx), activeRange: null },
+    }));
+
+    return baseScenario({
+      id: 'selection-sort',
+      label: '선택 정렬',
+      subtitle: '정렬되지 않은 구간에서 최솟값을 골라 앞자리에 놓는다.',
+      complexity: '시간 O(n²)',
+      spaceComplexity: '공간 O(1)',
+      badges: ['최솟값 선택', '제자리 정렬', '패스당 swap 1회'],
+      code: [
+        'def selection_sort(arr):',
+        '    for i in range(len(arr) - 1):',
+        '        min_idx = i',
+        '        for j in range(i + 1, len(arr)):',
+        '            if arr[j] < arr[min_idx]:',
+        '                min_idx = j',
+        '        arr[i], arr[min_idx] = arr[min_idx], arr[i]',
+        '    return arr',
+      ],
+      renderer: 'sorting',
+      legend: [
+        { label: '현재 최소 후보', tone: 'key' },
+        { label: '비교 중', tone: 'highlight' },
+        { label: '정렬 완료 구간', tone: 'good' },
+      ],
+      notes: [
+        { title: '핵심 포인트', body: '선택 정렬은 매 패스마다 최솟값 하나를 골라 맨 앞으로 보내는 방식입니다.' },
+        { title: '보기 좋은 포인트', body: '왼쪽의 초록 구간이 확정 구간이고, 오른쪽에서 최소 후보가 어떻게 바뀌는지 보세요.' },
+        { title: '실수하기 쉬운 부분', body: '최소 후보는 비교할 때마다 바로 swap하지 않고, 패스가 끝난 뒤 한 번만 교환합니다.' },
+      ],
+      steps,
+    });
+  }
+
   function buildMergeSortScenario() {
     const arr = [7, 2, 9, 1, 5, 3];
     const steps = [];
@@ -3741,14 +3850,20 @@ body {
     stack.push(30);
     snapshot([5], 'push 30', '30을 top에 올립니다.', '새 값이 들어오면 그 값이 새로운 top이 됩니다.', 'push', 30);
 
-    const popped1 = stack.pop();
-    snapshot([6], 'pop', `${popped1}을 top에서 꺼냅니다.`, 'pop도 항상 top에서만 일어납니다. 그래서 가장 최근 값이 먼저 빠집니다.', 'pop', popped1);
-
     stack.push(40);
-    snapshot([7], 'push 40', '40을 top에 올립니다.', 'push와 pop이 모두 한쪽 끝(top)에서만 일어난다는 점이 핵심입니다.', 'push', 40);
+    snapshot([6], 'push 40', '40을 top에 올립니다.', 'top 쪽으로 값이 계속 쌓이는 모습에 주목해 보세요.', 'push', 40);
+
+    const popped1 = stack.pop();
+    snapshot([7], 'pop', `${popped1}을 top에서 꺼냅니다.`, 'pop도 항상 top에서만 일어납니다. 그래서 가장 최근 값이 먼저 빠집니다.', 'pop', popped1);
+
+    stack.push(50);
+    snapshot([8], 'push 50', '50을 top에 올립니다.', '값 개수가 늘어나도 연산 위치는 항상 top 한 곳뿐입니다.', 'push', 50);
 
     const popped2 = stack.pop();
-    snapshot([8], '마지막 pop', `${popped2}을 다시 top에서 꺼냅니다.`, '스택은 가장 나중에 들어간 40이 가장 먼저 빠집니다.', 'pop', popped2);
+    snapshot([9], 'pop 50', `${popped2}을 다시 top에서 꺼냅니다.`, '스택은 가장 나중에 들어간 50이 가장 먼저 빠집니다.', 'pop', popped2);
+
+    const popped3 = stack.pop();
+    snapshot([10], '마지막 pop', `${popped3}을 이어서 꺼냅니다.`, '맨 위부터 차례대로 빠지므로 30보다 40이 먼저 나옵니다.', 'pop', popped3);
 
     return baseScenario({
       id: 'stack-basic',
@@ -3763,8 +3878,10 @@ body {
         'stack.append(20)',
         'top = stack[-1]',
         'stack.append(30)',
-        'popped = stack.pop()',
         'stack.append(40)',
+        'popped = stack.pop()',
+        'stack.append(50)',
+        'popped = stack.pop()',
         'popped = stack.pop()',
       ],
       renderer: 'linear-structure',
@@ -3827,8 +3944,14 @@ body {
     queue.push(40);
     snapshot([8], 'enqueue 40', '40을 rear에 넣습니다.', '줄 서는 구조라고 생각하면 이해가 쉽습니다.', 'enqueue', 40);
 
+    queue.push(50);
+    snapshot([9], 'enqueue 50', '50도 rear에 넣습니다.', '원소 수가 늘어나도 먼저 들어온 값은 front에서 차례대로 빠져나갑니다.', 'enqueue', 50);
+
     const secondOut = queue.shift();
-    snapshot([9], '마지막 dequeue', `${secondOut}을 다시 front에서 꺼냅니다.`, '큐는 먼저 들어온 값이 먼저 나가는 구조를 유지합니다.', 'dequeue', secondOut);
+    snapshot([10], 'dequeue', `${secondOut}을 다시 front에서 꺼냅니다.`, '큐는 먼저 들어온 값이 먼저 나가는 구조를 유지합니다.', 'dequeue', secondOut);
+
+    const thirdOut = queue.shift();
+    snapshot([11], '마지막 dequeue', `${thirdOut}을 이어서 front에서 꺼냅니다.`, '10이 나간 뒤에는 20, 그다음 30처럼 들어온 순서대로 처리됩니다.', 'dequeue', thirdOut);
 
     return baseScenario({
       id: 'queue-basic',
@@ -3846,6 +3969,8 @@ body {
         'popped = queue.popleft()',
         'queue.append(30)',
         'queue.append(40)',
+        'queue.append(50)',
+        'popped = queue.popleft()',
         'popped = queue.popleft()',
       ],
       renderer: 'linear-structure',
@@ -4738,6 +4863,8 @@ body {
           currentNodeId,
           callStack: stack.slice(),
           sequence: Array.from({ length: n }, (_, idx) => n - idx),
+          baseCase: 'n <= 1 이면 1 반환',
+          recurrence: 'n! = n × (n-1)!',
         },
       }));
     }
@@ -4837,6 +4964,8 @@ body {
           nodeStates: deepClone(stateMap),
           currentNodeId,
           callStack: stack.slice(),
+          recursionKind: 'fibonacci',
+          explanation: 'fib(n)은 n번째 피보나치 수를 뜻하며, fib(n-1)과 fib(n-2)를 더해 만듭니다.',
         },
       }));
     }
@@ -4941,6 +5070,8 @@ body {
           nodeStates: deepClone(stateMap),
           currentNodeId,
           callStack: stack.slice(),
+          recursionKind: 'combination',
+          explanation: 'C(n, k)는 n개 중 k개를 고르는 경우의 수입니다. 왼쪽은 선택, 오른쪽은 선택하지 않음을 뜻합니다.',
         },
       }));
     }
@@ -6150,7 +6281,7 @@ function exposePublicApi() {
     const cards = [
       { tag: '현재 프레임', label: visual.callStack.length ? visual.callStack[visual.callStack.length - 1] : '없음', tone: 'highlight' },
       { tag: '프레임 상태', label: currentState ? statusLabel[currentState] : '없음', tone: 'warn' },
-      { tag: '호출 스택 top', label: visual.callStack.length ? visual.callStack[visual.callStack.length - 1] : '비어 있음', tone: 'good' },
+      { tag: '무슨 뜻?', label: visual.explanation || '현재 노드가 어떤 하위 문제를 뜻하는지 보세요.', tone: 'good' },
     ];
 
     return `
@@ -6170,16 +6301,34 @@ function exposePublicApi() {
               else if (state.status === 'waiting') classes.push('waiting');
               else if (state.status === 'split') classes.push('split');
               else if (state.status === 'done') classes.push('done');
-              const resultText = state.result === null || state.result === undefined ? '' : `<text class="result-text" x="${node.x}" y="${node.y + 24}">= ${state.result}</text>`;
+              let pendingText = '';
+              if (visual.recursionKind === 'fibonacci') {
+                const match = /fib\((\d+)\)/.exec(node.label);
+                const value = match ? Number(match[1]) : null;
+                if (value !== null) {
+                  pendingText = value <= 1 ? `기저값 ${value}` : `fib(${value - 1}) + fib(${value - 2})`;
+                }
+              } else if (visual.recursionKind === 'combination') {
+                const match = /C\((\d+), (\d+)\)/.exec(node.label);
+                const n = match ? Number(match[1]) : null;
+                const k = match ? Number(match[2]) : null;
+                if (n !== null && k !== null) {
+                  pendingText = (k === 0 || k === n)
+                    ? '기저값 1'
+                    : `선택 C(${n - 1},${k - 1}) + 비선택 C(${n - 1},${k})`;
+                }
+              }
+              const caption = state.result === null || state.result === undefined ? pendingText : `= ${state.result}`;
+              const resultText = caption ? `<text class="result-text" x="${node.x}" y="${node.y + 30}">${escapeHtml(caption)}</text>` : '';
               return `
                 <g class="${classes.join(' ')}">
                   <circle cx="${node.x}" cy="${node.y}" r="23"></circle>
-                  <text x="${node.x}" y="${node.y - 1}">${node.label}</text>
+                  <text x="${node.x}" y="${node.y - 4}">${node.label}</text>
                   ${resultText}
                 </g>
               `;
             }).join('')}
-            ${visual.currentNodeId ? renderSvgBadge(nodesById[visual.currentNodeId], '현재', 'current', 42, -10) : ''}
+            ${visual.currentNodeId ? renderSvgBadge(nodesById[visual.currentNodeId], '현재', 'current', 0, -42) : ''}
           </svg>
         </div>
         <div class="workspace-box">
@@ -6402,16 +6551,12 @@ function arrayStateClasses(index, options) {
 function renderArrayTable(values, options = {}) {
   const data = Array.isArray(values) ? values : [];
   const arrayName = options.arrayName || '';
-  const indexHeader = options.indexLabel || 'index';
-  const valueLabel = options.valueLabel || '원소';
   const indexLabels = options.indexLabels || data.map((_, index) => index);
-  const showIndexHeader = Boolean(options.showIndexHeader);
   const titleHtml = options.title || arrayName
     ? `
         <div class="array-table-head">
           <div class="array-table-title">
             <strong>${escapeHtml(options.title || (arrayName ? `${arrayName} 배열` : '배열'))}</strong>
-            <span>${escapeHtml(arrayName ? `${arrayName}[${indexHeader}] → ${valueLabel}` : `${indexHeader}별 ${valueLabel}`)}</span>
           </div>
           ${arrayName ? `<div class="array-table-badge">${escapeHtml(arrayName)}</div>` : ''}
         </div>
@@ -6430,18 +6575,14 @@ function renderArrayTable(values, options = {}) {
     const displayValue = value === '' || value === null || value === undefined ? '·' : String(value);
     const muted = displayValue === '·' ? 'muted' : '';
     const indexText = String(indexLabels[index]);
-    const indexChip = arrayName ? `${arrayName}[${indexText}]` : `[${indexText}]`;
-    const metaText = displayValue === '·' ? `빈 ${valueLabel}` : `${valueLabel}`;
     return `
       <div class="array-column">
         <div class="array-index-label">
-          ${showIndexHeader ? `<small>${escapeHtml(indexHeader)}</small>` : ''}
-          <span>${escapeHtml(indexChip)}</span>
+          <span>${escapeHtml(indexText)}</span>
         </div>
         <div class="${arrayStateClasses(index, options)}">
           <span class="array-value ${muted}">
             <span class="array-value-main">${escapeHtml(displayValue)}</span>
-            <span class="array-value-meta">${escapeHtml(metaText)}</span>
           </span>
         </div>
       </div>
@@ -6464,8 +6605,8 @@ function renderArrayTable(values, options = {}) {
 function heapLayoutFromArray(heap) {
   const nodes = {};
   const edges = [];
-  const width = 620;
-  const levelGap = 92;
+  const width = 720;
+  const levelGap = 104;
   const levels = heap.length ? Math.floor(Math.log2(heap.length)) + 1 : 1;
   heap.forEach((value, index) => {
     const level = Math.floor(Math.log2(index + 1));
@@ -6479,7 +6620,7 @@ function heapLayoutFromArray(heap) {
     if (left < heap.length) edges.push([index, left]);
     if (right < heap.length) edges.push([index, right]);
   });
-  return { nodes, edges, width, height: 86 + (levels - 1) * levelGap + 36 };
+  return { nodes, edges, width, height: 96 + (levels - 1) * levelGap + 60 };
 }
 
 function buildHeapSortScenario() {
@@ -6877,6 +7018,7 @@ function buildScenarios() {
     sorting: [
       buildBubbleSortScenario(),
       buildInsertionSortScenario(),
+      buildSelectionSortScenario(),
       buildMergeSortScenario(),
       buildQuickSortScenario(),
       buildCountingSortScenario(),
@@ -6975,10 +7117,10 @@ function renderSortingVisual(visual, renderer, step) {
   const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
   const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
   const infoCards = [];
-  if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `arr[${index}]`).join(' ↔ '), tone: 'highlight' });
-  if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: '기준값', label: `arr[${visual.keyIndex}]`, tone: 'warn' });
-  if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `arr[${visual.pivotIndex}]`, tone: 'warn' });
-  if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `arr[${visual.currentWrite}]`, tone: 'good' });
+  if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `인덱스 ${index}`).join(' ↔ '), tone: 'highlight' });
+  if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: '기준값', label: `인덱스 ${visual.keyIndex}`, tone: 'warn' });
+  if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `인덱스 ${visual.pivotIndex}`, tone: 'warn' });
+  if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `인덱스 ${visual.currentWrite}`, tone: 'good' });
   if (visual.activeRange && rangeStart !== null && rangeEnd !== null) infoCards.push({ tag: '현재 구간', label: `${rangeStart} ~ ${rangeEnd}`, tone: 'range' });
 
   const rangeIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
@@ -7207,7 +7349,7 @@ function renderTreeTraversalVisual(visual, step) {
   const cards = [
     { tag: '현재 노드', label: visual.current || stackTop || '없음', tone: 'highlight' },
     { tag: '현재 동작', label: actionLabel, tone: 'warn' },
-    { tag: '호출 스택 top', label: stackTop || '비어 있음', tone: 'good' },
+    { tag: '방문 순서', label: visual.visitedOrder.length ? visual.visitedOrder.join(' → ') : '아직 방문 전', tone: 'good' },
   ];
 
   return `
@@ -7246,7 +7388,7 @@ function renderTreeTraversalVisual(visual, step) {
               </g>
             `;
           }).join('')}
-          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', visual.backtracking ? 0 : 42, visual.backtracking ? -34 : -10) : ''}
+          ${visual.current ? renderSvgBadge(tree[visual.current], visual.backtracking ? '복귀 중' : '현재', visual.backtracking ? 'next' : 'current', 0, -40) : ''}
           ${visual.backtracking && visual.returnTarget ? renderSvgBadge(tree[visual.returnTarget], '돌아갈 곳', 'done', 0, 30) : ''}
           ${!visual.backtracking && visual.edge && visual.edge[1] ? renderSvgBadge(tree[visual.edge[1]], '다음', 'next', 0, 30) : ''}
         </svg>
@@ -7277,16 +7419,16 @@ function renderFactorialVisual(visual) {
   const currentStatus = visual.currentNodeId ? visual.nodeStates[visual.currentNodeId]?.status : null;
   const maxValue = Math.max(...values);
 
-  let moveText = '현재 프레임 내부에서 조건을 확인합니다.';
+  let moveText = '현재 프레임에서 기저 사례인지 확인합니다.';
   let moveDirection = '멈춤';
   if ((currentStatus === 'waiting' || currentStatus === 'current') && currentValue && currentValue > 1) {
-    moveText = `factorial(${currentValue - 1})를 호출하러 오른쪽으로 이동합니다.`;
+    moveText = `문제를 더 작은 factorial(${currentValue - 1})로 줄여 내려갑니다.`;
     moveDirection = `${currentValue} → ${currentValue - 1}`;
   } else if (currentStatus === 'done' && currentValue && currentValue < maxValue) {
-    moveText = `계산된 값을 부모 factorial(${currentValue + 1})로 반환합니다.`;
+    moveText = `계산된 결과를 부모 factorial(${currentValue + 1})에게 돌려줍니다.`;
     moveDirection = `${currentValue} → ${currentValue + 1}`;
   } else if (currentStatus === 'done' && currentValue === 1) {
-    moveText = '기저 사례에서 1을 반환하고, 반환 흐름이 왼쪽으로 시작됩니다.';
+    moveText = '가장 작은 문제 factorial(1)에서 1을 반환하며 올라가기 시작합니다.';
     moveDirection = '1 → 2';
   }
 
@@ -7294,8 +7436,8 @@ function renderFactorialVisual(visual) {
     <div class="factorial-layout">
       ${renderDirectionStrip([
         { tag: '현재 프레임', label: currentValue ? `factorial(${currentValue})` : '없음', tone: 'highlight' },
-        { tag: '이동 방향', label: moveDirection, tone: 'warn' },
-        { tag: '의미', label: moveText, tone: 'good' },
+        { tag: '내려가기 규칙', label: visual.recurrence || 'n! = n × (n-1)!', tone: 'warn' },
+        { tag: '멈추는 규칙', label: visual.baseCase || 'n <= 1 이면 1 반환', tone: 'good' },
       ])}
       <div class="factorial-stage compact-stage">
         <div class="factorial-chain">
@@ -7308,9 +7450,11 @@ function renderFactorialVisual(visual) {
             else if (state.status === 'done') classes.push('done');
             const smallerNode = nodeByValue[value - 1];
             const smallerResult = smallerNode && visual.nodeStates[smallerNode.id] ? visual.nodeStates[smallerNode.id].result : null;
-            const formula = value > 1 && state.result !== null && smallerResult !== null
-              ? `${value} × ${smallerResult} = ${state.result}`
-              : (state.result !== null ? `return ${state.result}` : 'return ?');
+            const formula = value <= 1
+              ? (state.result !== null ? `1을 반환 → ${state.result}` : '기저 사례: 1 반환 준비')
+              : state.result !== null && smallerResult !== null
+                ? `${value} × ${smallerResult} = ${state.result}`
+                : `${value} × factorial(${value - 1}) 계산 대기`;
             const statusLabel = state.status === 'current' ? '지금 조건을 검사하거나 곱셈을 계산하는 중'
               : state.status === 'waiting' ? `factorial(${value - 1}) 결과를 기다리는 중`
               : state.status === 'done' ? '반환값 계산이 끝나 위로 올라갈 준비 완료'
@@ -7318,12 +7462,11 @@ function renderFactorialVisual(visual) {
             let arrowHtml = '';
             if (index < values.length - 1) {
               const childValue = values[index + 1];
-              const activeForward = currentStatus !== 'done' && currentValue === value && value > childValue;
               const activeBack = currentStatus === 'done' && currentValue === childValue;
               arrowHtml = `
                 <div class="factorial-arrow ${activeBack ? 'back' : ''}">
                   <div class="factorial-arrow-main">${activeBack ? '←' : '→'}</div>
-                  <div class="factorial-arrow-sub">${activeBack ? `${childValue}의 결과를 ${value}로 반환` : `${childValue}를 호출`}</div>
+                  <div class="factorial-arrow-sub">${activeBack ? `factorial(${childValue}) 결과를 factorial(${value})에 반영` : `다음으로 factorial(${childValue}) 호출`}</div>
                 </div>
               `;
             }
@@ -7341,6 +7484,10 @@ function renderFactorialVisual(visual) {
           }).join('')}
         </div>
       </div>
+      ${renderDirectionStrip([
+        { tag: '지금 흐름', label: moveDirection, tone: 'warn' },
+        { tag: '해석', label: moveText, tone: 'good' },
+      ])}
       <div class="workspace-box">
         <div class="workspace-card structure-card">
           <div class="workspace-head">현재 호출 스택</div>
@@ -7353,8 +7500,6 @@ function renderFactorialVisual(visual) {
         }), {
           title: '반환값 진행 표',
           arrayName: 'returns',
-          indexLabel: 'n',
-          valueLabel: 'return',
           indexLabels: values,
           currentIndices: currentValue ? [values.indexOf(currentValue)] : [],
           sortedIndices: values.filter((value) => {
@@ -7530,13 +7675,13 @@ function renderHeapVisual(visual, step) {
               if (visual.activeIndex === idx) classes.push('current');
               return `
                 <g class="${classes.join(' ')}">
-                  <circle cx="${node.x}" cy="${node.y}" r="23"></circle>
-                  <text x="${node.x}" y="${node.y - 2}">${node.value}</text>
-                  <text class="heap-index" x="${node.x}" y="${node.y + 25}">idx ${idx}</text>
+                  <circle cx="${node.x}" cy="${node.y}" r="25"></circle>
+                  <text x="${node.x}" y="${node.y - 3}">${node.value}</text>
+                  <text class="heap-index" x="${node.x}" y="${node.y + 34}">idx ${idx}</text>
                 </g>
               `;
             }).join('')}
-            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 42, -10) : ''}
+            ${visual.activeIndex !== null && visual.activeIndex !== undefined && layout.nodes[visual.activeIndex] ? renderSvgBadge(layout.nodes[visual.activeIndex], '현재', 'current', 0, -46) : ''}
           </svg>
         ` : `<div class="empty-text">현재 힙이 비어 있습니다.</div>`}
       </div>
