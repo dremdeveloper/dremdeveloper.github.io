@@ -1626,6 +1626,27 @@ p { line-height: 1.75; color: var(--muted); }
   margin: 28px 0;
 }
 
+.article-viewer table {
+  border-collapse: collapse;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.article-viewer th,
+.article-viewer td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.article-viewer pre {
+  background: #111;
+  color: #eee;
+  padding: 12px;
+  overflow-x: auto;
+}
+
 
 @media (max-width: 860px) {
   .browser-layout {

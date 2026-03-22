@@ -246,131 +246,13 @@
     window.history.replaceState({}, '', url);
   }
 
-  function renderInline(text) {
-    return escapeHtml(text)
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  }
+  marked.setOptions({
+    gfm: true,
+    breaks: true
+  });
 
-  function renderMarkdown(markdown) {
-    const lines = markdown.replace(/\r\n/g, '\n').split('\n');
-    const html = [];
-    let inCodeBlock = false;
-    let codeLines = [];
-    let listType = '';
-    let quoteLines = [];
-    let paragraphLines = [];
-
-    const flushParagraph = () => {
-      if (!paragraphLines.length) return;
-      html.push(`<p>${renderInline(paragraphLines.join(' '))}</p>`);
-      paragraphLines = [];
-    };
-
-    const flushList = () => {
-      if (!listType) return;
-      html.push(`</${listType}>`);
-      listType = '';
-    };
-
-    const flushQuote = () => {
-      if (!quoteLines.length) return;
-      html.push(`<blockquote><p>${renderInline(quoteLines.join('<br />'))}</p></blockquote>`);
-      quoteLines = [];
-    };
-
-    const flushTextBlocks = () => {
-      flushParagraph();
-      flushList();
-      flushQuote();
-    };
-
-    const flushCode = () => {
-      if (!inCodeBlock) return;
-      html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
-      codeLines = [];
-      inCodeBlock = false;
-    };
-
-    for (const line of lines) {
-      if (line.trim().startsWith('```')) {
-        flushTextBlocks();
-        if (inCodeBlock) {
-          flushCode();
-        } else {
-          inCodeBlock = true;
-          codeLines = [];
-        }
-        continue;
-      }
-
-      if (inCodeBlock) {
-        codeLines.push(line);
-        continue;
-      }
-
-      if (!line.trim()) {
-        flushTextBlocks();
-        continue;
-      }
-
-      if (/^---+$/.test(line.trim())) {
-        flushTextBlocks();
-        html.push('<hr />');
-        continue;
-      }
-
-      const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-      if (headingMatch) {
-        flushTextBlocks();
-        const level = Math.min(6, headingMatch[1].length);
-        html.push(`<h${level}>${renderInline(headingMatch[2].trim())}</h${level}>`);
-        continue;
-      }
-
-      const quoteMatch = line.match(/^>\s?(.*)$/);
-      if (quoteMatch) {
-        flushParagraph();
-        flushList();
-        quoteLines.push(quoteMatch[1]);
-        continue;
-      }
-
-      const orderedMatch = line.match(/^\d+\.\s+(.+)$/);
-      if (orderedMatch) {
-        flushParagraph();
-        flushQuote();
-        if (listType !== 'ol') {
-          flushList();
-          listType = 'ol';
-          html.push('<ol>');
-        }
-        html.push(`<li>${renderInline(orderedMatch[1])}</li>`);
-        continue;
-      }
-
-      const unorderedMatch = line.match(/^[-*]\s+(.+)$/);
-      if (unorderedMatch) {
-        flushParagraph();
-        flushQuote();
-        if (listType !== 'ul') {
-          flushList();
-          listType = 'ul';
-          html.push('<ul>');
-        }
-        html.push(`<li>${renderInline(unorderedMatch[1])}</li>`);
-        continue;
-      }
-
-      paragraphLines.push(line.trim());
-    }
-
-    flushTextBlocks();
-    flushCode();
-
-    return html.join('');
+  function renderMarkdown(md) {
+    return DOMPurify.sanitize(marked.parse(md));
   }
 
   function resolveInitialFileName() {
@@ -466,7 +348,9 @@
       file.title = renderedTitle;
       renderList();
       updateSidebarCurrentLabel();
-      showViewer(renderMarkdown(sanitizedMarkdown));
+      viewerNode.innerHTML = renderMarkdown(sanitizedMarkdown);
+      viewerNode.hidden = false;
+      statusNode.hidden = true;
       closeSidebarOnMobile();
       await typesetMath();
     } catch (error) {
