@@ -5,20 +5,40 @@ window.siteData = {
     branch: 'main',
     articlesPath: 'articles',
     categoryOrder: ['AI 논문', '생각', '지식 정리', '트러블 슈팅'],
-    defaultFile: 'articles/생각정리/2026-03-21-sample-article.md',
+    defaultFile: 'articles/AI 논문/attention_is_all_you_need.md',
     ignoredFiles: [
       'articles/AI 논문/sample.md'
     ],
     files: [
       {
-        name: 'articles/AI 논문/Llama 2.md',
+        name: 'articles/AI 논문/attention_is_all_you_need.md',
         category: 'AI 논문',
-        title: 'Llama 2'
+        title: 'attention is all you need'
       },
       {
-        name: 'articles/AI 논문/PPO.md',
+        name: 'articles/AI 논문/Direct Preference Optimization.md',
         category: 'AI 논문',
-        title: 'PPO'
+        title: 'Direct Preference Optimization'
+      },
+      {
+        name: 'articles/AI 논문/Proximal_Policy_Optimization_Algorithms.md',
+        category: 'AI 논문',
+        title: 'Proximal Policy Optimization Algorithms'
+      },
+      {
+        name: 'articles/AI 논문/Rate_or_Fate_RLVeR.md',
+        category: 'AI 논문',
+        title: 'Rate or Fate RLVeR'
+      },
+      {
+        name: 'articles/AI 논문/Training language models to follow instructions with human feedback.md',
+        category: 'AI 논문',
+        title: 'Training language models to follow instructions with human feedback'
+      },
+      {
+        name: 'articles/AI 논문/mixture_of_experts_in_large_language_models.md',
+        category: 'AI 논문',
+        title: 'mixture of experts in large language models'
       },
       {
         name: 'articles/생각정리/2026-03-21-sample-article.md',
@@ -27,11 +47,18 @@ window.siteData = {
       },
       {
         name: 'articles/유용한 지식 및 팁/markdown_guide_ko.md',
-        category: '지식 정리'
+        category: '지식 정리',
+        title: 'Markdown Guide KO'
       },
       {
         name: 'articles/트러블 슈팅/2026-03-21-temp-troubleshooting-note.md',
-        category: '트러블 슈팅'
+        category: '트러블 슈팅',
+        title: 'temp troubleshooting note'
+      },
+      {
+        name: 'articles/instruction_tuning_survey_section6_mathjax.md',
+        category: '미분류',
+        title: 'instruction tuning survey section6 mathjax'
       }
     ]
   },

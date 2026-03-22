@@ -170,8 +170,7 @@
     updateSearchResults();
   }
 
-  function mergeArticleFiles(primaryFiles, secondaryFiles = [], options = {}) {
-    const { includeSecondaryOnly = false } = options;
+  function mergeArticleFiles(primaryFiles, secondaryFiles = []) {
     const merged = new Map();
 
     primaryFiles.forEach((item) => {
@@ -190,9 +189,7 @@
         return;
       }
 
-      if (includeSecondaryOnly || !primaryFiles.length) {
-        merged.set(key, { ...item, path: key, name: key });
-      }
+      merged.set(key, { ...item, path: key, name: key });
     });
 
     return Array.from(merged.values());
