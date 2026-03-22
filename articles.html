@@ -35,12 +35,40 @@
       </button>
 
       <nav id="site-nav" class="site-nav" aria-label="주요 메뉴">
-        <a class="is-active" href="articles.html">Article</a>
+        <div class="site-nav-dropdown" id="article-nav-item">
+          <button
+            id="article-nav-toggle"
+            class="site-nav-dropdown-toggle is-active"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="article-top-submenu"
+          >
+            Article
+          </button>
+
+          <section id="article-top-submenu" class="site-top-submenu" aria-label="Article 서브메뉴">
+            <div class="site-submenu-roots" role="list">
+              <a class="site-submenu-root" href="articles.html?category=AI%20%EB%85%BC%EB%AC%B8">
+                <span class="site-submenu-root-label">AI논문</span>
+              </a>
+              <a class="site-submenu-root" href="articles.html?category=%EC%83%9D%EA%B0%81">
+                <span class="site-submenu-root-label">생각</span>
+              </a>
+              <a class="site-submenu-root" href="articles.html?category=%EC%A7%80%EC%8B%9D%20%EC%A0%95%EB%A6%AC">
+                <span class="site-submenu-root-label">지식 정리</span>
+              </a>
+              <a class="site-submenu-root" href="articles.html?category=%ED%8A%B8%EB%9F%AC%EB%B8%94%20%EC%8A%88%ED%8C%85">
+                <span class="site-submenu-root-label">트러블 슈팅</span>
+              </a>
+            </div>
+          </section>
+        </div>
         <a href="lectures.html">강의</a>
-        <div class="site-nav-study" id="study-nav-item">
+        <div class="site-nav-dropdown site-nav-study" id="study-nav-item">
           <button
             id="study-nav-toggle"
-            class="site-nav-study-toggle"
+            class="site-nav-dropdown-toggle site-nav-study-toggle"
             type="button"
             aria-expanded="false"
             aria-haspopup="true"
@@ -49,16 +77,16 @@
             코테자료
           </button>
 
-          <section id="study-top-submenu" class="study-top-submenu" aria-label="코테자료 서브메뉴">
-            <div class="study-submenu-roots" role="list">
-              <a class="study-submenu-root" href="study.html?view=visualization">
-                <span class="study-submenu-root-label">시각화</span>
+          <section id="study-top-submenu" class="site-top-submenu study-top-submenu" aria-label="코테자료 서브메뉴">
+            <div class="site-submenu-roots study-submenu-roots" role="list">
+              <a class="site-submenu-root study-submenu-root" href="study.html?view=visualization">
+                <span class="site-submenu-root-label study-submenu-root-label">시각화</span>
               </a>
-              <a class="study-submenu-root" href="study.html?view=plan">
-                <span class="study-submenu-root-label">학습 플랜</span>
+              <a class="site-submenu-root study-submenu-root" href="study.html?view=plan">
+                <span class="site-submenu-root-label study-submenu-root-label">학습 플랜</span>
               </a>
-              <a class="study-submenu-root" href="boj-archive-search.html">
-                <span class="study-submenu-root-label">문제 검색</span>
+              <a class="site-submenu-root study-submenu-root" href="boj-archive-search.html">
+                <span class="site-submenu-root-label study-submenu-root-label">문제 검색</span>
               </a>
             </div>
           </section>

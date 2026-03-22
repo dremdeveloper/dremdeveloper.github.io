@@ -34,11 +34,13 @@
     '지식 정리': '지식 정리',
     '트러블 슈팅': '트러블 슈팅'
   };
+  const requestedCategory = normalizeCategoryLabel(decodeURIComponent(searchParams.get('category') || ''));
 
   const contentsApiBaseUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
   const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}`;
   const mathJaxSrc = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
   let articleFiles = [];
+  let allArticleFiles = [];
   let currentFile = '';
   let mathJaxLoader = null;
   let searchMatches = [];
@@ -132,13 +134,24 @@
     sidebarCurrentNode.textContent = SIDEBAR_CURRENT_LABEL;
   }
 
+  function applyCategoryFilter(files) {
+    if (!requestedCategory) return files;
+    return files.filter((item) => normalizeCategoryLabel(item.category) === requestedCategory);
+  }
+
+  function updateCountLabel() {
+    const prefix = requestedCategory ? `${requestedCategory} · ` : '';
+    countNode.textContent = `${prefix}${articleFiles.length}개의 md 파일`;
+  }
+
   function setArticleFiles(files) {
-    articleFiles = files
+    allArticleFiles = files
       .filter((item) => normalizeFileKey(item?.path || item?.name))
       .map(buildArticleEntry)
       .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
 
-    countNode.textContent = `${articleFiles.length}개의 md 파일`;
+    articleFiles = applyCategoryFilter(allArticleFiles);
+    updateCountLabel();
     updateSidebarCurrentLabel();
     renderList();
     updateSearchResults();
@@ -440,6 +453,7 @@
     return articleFiles.find((file) => file.name === requestedFile)?.name
       || articleFiles.find((file) => file.name === defaultFile)?.name
       || articleFiles[0]?.name
+      || allArticleFiles.find((file) => file.name === requestedFile)?.name
       || '';
   }
 
@@ -514,7 +528,7 @@
   }
 
   async function loadArticle(fileName) {
-    const file = articleFiles.find((entry) => entry.name === fileName);
+    const file = allArticleFiles.find((entry) => entry.name === fileName);
     if (!file) return;
 
     currentFile = file.name;
