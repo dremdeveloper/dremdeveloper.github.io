@@ -4,86 +4,103 @@
 
   const menuToggle = document.querySelector('.menu-toggle');
   const siteNav = document.querySelector('.site-nav');
-  const studyNavItem = document.getElementById('study-nav-item');
-  const studyNavToggle = document.getElementById('study-nav-toggle');
-  const studyTopSubmenu = document.getElementById('study-top-submenu');
   const visualizationToggle = document.getElementById('study-visualization-toggle');
   const desktopMediaQuery = window.matchMedia('(min-width: 861px)');
+  const dropdownConfigs = [
+    {
+      item: document.getElementById('article-nav-item'),
+      toggle: document.getElementById('article-nav-toggle')
+    },
+    {
+      item: document.getElementById('study-nav-item'),
+      toggle: document.getElementById('study-nav-toggle')
+    }
+  ].filter((entry) => entry.item && entry.toggle);
 
-  const setStudyMenuOpen = (isOpen) => {
-    if (!studyNavItem || !studyNavToggle) return;
-    studyNavItem.classList.toggle('is-open', isOpen);
-    studyNavToggle.setAttribute('aria-expanded', String(isOpen));
+  const setDropdownOpen = (targetItem, isOpen) => {
+    dropdownConfigs.forEach(({ item, toggle }) => {
+      const shouldOpen = item === targetItem && isOpen;
+      item.classList.toggle('is-open', shouldOpen);
+      toggle.setAttribute('aria-expanded', String(shouldOpen));
+    });
+  };
+
+  const closeAllDropdowns = () => {
+    dropdownConfigs.forEach(({ item }) => setDropdownOpen(item, false));
   };
 
   if (menuToggle && siteNav) {
     menuToggle.addEventListener('click', () => {
       const isOpen = siteNav.classList.toggle('is-open');
       menuToggle.setAttribute('aria-expanded', String(isOpen));
-      if (!isOpen) setStudyMenuOpen(false);
+      if (!isOpen) closeAllDropdowns();
     });
 
     siteNav.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
         siteNav.classList.remove('is-open');
         menuToggle.setAttribute('aria-expanded', 'false');
-        setStudyMenuOpen(false);
+        closeAllDropdowns();
       });
     });
   }
 
-  if (visualizationToggle || !studyNavItem || !studyNavToggle || !studyTopSubmenu) return;
+  if (visualizationToggle || dropdownConfigs.length === 0) return;
 
-  let closeTimer = null;
+  const closeTimers = new Map();
 
-  const clearCloseTimer = () => {
-    if (closeTimer) {
-      window.clearTimeout(closeTimer);
-      closeTimer = null;
+  const clearCloseTimer = (item) => {
+    const timer = closeTimers.get(item);
+    if (timer) {
+      window.clearTimeout(timer);
+      closeTimers.delete(item);
     }
   };
 
-  const openStudyMenu = () => {
-    clearCloseTimer();
-    setStudyMenuOpen(true);
+  const openDropdown = (item) => {
+    clearCloseTimer(item);
+    setDropdownOpen(item, true);
   };
 
-  const scheduleCloseStudyMenu = () => {
-    clearCloseTimer();
-    closeTimer = window.setTimeout(() => {
-      setStudyMenuOpen(false);
-      closeTimer = null;
+  const scheduleCloseDropdown = (item) => {
+    clearCloseTimer(item);
+    const timer = window.setTimeout(() => {
+      setDropdownOpen(item, false);
+      closeTimers.delete(item);
     }, 280);
+    closeTimers.set(item, timer);
   };
 
-  studyNavToggle.addEventListener('click', (event) => {
-    event.preventDefault();
-    const nextOpen = !studyNavItem.classList.contains('is-open');
-    clearCloseTimer();
-    setStudyMenuOpen(nextOpen);
-  });
+  dropdownConfigs.forEach(({ item, toggle }) => {
+    toggle.addEventListener('click', (event) => {
+      event.preventDefault();
+      const nextOpen = !item.classList.contains('is-open');
+      clearCloseTimer(item);
+      setDropdownOpen(item, nextOpen);
+    });
 
-  if (desktopMediaQuery.matches) {
-    studyNavItem.addEventListener('mouseenter', openStudyMenu);
-    studyNavItem.addEventListener('mouseleave', scheduleCloseStudyMenu);
-  }
+    if (desktopMediaQuery.matches) {
+      item.addEventListener('mouseenter', () => openDropdown(item));
+      item.addEventListener('mouseleave', () => scheduleCloseDropdown(item));
+    }
 
-  studyNavItem.addEventListener('focusin', openStudyMenu);
-  studyNavItem.addEventListener('focusout', () => {
-    window.setTimeout(() => {
-      if (!studyNavItem.contains(document.activeElement)) {
-        scheduleCloseStudyMenu();
-      }
-    }, 0);
+    item.addEventListener('focusin', () => openDropdown(item));
+    item.addEventListener('focusout', () => {
+      window.setTimeout(() => {
+        if (!item.contains(document.activeElement)) {
+          scheduleCloseDropdown(item);
+        }
+      }, 0);
+    });
   });
 
   document.addEventListener('click', (event) => {
-    if (!studyNavItem.contains(event.target)) {
-      setStudyMenuOpen(false);
+    if (!dropdownConfigs.some(({ item }) => item.contains(event.target))) {
+      closeAllDropdowns();
     }
   });
 
   desktopMediaQuery.addEventListener('change', () => {
-    setStudyMenuOpen(false);
+    closeAllDropdowns();
   });
 })();
