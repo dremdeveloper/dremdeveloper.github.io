@@ -400,6 +400,88 @@
     return segments;
   }
 
+  function normalizeStandaloneMathBlocks(markdown) {
+    const isStandaloneMathLine = (line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return false;
+      if (/^(#{1,6}\s|[-*+]\s|>\s|\d+\.\s|```|~~~|!\[|<)/.test(trimmed)) return false;
+      if (/[가-힣]/.test(trimmed)) return false;
+
+      const hasMathSignal = /\\[A-Za-z]+|[_^][A-Za-z{(]|[{}]|=/.test(trimmed);
+      if (!hasMathSignal) return false;
+
+      const plainText = trimmed
+        .replace(/\\[A-Za-z]+/g, '')
+        .replace(/[{}[\]()<>=_^\\|,&;.:+\-/*~`]/g, '')
+        .replace(/\d+/g, '')
+        .replace(/\s+/g, '');
+
+      return plainText.length <= 6;
+    };
+
+    const normalizeTextSegment = (segment) => {
+      const lines = segment.split('\n');
+      const normalized = [];
+      let index = 0;
+      let inDisplayMath = false;
+
+      while (index < lines.length) {
+        const line = lines[index];
+        const trimmed = line.trim();
+
+        if (/^(\$\$|\\\[)\s*$/.test(trimmed)) {
+          inDisplayMath = true;
+          normalized.push(line);
+          index += 1;
+          continue;
+        }
+
+        if (inDisplayMath) {
+          normalized.push(line);
+          if (/^(\$\$|\\\])\s*$/.test(trimmed)) {
+            inDisplayMath = false;
+          }
+          index += 1;
+          continue;
+        }
+
+        if (!isStandaloneMathLine(line)) {
+          normalized.push(line);
+          index += 1;
+          continue;
+        }
+
+        const blockLines = [];
+        let cursor = index;
+        while (cursor < lines.length && isStandaloneMathLine(lines[cursor])) {
+          blockLines.push(lines[cursor].trim());
+          cursor += 1;
+        }
+
+        const previousLine = normalized.length ? normalized[normalized.length - 1].trim() : '';
+        const nextLine = cursor < lines.length ? lines[cursor].trim() : '';
+        const shouldWrap =
+          blockLines.length >= 2 ||
+          (blockLines.length === 1 && !previousLine && !nextLine);
+
+        if (shouldWrap) {
+          normalized.push('\\[');
+          normalized.push(...blockLines);
+          normalized.push('\\]');
+        } else {
+          normalized.push(...blockLines);
+        }
+        index = cursor;
+      }
+
+      return normalized.join('\n');
+    };
+
+    return segmentMarkdownByCodeFence(markdown)
+      .map((segment) => (segment.type === 'code' ? segment.content : normalizeTextSegment(segment.content)))
+      .join('');
+  }
+
   function restoreMathPlaceholders(html, placeholders) {
     return placeholders.reduce(
       (restoredHtml, entry) => restoredHtml.replace(entry.placeholder, entry.mathSource),
@@ -408,7 +490,8 @@
   }
 
   function renderMarkdown(md) {
-    const { protectedMarkdown, placeholders } = protectMathSegments(md);
+    const normalizedMarkdown = normalizeStandaloneMathBlocks(md);
+    const { protectedMarkdown, placeholders } = protectMathSegments(normalizedMarkdown);
     const sanitizedHtml = DOMPurify.sanitize(marked.parse(protectedMarkdown));
     return restoreMathPlaceholders(sanitizedHtml, placeholders);
   }
