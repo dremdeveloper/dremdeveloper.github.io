@@ -591,11 +591,13 @@ p {
 .site-submenu-root-label,
 .study-submenu-root-label {
   display: block;
+  width: 100%;
   font-weight: 700;
   font-size: 0.94rem;
   line-height: 1.2;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  text-align: inherit;
 }
 
 .study-submenu-selector {
