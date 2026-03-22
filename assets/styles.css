@@ -499,7 +499,7 @@ p {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 188px;
+  min-width: 164px;
   width: max-content;
   padding: 0;
   background: transparent;
@@ -525,14 +525,14 @@ p {
 
 .study-submenu-roots {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   justify-items: stretch;
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(22, 28, 41, 0.98), rgba(15, 19, 29, 0.98));
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.34);
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.28);
   backdrop-filter: blur(18px);
 }
 
@@ -541,15 +541,15 @@ p {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  min-height: 48px;
-  padding: 12px 16px;
-  border: 1px solid rgba(99, 102, 241, 0.16);
-  border-radius: 14px;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  border-radius: 12px;
   background: linear-gradient(180deg, rgba(31, 41, 55, 0.92), rgba(17, 24, 39, 0.92));
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.18);
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.16);
   white-space: nowrap;
   transition: background var(--ease), color var(--ease), border-color var(--ease), transform var(--ease), box-shadow var(--ease);
 }
@@ -557,9 +557,9 @@ p {
 .study-submenu-root:hover,
 .study-submenu-root.is-active {
   color: var(--text-strong);
-  border-color: rgba(129, 140, 248, 0.46);
+  border-color: rgba(129, 140, 248, 0.4);
   background: linear-gradient(180deg, rgba(49, 46, 129, 0.96), rgba(30, 41, 59, 0.96));
-  box-shadow: 0 16px 32px rgba(49, 46, 129, 0.24);
+  box-shadow: 0 12px 24px rgba(49, 46, 129, 0.2);
   transform: translateY(-1px);
 }
 
@@ -570,7 +570,7 @@ p {
 .study-submenu-root-label {
   display: block;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.94rem;
   line-height: 1.2;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -1503,7 +1503,8 @@ p {
   .study-submenu-root {
     justify-content: center;
     text-align: center;
-    padding: 12px 14px;
+    min-height: 40px;
+    padding: 10px 12px;
   }
   .study-viewer-toolbar {
     padding: 18px 18px 16px;
