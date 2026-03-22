@@ -36,6 +36,8 @@
   let hasLoadedPlan = false;
   let pendingScrollAnchorTop = null;
   let pendingScrollAnchorTimeout = null;
+  let pendingPlanScrollAnchorTop = null;
+  let pendingPlanScrollAnchorTimeout = null;
   let submenuCloseTimer = null;
   const requestedView = new URLSearchParams(window.location.search).get('view');
 
@@ -301,6 +303,7 @@
 
         const nextLessonId = nextWeekGroup?.items?.[0]?.id;
         if (nextLessonId) {
+          capturePlanScrollAnchor();
           setPlanFile(nextLessonId);
           return;
         }
@@ -313,6 +316,7 @@
       button.addEventListener('click', () => {
         const nextFileId = button.getAttribute('data-plan-file');
         if (!nextFileId) return;
+        capturePlanScrollAnchor();
         setPlanFile(nextFileId);
       });
     });
@@ -330,6 +334,7 @@
       : currentInfo.file.path;
 
     if (forceReload || planFrame.dataset.loadedFile !== currentPlanFileId) {
+      capturePlanScrollAnchor();
       planFrame.src = frameUrl;
       planFrame.dataset.loadedFile = currentPlanFileId;
     }
@@ -638,6 +643,24 @@
     }
   }
 
+  function capturePlanScrollAnchor() {
+    if (learningPlanPanel.hidden || !planFrame) return;
+    pendingPlanScrollAnchorTop = planFrame.getBoundingClientRect().top;
+    if (pendingPlanScrollAnchorTimeout) clearTimeout(pendingPlanScrollAnchorTimeout);
+    pendingPlanScrollAnchorTimeout = setTimeout(() => {
+      pendingPlanScrollAnchorTop = null;
+      pendingPlanScrollAnchorTimeout = null;
+    }, 500);
+  }
+
+  function restorePlanScrollAnchor() {
+    if (pendingPlanScrollAnchorTop === null || !planFrame) return;
+    const delta = planFrame.getBoundingClientRect().top - pendingPlanScrollAnchorTop;
+    if (Math.abs(delta) > 1) {
+      window.scrollBy(0, delta);
+    }
+  }
+
   function queueHeightSync() {
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(syncFrameHeight);
@@ -716,6 +739,7 @@
       );
       if (nextHeight) {
         planFrame.style.height = `${nextHeight + 12}px`;
+        restorePlanScrollAnchor();
       }
     } catch (error) {
       // same-origin access only
@@ -853,6 +877,17 @@
 
     if (data.type === 'kp-study-docs-height' && planFrame && typeof data.height === 'number' && data.height > 0) {
       planFrame.style.height = `${Math.round(data.height + 12)}px`;
+      restorePlanScrollAnchor();
+      return;
+    }
+
+    if (data.type === 'kp-study-docs-selection' && typeof data.lessonId === 'string' && data.lessonId) {
+      const currentInfo = findPlanFileInfo(data.lessonId);
+      if (!currentInfo) return;
+      currentPlanKey = currentInfo.plan.key;
+      currentPlanFileId = currentInfo.lesson?.id || currentInfo.file.id;
+      expandedPlanWeek = findPlanWeekByFileId(currentPlanFileId) || expandedPlanWeek;
+      renderPlanMenu();
     }
   });
 
