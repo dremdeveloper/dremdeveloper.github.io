@@ -2126,7 +2126,7 @@ body {
 .array-table-panel {
   border-radius: 18px;
   border: 1px solid var(--line);
-  background: transparent;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
   padding: 12px;
   overflow: hidden;
 }
@@ -2135,11 +2135,60 @@ body {
   padding: 10px;
 }
 
+.array-table-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 .array-table-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.array-table-title strong {
   font-size: 12px;
   font-weight: 800;
   color: var(--muted);
-  margin-bottom: 8px;
+}
+
+.array-table-title span {
+  font-size: 11px;
+  color: var(--muted-2);
+}
+
+.array-table-badge {
+  flex-shrink: 0;
+  align-self: center;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 164, 255, 0.28);
+  background: rgba(99, 164, 255, 0.08);
+  color: var(--accent);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.array-shell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.array-bracket {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1;
+  padding-bottom: 8px;
 }
 
 .array-grid {
@@ -2164,29 +2213,29 @@ body {
 }
 
 .array-index-label {
-  min-height: 24px;
-  padding: 0 4px;
-  border: none;
-  background: transparent;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   line-height: 1.2;
 }
 
 .array-index-label small {
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .array-cell {
-  min-height: 52px;
+  min-height: 58px;
   border: 1px solid var(--array-cell-border);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .array-cell {
@@ -2261,12 +2310,33 @@ body {
 }
 
 .array-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   font-size: 14px;
   font-weight: 800;
   word-break: keep-all;
 }
 
+.array-value-main {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.array-value-meta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted-2);
+}
+
 .array-value.muted {
+  color: var(--muted);
+}
+
+.array-value.muted .array-value-meta {
   color: var(--muted);
 }
 
@@ -5669,8 +5739,17 @@ function exposePublicApi() {
         </div>
         <div class="workspace-box">
           <div class="workspace-card">
-            <div class="workspace-head">현재 구조</div>
-            <div class="token-row">${renderTokens(visual.items)}</div>
+            <div class="workspace-head">배열로 본 내부 저장 상태</div>
+            ${renderArrayTable(visual.items, {
+              title: isStack ? 'stack 리스트' : 'queue 리스트',
+              arrayName: isStack ? 'stack' : 'queue',
+              currentIndices: isStack
+                ? (visual.items.length ? [visual.items.length - 1] : [])
+                : (visual.items.length ? [0] : []),
+              frontIndices: !isStack && visual.items.length ? [0] : [],
+              rearIndices: !isStack && visual.items.length ? [visual.items.length - 1] : [],
+              keyIndices: isStack && visual.items.length ? [visual.items.length - 1] : [],
+            })}
           </div>
           <div class="workspace-card">
             <div class="workspace-head">핵심 규칙</div>
@@ -5685,10 +5764,10 @@ function exposePublicApi() {
     const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
     const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
     const infoCards = [];
-    if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `idx ${index}`).join(' ↔ '), tone: 'highlight' });
-    if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: 'key', label: `idx ${visual.keyIndex}`, tone: 'warn' });
-    if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `idx ${visual.pivotIndex}`, tone: 'warn' });
-    if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `idx ${visual.currentWrite}`, tone: 'good' });
+    if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `arr[${index}]`).join(' ↔ '), tone: 'highlight' });
+    if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: 'key', label: `arr[${visual.keyIndex}]`, tone: 'warn' });
+    if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `arr[${visual.pivotIndex}]`, tone: 'warn' });
+    if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `arr[${visual.currentWrite}]`, tone: 'good' });
     if (visual.activeRange && rangeStart !== null && rangeEnd !== null) infoCards.push({ tag: '현재 구간', label: `${rangeStart} ~ ${rangeEnd}`, tone: 'range' });
     const rangeIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
       ? Array.from({ length: rangeEnd - rangeStart + 1 }, (_, offset) => rangeStart + offset)
@@ -6322,39 +6401,61 @@ function arrayStateClasses(index, options) {
 
 function renderArrayTable(values, options = {}) {
   const data = Array.isArray(values) ? values : [];
+  const arrayName = options.arrayName || '';
   const indexHeader = options.indexLabel || 'index';
+  const valueLabel = options.valueLabel || '원소';
   const indexLabels = options.indexLabels || data.map((_, index) => index);
-  const showIndexHeader = indexHeader.toLowerCase() !== 'index';
-  const title = options.title ? `<div class="array-table-title">${escapeHtml(options.title)}</div>` : '';
+  const showIndexHeader = Boolean(options.showIndexHeader);
+  const titleHtml = options.title || arrayName
+    ? `
+        <div class="array-table-head">
+          <div class="array-table-title">
+            <strong>${escapeHtml(options.title || (arrayName ? `${arrayName} 배열` : '배열'))}</strong>
+            <span>${escapeHtml(arrayName ? `${arrayName}[${indexHeader}] → ${valueLabel}` : `${indexHeader}별 ${valueLabel}`)}</span>
+          </div>
+          ${arrayName ? `<div class="array-table-badge">${escapeHtml(arrayName)}</div>` : ''}
+        </div>
+      `
+    : '';
   if (!data.length) {
     return `
       <div class="array-table-panel ${options.compact ? 'compact' : ''}">
-        ${title}
+        ${titleHtml}
         <div class="empty-text">비어 있음</div>
       </div>
     `;
   }
   const gridStyle = `grid-template-columns: repeat(${data.length}, minmax(56px, 1fr));`;
   const columns = data.map((value, index) => {
-    const showValue = value === '' || value === null || value === undefined ? '·' : String(value);
-    const muted = showValue === '·' ? 'muted' : '';
+    const displayValue = value === '' || value === null || value === undefined ? '·' : String(value);
+    const muted = displayValue === '·' ? 'muted' : '';
+    const indexText = String(indexLabels[index]);
+    const indexChip = arrayName ? `${arrayName}[${indexText}]` : `[${indexText}]`;
+    const metaText = displayValue === '·' ? `빈 ${valueLabel}` : `${valueLabel}`;
     return `
       <div class="array-column">
         <div class="array-index-label">
           ${showIndexHeader ? `<small>${escapeHtml(indexHeader)}</small>` : ''}
-          <span>${escapeHtml(String(indexLabels[index]))}</span>
+          <span>${escapeHtml(indexChip)}</span>
         </div>
         <div class="${arrayStateClasses(index, options)}">
-          <span class="array-value ${muted}">${escapeHtml(showValue)}</span>
+          <span class="array-value ${muted}">
+            <span class="array-value-main">${escapeHtml(displayValue)}</span>
+            <span class="array-value-meta">${escapeHtml(metaText)}</span>
+          </span>
         </div>
       </div>
     `;
   }).join('');
   return `
     <div class="array-table-panel ${options.compact ? 'compact' : ''}">
-      ${title}
-      <div class="array-grid" style="${gridStyle}">
-        ${columns}
+      ${titleHtml}
+      <div class="array-shell">
+        <div class="array-bracket" aria-hidden="true">[</div>
+        <div class="array-grid" style="${gridStyle}">
+          ${columns}
+        </div>
+        <div class="array-bracket" aria-hidden="true">]</div>
       </div>
     </div>
   `;
@@ -6874,10 +6975,10 @@ function renderSortingVisual(visual, renderer, step) {
   const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
   const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
   const infoCards = [];
-  if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `idx ${index}`).join(' ↔ '), tone: 'highlight' });
-  if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: '기준값', label: `idx ${visual.keyIndex}`, tone: 'warn' });
-  if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `idx ${visual.pivotIndex}`, tone: 'warn' });
-  if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `idx ${visual.currentWrite}`, tone: 'good' });
+  if (visual.comparing && visual.comparing.length) infoCards.push({ tag: '비교 중', label: visual.comparing.map((index) => `arr[${index}]`).join(' ↔ '), tone: 'highlight' });
+  if (visual.keyIndex !== undefined && visual.keyIndex !== null) infoCards.push({ tag: '기준값', label: `arr[${visual.keyIndex}]`, tone: 'warn' });
+  if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `arr[${visual.pivotIndex}]`, tone: 'warn' });
+  if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `arr[${visual.currentWrite}]`, tone: 'good' });
   if (visual.activeRange && rangeStart !== null && rangeEnd !== null) infoCards.push({ tag: '현재 구간', label: `${rangeStart} ~ ${rangeEnd}`, tone: 'range' });
 
   const rangeIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
@@ -6889,9 +6990,9 @@ function renderSortingVisual(visual, renderer, step) {
 
   const workspaceCards = [];
   if (mergeWorkspace) {
-    workspaceCards.push(renderArrayTable(visual.leftPart || [], { title: 'left_part', compact: true }));
-    workspaceCards.push(renderArrayTable(visual.rightPart || [], { title: 'right_part', compact: true }));
-    workspaceCards.push(renderArrayTable(visual.temp || [], { title: 'temp', compact: true }));
+    workspaceCards.push(renderArrayTable(visual.leftPart || [], { title: 'left_part', arrayName: 'left_part', compact: true }));
+    workspaceCards.push(renderArrayTable(visual.rightPart || [], { title: 'right_part', arrayName: 'right_part', compact: true }));
+    workspaceCards.push(renderArrayTable(visual.temp || [], { title: 'temp', arrayName: 'temp', compact: true }));
   }
 
   if (visual.stack) {
@@ -6908,6 +7009,7 @@ function renderSortingVisual(visual, renderer, step) {
       ${renderDirectionStrip(infoCards)}
       ${renderArrayTable(visual.items, {
         title: '배열 상태',
+        arrayName: 'arr',
         rangeIndices,
         dimIndices,
         comparingIndices: visual.comparing || [],
@@ -6935,16 +7037,19 @@ function renderCountingVisual(visual, step) {
       ${renderDirectionStrip(cards)}
       ${renderArrayTable(visual.input, {
         title: '입력 배열',
+        arrayName: 'input',
         currentIndices: [visual.currentInputIndex].filter((value) => value !== null && value !== undefined),
       })}
       ${renderArrayTable(visual.count, {
         title: 'count 배열',
+        arrayName: 'count',
         indexLabel: 'value',
         valueLabel: 'count',
         currentIndices: [visual.currentCountValue].filter((value) => value !== null && value !== undefined),
       })}
       ${renderArrayTable(outputValues, {
         title: 'output 배열',
+        arrayName: 'output',
         currentIndices: currentOutputIndex,
         sortedIndices: visual.output.map((_, index) => index),
       })}
@@ -7247,6 +7352,7 @@ function renderFactorialVisual(visual) {
           return state && state.result !== null && state.result !== undefined ? state.result : '';
         }), {
           title: '반환값 진행 표',
+          arrayName: 'returns',
           indexLabel: 'n',
           valueLabel: 'return',
           indexLabels: values,
@@ -7323,6 +7429,7 @@ function renderPruningTreeVisual(visual, step) {
       <div class="workspace-box">
         ${renderArrayTable(visual.nums, {
           title: '숫자 목록',
+          arrayName: 'nums',
           currentIndices: visual.currentNodeId ? [allNodes[visual.currentNodeId].meta.idx].filter((idx) => idx !== undefined && idx !== null && idx < visual.nums.length) : [],
         })}
         <div class="workspace-card structure-card">
@@ -7371,6 +7478,7 @@ function renderNQueenVisual(visual, step) {
         </div>
         ${renderArrayTable(visual.queens.map((col) => col === -1 ? '' : col), {
           title: '배치된 퀸 배열',
+          arrayName: 'queens',
           indexLabel: 'row',
           valueLabel: 'column',
           currentIndices: currentRow === null || currentRow === undefined ? [] : [currentRow],
@@ -7433,9 +7541,10 @@ function renderHeapVisual(visual, step) {
         ` : `<div class="empty-text">현재 힙이 비어 있습니다.</div>`}
       </div>
       <div class="workspace-box">
-        ${renderArrayTable(visual.input, { title: '입력 배열' })}
+        ${renderArrayTable(visual.input, { title: '입력 배열', arrayName: 'input' })}
         ${renderArrayTable(heapArray, {
           title: '현재 힙 배열',
+          arrayName: 'heap',
           currentIndices: [visual.activeIndex].filter((value) => value !== null && value !== undefined),
           comparingIndices: compareIndices,
           shiftedIndices: swapIndices,
@@ -7443,6 +7552,7 @@ function renderHeapVisual(visual, step) {
         })}
         ${renderArrayTable(outputArray, {
           title: '정렬 결과 배열',
+          arrayName: 'output',
           sortedIndices: visual.output.map((_, index) => index),
           currentIndices: visual.output.length ? [visual.output.length - 1] : [],
         })}
