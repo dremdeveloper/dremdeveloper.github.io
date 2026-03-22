@@ -101,9 +101,15 @@
               <a class="site-submenu-root study-submenu-root" href="boj-archive-search.html">
                 <span class="site-submenu-root-label study-submenu-root-label">백준 검색</span>
               </a>
-              <a class="site-submenu-root study-submenu-root" href="study-solutions.html">
+              <button
+                id="study-solutions-toggle"
+                class="site-submenu-root study-submenu-root"
+                type="button"
+                aria-expanded="false"
+                aria-controls="study-solutions-panel"
+              >
                 <span class="site-submenu-root-label study-submenu-root-label">코테합 문제</span>
-              </a>
+              </button>
             </div>
           </section>
         </div>
@@ -148,6 +154,19 @@
             </div>
           </article>
         </div>
+      </section>
+
+      <section id="study-solutions-panel" class="study-focus-layout" hidden>
+        <article class="card study-viewer-card study-solutions-viewer">
+          <div class="study-frame-wrap study-frame-wrap-expanded study-solutions-frame-wrap">
+            <iframe
+              id="study-solutions-frame"
+              title="코테합 문제 뷰어"
+              loading="lazy"
+              src="about:blank"
+            ></iframe>
+          </div>
+        </article>
       </section>
     </main>
 
