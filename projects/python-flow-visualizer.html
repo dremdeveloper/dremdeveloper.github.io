@@ -601,7 +601,8 @@ label {
 
 .code-line.active {
   background: rgba(99, 164, 255, 0.14);
-  box-shadow: inset 3px 0 0 rgba(99, 164, 255, 0.95);
+  box-shadow: inset 5px 0 0 rgba(99, 164, 255, 0.98);
+  border: 2px solid rgba(99, 164, 255, 0.48);
 }
 
 .code-line-num {
@@ -2194,7 +2195,7 @@ body {
   font-weight: 800;
   line-height: 1.25;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease, background 0.22s ease;
 }
 
 .array-cell.dim {
@@ -2206,29 +2207,39 @@ body {
 }
 
 .array-cell.current {
-  border-color: rgba(255, 191, 95, 0.44);
-  box-shadow: inset 0 0 0 1px rgba(255, 191, 95, 0.14), 0 0 0 1px rgba(255, 191, 95, 0.08);
+  border-width: 3px;
+  border-color: rgba(255, 191, 95, 0.82);
+  background: rgba(255, 191, 95, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(255, 191, 95, 0.2), 0 0 0 2px rgba(255, 191, 95, 0.16);
 }
 
 .array-cell.comparing {
-  border-color: rgba(255, 191, 95, 0.36);
-  box-shadow: inset 0 0 0 1px rgba(255, 191, 95, 0.1);
+  border-width: 3px;
+  border-color: rgba(255, 191, 95, 0.72);
+  background: rgba(255, 191, 95, 0.06);
+  box-shadow: inset 0 0 0 2px rgba(255, 191, 95, 0.16), 0 0 0 2px rgba(255, 191, 95, 0.1);
 }
 
 .array-cell.key {
-  border-color: rgba(124, 92, 255, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.11);
+  border-width: 3px;
+  border-color: rgba(124, 92, 255, 0.75);
+  background: rgba(124, 92, 255, 0.07);
+  box-shadow: inset 0 0 0 2px rgba(124, 92, 255, 0.16), 0 0 0 2px rgba(124, 92, 255, 0.1);
 }
 
 .array-cell.shifted {
-  border-color: rgba(255, 107, 129, 0.4);
-  box-shadow: inset 0 0 0 1px rgba(255, 107, 129, 0.1);
+  border-width: 3px;
+  border-color: rgba(255, 107, 129, 0.78);
+  background: rgba(255, 107, 129, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(255, 107, 129, 0.16), 0 0 0 2px rgba(255, 107, 129, 0.1);
 }
 
 .array-cell.done,
 .array-cell.success {
-  border-color: rgba(50, 213, 131, 0.42);
-  box-shadow: inset 0 0 0 1px rgba(50, 213, 131, 0.11);
+  border-width: 3px;
+  border-color: rgba(50, 213, 131, 0.72);
+  background: rgba(50, 213, 131, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(50, 213, 131, 0.14), 0 0 0 2px rgba(50, 213, 131, 0.08);
 }
 
 .array-cell.candidate {
@@ -2269,7 +2280,7 @@ body {
 .array-cell.danger,
 .array-cell.front,
 .array-cell.rear {
-  transform: none;
+  transform: translateY(-3px) scale(1.02);
 }
 
 .workspace-box .array-table-panel {
@@ -2713,11 +2724,6 @@ body {
     if (Array.isArray(value)) return value.length ? value.join(' → ') : '비어 있음';
     if (typeof value === 'object') return JSON.stringify(value);
     return String(value);
-  }
-
-  function activeLineLabel(lines) {
-    if (!lines || !lines.length) return '현재 단계에서 직접 강조할 줄이 없습니다.';
-    return `실행 줄 ${lines.join(', ')}번`;
   }
 
   function speedLabel(speed) {
@@ -5301,7 +5307,6 @@ function exposePublicApi() {
         <div class="description-top">
           <div class="line-chip">${APP.stepIndex + 1} / ${scenario.steps.length} 단계 · ${escapeHtml(getStageLabel(scenario, step))}</div>
           <div class="note-chip-row">
-            <span class="note-chip">${escapeHtml(activeLineLabel(step.lines))}</span>
             <span class="note-chip">현재 초점: ${escapeHtml(getCurrentFocusLabel(scenario, step))}</span>
           </div>
         </div>
@@ -5329,7 +5334,6 @@ function exposePublicApi() {
             <div class="state-value">${escapeHtml(getNextFocusLabel(scenario, step))}</div>
           </div>
         </div>
-        <p class="description-caption">애니메이션·설명 개선 포인트를 반영해, 모든 단계에서 “지금 무엇을 보고 왜 중요한지”가 한 번 더 보이도록 정리했습니다.</p>
       </div>
     `;
   }
@@ -5664,7 +5668,6 @@ function exposePublicApi() {
   }
 
   function renderSortingVisual(visual, renderer, step) {
-    const maxValue = Math.max(...visual.items);
     const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
     const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
     const infoCards = [];
@@ -5673,38 +5676,12 @@ function exposePublicApi() {
     if (visual.pivotIndex !== undefined && visual.pivotIndex !== null) infoCards.push({ tag: 'pivot', label: `idx ${visual.pivotIndex}`, tone: 'warn' });
     if (visual.currentWrite !== undefined && visual.currentWrite !== null) infoCards.push({ tag: '쓰기 위치', label: `idx ${visual.currentWrite}`, tone: 'good' });
     if (visual.activeRange && rangeStart !== null && rangeEnd !== null) infoCards.push({ tag: '현재 구간', label: `${rangeStart} ~ ${rangeEnd}`, tone: 'range' });
-
-    const bars = visual.items.map((value, index) => {
-      const classes = ['bar-card'];
-      if (visual.activeRange && index >= rangeStart && index <= rangeEnd) classes.push('range');
-      if (visual.comparing && visual.comparing.includes(index)) classes.push('comparing');
-      if (visual.keyIndex === index || visual.pivotIndex === index) classes.push('key');
-      if (visual.shifted && visual.shifted.includes(index)) classes.push('shifted');
-      if (visual.sorted && visual.sorted.includes(index)) classes.push('sorted');
-      if (visual.fixed && visual.fixed.includes(index)) classes.push('fixed');
-      if (visual.currentWrite === index) classes.push('current-write');
-      if (visual.activeRange && (index < rangeStart || index > rangeEnd)) classes.push('dimmed');
-      const markers = [];
-      if (visual.keyIndex === index) markers.push(`<span class="bar-marker pivot">key</span>`);
-      if (visual.pivotIndex === index) markers.push(`<span class="bar-marker pivot">pivot</span>`);
-      if (visual.pointerI === index) markers.push(`<span class="bar-marker pointer">i</span>`);
-      if (visual.pointerJ === index) markers.push(`<span class="bar-marker current">j</span>`);
-      if (visual.sorted && visual.sorted.includes(index)) markers.push(`<span class="bar-marker sorted">done</span>`);
-      if (visual.fixed && visual.fixed.includes(index)) markers.push(`<span class="bar-marker sorted">fixed</span>`);
-      return `
-        <div class="${classes.join(' ')}">
-          <div class="bar-marker-row">${markers.join('')}</div>
-          <div class="bar-value-label">${value}</div>
-          <div class="bar-track">
-            <div class="bar-fill" style="height:${Math.max(18, (value / maxValue) * 100)}%"></div>
-          </div>
-          <div class="bar-footer">
-            <span>index ${index}</span>
-            <span>value ${value}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
+    const rangeIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
+      ? Array.from({ length: rangeEnd - rangeStart + 1 }, (_, offset) => rangeStart + offset)
+      : visual.items.map((_, index) => index);
+    const dimIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
+      ? visual.items.map((_, index) => index).filter((index) => index < rangeStart || index > rangeEnd)
+      : [];
 
     const workspaceCards = [];
     if (mergeWorkspace) {
@@ -5740,7 +5717,17 @@ function exposePublicApi() {
     return `
       <div class="sort-layout scene-fade">
         ${renderDirectionStrip(infoCards)}
-        <div class="sort-bars">${bars}</div>
+        ${renderArrayTable(visual.items, {
+          title: '배열 상태',
+          rangeIndices,
+          dimIndices,
+          comparingIndices: visual.comparing || [],
+          currentIndices: [visual.currentWrite].filter((value) => value !== null && value !== undefined),
+          keyIndices: [visual.keyIndex, visual.pivotIndex].filter((value) => value !== null && value !== undefined),
+          shiftedIndices: visual.shifted || [],
+          sortedIndices: visual.sorted || [],
+          fixedIndices: visual.fixed || [],
+        })}
         ${workspaceCards.length ? `<div class="workspace-box">${workspaceCards.join('')}</div>` : ''}
       </div>
     `;
@@ -6870,7 +6857,6 @@ function visualHint(scenario, step) {
 }
 
 function renderSortingVisual(visual, renderer, step) {
-  const maxValue = Math.max(...visual.items);
   const [rangeStart, rangeEnd] = visual.activeRange || [null, null];
   const mergeWorkspace = visual.leftPart || visual.rightPart || visual.temp;
   const infoCards = [];
@@ -6886,33 +6872,6 @@ function renderSortingVisual(visual, renderer, step) {
   const dimIndices = visual.activeRange && rangeStart !== null && rangeEnd !== null
     ? visual.items.map((_, index) => index).filter((index) => index < rangeStart || index > rangeEnd)
     : [];
-
-  const bars = visual.items.map((value, index) => {
-    const classes = ['bar-card'];
-    if (visual.activeRange && index >= rangeStart && index <= rangeEnd) classes.push('range');
-    if (visual.comparing && visual.comparing.includes(index)) classes.push('comparing');
-    if (visual.keyIndex === index || visual.pivotIndex === index) classes.push('key');
-    if (visual.shifted && visual.shifted.includes(index)) classes.push('shifted');
-    if (visual.sorted && visual.sorted.includes(index)) classes.push('sorted');
-    if (visual.fixed && visual.fixed.includes(index)) classes.push('fixed');
-    if (visual.currentWrite === index) classes.push('current-write');
-    if (visual.activeRange && (index < rangeStart || index > rangeEnd)) classes.push('dimmed');
-    const markers = [];
-    if (visual.keyIndex === index) markers.push(`<span class="bar-marker pivot">key</span>`);
-    if (visual.pivotIndex === index) markers.push(`<span class="bar-marker pivot">pivot</span>`);
-    if (visual.pointerI === index) markers.push(`<span class="bar-marker pointer">i</span>`);
-    if (visual.pointerJ === index) markers.push(`<span class="bar-marker current">j</span>`);
-    if (visual.sorted && visual.sorted.includes(index)) markers.push(`<span class="bar-marker sorted">done</span>`);
-    if (visual.fixed && visual.fixed.includes(index)) markers.push(`<span class="bar-marker sorted">fixed</span>`);
-    return `
-      <div class="${classes.join(' ')}">
-        <div class="bar-marker-row">${markers.join('')}</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="height:${Math.max(18, (value / maxValue) * 100)}%">${value}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
 
   const workspaceCards = [];
   if (mergeWorkspace) {
@@ -6933,7 +6892,6 @@ function renderSortingVisual(visual, renderer, step) {
   return `
     <div class="sort-layout scene-fade">
       ${renderDirectionStrip(infoCards)}
-      <div class="sort-bars">${bars}</div>
       ${renderArrayTable(visual.items, {
         title: '배열 상태',
         rangeIndices,
