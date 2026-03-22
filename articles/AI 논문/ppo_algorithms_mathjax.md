@@ -1,5 +1,5 @@
 ---
-title: "Proximal Policy Optimization Algorithms"
+title: "정책을 너무 크게 바꾸지 않는 강화학습 — Proximal Policy Optimization Algorithms"
 math: true
 ---
 
@@ -19,14 +19,21 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-# Proximal Policy Optimization Algorithms
+# 정책을 너무 크게 바꾸지 않는 강화학습 — Proximal Policy Optimization Algorithms
+
+이 글은 PPO가 왜 정책경사 기반 강화학습의 대표 알고리즘으로 자리 잡았는지, 그리고 왜 RLHF 문맥에서도 계속 호출되는지를 설명하는 해설이다. PPO의 요지는 한 번의 업데이트가 정책을 너무 멀리 이동시키지 않도록 하면서도, 같은 on-policy 데이터를 여러 epoch 재사용할 수 있게 만드는 데 있다. 그래서 TRPO의 안정성과 구현 단순성 사이의 절충안으로 읽으면 이해가 쉽다. 처음 읽는다면 Figure 1, Figure 2, Table 1 순서로 보라.
 
 ## 핵심 요약
+- **푸는 문제:** on-policy 데이터 배치를 여러 번 학습에 재사용하면 정책이 한 번에 너무 크게 변해 학습이 쉽게 붕괴한다.
+- **핵심 아이디어:** old policy와 new policy의 확률비 \(r_t(\theta)\)를 사용하고, 이를 **clipped surrogate objective**로 제한해 업데이트 폭을 통제한다.
+- **주요 결과:** TRPO보다 단순한 구현으로도 강한 성능을 보였고, MuJoCo·Atari 등 여러 벤치마크에서 경쟁력 있는 결과를 냈다.
+- **왜 중요한가:** 이후 RLHF에서 PPO가 널리 쓰인 것은, policy를 보수적으로 움직이면서도 실전 구현이 상대적으로 간단했기 때문이다.
+- **한계 / 주의점:** PPO는 “아무렇게나 안정한 알고리즘”이 아니며, advantage 추정, KL 제어, 보상 스케일, batch 구성에 민감하다.
 
-- PPO는 정책을 한 번에 너무 크게 바꾸지 않도록 막아 **정책 경사 기반 강화학습을 안정화**한 알고리즘이다.
-- 핵심 아이디어는 오래된 정책과 새 정책의 비율을 이용한 **clipped surrogate objective**에 있다.
-- TRPO보다 계산이 간단하면서도 업데이트 폭을 제어할 수 있어, 이후 RLHF 계열에서도 널리 쓰이게 되었다.
-- 실제로는 보상 스케일, KL 제어, advantage 추정 방식에 따라 결과가 크게 달라지므로 구현 세부가 중요하다.
+## 먼저 읽을 포인트
+- 이 논문을 한 문장으로 줄이면 **“정책을 너무 크게 바꾸지 않게 하면서 여러 번 업데이트하자”**다.
+- Figure 1은 clip이 한 항목에서 어떻게 작동하는지, Figure 2는 실제 업데이트 구간에서 왜 안정화 효과가 생기는지를 보여 준다.
+- RLHF에서 PPO가 중요했던 이유도 결국 같다. reward가 조금 흔들려도 policy가 한 번에 멀리 뛰지 않게 만들기 쉽기 때문이다.
 
 ## 문헌 정보
 
@@ -239,9 +246,11 @@ $$
 
 또한 논문은 \(L^{CLIP}(\theta)\)가 \(\theta_{\text{old}}\) 주변에서는 \(L^{CPI}(\theta)\)와 **1차 근사 수준에서 동일**하다고 설명한다. 즉, \(r=1\) 근방에서는 둘의 gradient 방향이 사실상 같지만, \(\theta\)가 \(\theta_{\text{old}}\)에서 멀어질수록 두 목적함수는 달라진다. 이 점은 PPO가 기존 정책경사의 국소적인 업데이트 방향은 유지하면서도, 과도한 이동을 스스로 억제한다는 사실을 보여준다.
 
-### Figure 1 해설
+clipping은 업데이트를 완전히 막는 장치가 아니다. 더 정확히 말하면, **허용 범위를 넘는 이동에 추가 인센티브를 주지 않는 장치**다. 그래서 PPO는 “무조건 작은 업데이트”가 아니라, “이득이 있더라도 너무 멀리 가는 업데이트는 굳이 더 밀지 않는 방식”으로 읽는 것이 맞다.
 
-> Figure 1 삽입
+> **Figure 1 삽입**
+
+### Figure 1 해설
 
 Figure 1은 \(L^{CLIP}\)의 단일 시점 항을 \(r\)의 함수로 시각화한다. 왼쪽은 \(\hat A_t > 0\)인 경우, 오른쪽은 \(\hat A_t < 0\)인 경우이며, 두 그림 모두 빨간 원은 최적화 시작점 \(r=1\)을 표시한다.
 
@@ -250,9 +259,11 @@ Figure 1은 \(L^{CLIP}\)의 단일 시점 항을 \(r\)의 함수로 시각화한
 
 이 그림은 clipping이 “정책 업데이트를 금지”하는 것이 아니라, **일정 범위를 넘어서는 업데이트에 대한 추가 인센티브를 제거**한다는 점을 시각적으로 보여준다. 논문은 또한 \(L^{CLIP}\)이 이러한 단일 항들을 많이 합한 형태라는 점도 함께 강조한다.
 
+> **Figure 2 삽입**
+
 ### Figure 2 해설
 
-> Figure 2 삽입
+Figure 2를 읽을 때는 \(L^{CLIP}\)이 \(L^{CPI}\)를 완전히 대체하는 별도 목적이라기보다, **과도한 policy shift를 스스로 꺾는 보수적 대리목적**이라는 점을 잡아라. 이 그림은 PPO의 핵심 직관을 수식보다 더 빨리 보여 준다.
 
 Figure 2는 \(\theta_{\text{old}}\)와 한 번의 PPO 업데이트 이후 파라미터 사이를 선형 보간하면서, 몇 가지 surrogate objective가 어떻게 변화하는지를 보여준다. 이 그림은 연속제어의 Hopper-v1 문제에서 **첫 번째 policy update**에 해당하며, 업데이트된 정책은 초기 정책에 대해 약 **0.02의 KL divergence**를 갖는다. 논문은 바로 이 지점에서 \(L^{CLIP}\)이 최대가 된다고 설명한다.
 
@@ -451,9 +462,9 @@ end for
 
 평가 방식도 논문은 구체적으로 설명한다. 각 알고리즘은 7개 환경 모두에 대해 3개의 random seed로 실행된다. 각 run의 점수는 **마지막 100개 episode의 평균 total reward**로 정의한다. 이후 환경마다 점수를 shift 및 scale하여 random policy는 0점, 최상의 결과는 1점이 되도록 정규화하고, 총 21개 run의 평균을 내어 각 알고리즘 설정에 대한 단일 scalar score를 얻는다.
 
-#### Table 1. Continuous Control Benchmark 결과
+> **Table 1 삽입**
 
-> Table 1 삽입
+#### Table 1. Continuous Control Benchmark 결과
 
 표 1은 clipped objective가 실험적으로 가장 우수하다는 논문의 핵심 주장에 직접적인 근거를 제공한다. 특히 \(\epsilon=0.2\)일 때 평균 정규화 점수가 0.82로 가장 높다. 반면 clipping이나 penalty를 전혀 사용하지 않은 설정은 -0.39라는 음수 점수를 기록하는데, 논문은 그 이유를 HalfCheetah 환경에서 매우 큰 음수 점수가 발생하여 초기 random policy보다도 나쁜 결과가 나왔기 때문이라고 설명한다. 이 결과는 같은 on-policy 데이터를 여러 번 재사용하는 상황에서 update constraint가 없을 경우 정책이 쉽게 붕괴할 수 있음을 강하게 시사한다.
 
@@ -475,9 +486,9 @@ end for
 
 PPO는 직전 절의 하이퍼파라미터를 그대로 사용하되, clipping parameter는 \(\epsilon=0.2\)로 고정한다. 본문은 결과를 한 문장으로 요약한다. 즉, **PPO는 거의 모든 continuous control 환경에서 이전 방법들보다 우수하다**.
 
-#### Figure 3 해설
+> **Figure 3 삽입**
 
-> Figure 3 삽입
+#### Figure 3 해설
 
 Figure 3은 HalfCheetah-v1, Hopper-v1, InvertedDoublePendulum-v1, InvertedPendulum-v1, Reacher-v1, Swimmer-v1, Walker2d-v1의 7개 MuJoCo 환경에 대해, 100만 timestep 동안의 학습 곡선을 제시한다. 캡션은 “several MuJoCo environments에서 여러 알고리즘을 비교하였고, 학습 길이는 one million timesteps”라고 명시한다.
 
@@ -497,17 +508,17 @@ Figure 3은 HalfCheetah-v1, Hopper-v1, InvertedDoublePendulum-v1, InvertedPendul
 
 논문은 이 세 과제의 학습 곡선을 Figure 4에, 학습된 정책의 정지 프레임을 Figure 5에 제시한다. 하이퍼파라미터는 Appendix A의 Table 4에 제공된다. 또한 동시기(concurrent work)로 Heess et al.이 PPO의 adaptive KL 변형을 사용하여 3D 로봇 locomotion policy를 학습했다는 점도 언급한다.
 
-#### Figure 4 해설
+> **Figure 4 삽입**
 
-> Figure 4 삽입
+#### Figure 4 해설
 
 Figure 4는 RoboschoolHumanoid-v0, RoboschoolHumanoidFlagrun-v0, RoboschoolHumanoidFlagrunHarder-v0에 대한 학습 곡선을 보여준다. 캡션은 이를 “Roboschool을 사용하는 3D humanoid control task에 대한 PPO 학습 곡선”이라고 요약한다.
 
 세 과제 모두에서 곡선은 시간이 지남에 따라 유의미하게 상승하며, 특히 Flagrun 계열 과제에서는 더 긴 학습 구간 동안 개선이 지속된다. 이는 PPO가 단순한 정방향 보행을 넘어, 목표 전환과 외란 대응까지 포함하는 고난도 제어 과제에서도 학습을 이어갈 수 있음을 보여준다.
 
-#### Figure 5 해설
+> **Figure 5 삽입**
 
-> Figure 5 삽입
+#### Figure 5 해설
 
 Figure 5는 RoboschoolHumanoidFlagrun에서 학습된 정책의 정지 프레임을 제시한다. 캡션에 따르면 첫 여섯 프레임에서 로봇은 목표를 향해 달리고 있으며, 이후 목표 위치가 무작위로 바뀌자 방향을 전환하여 새로운 목표를 향해 달린다. 즉, 그림은 이 정책이 단순히 보행 주기를 생성하는 것이 아니라, **목표 변화에 따른 조향 행동까지 학습했음**을 시각적으로 보여준다.
 
@@ -517,16 +528,16 @@ Figure 5는 RoboschoolHumanoidFlagrun에서 학습된 정책의 정지 프레임
 
 논문은 Appendix B에 49개 게임 전체의 결과표와 학습 곡선을 제공한다고 말한다. Atari 실험에서는 두 가지 평가 지표를 사용한다.
 
-1. **전체 학습 구간에 걸친 episode 평균 보상**  
+1. **전체 학습 구간에 걸친 episode 평균 보상**
    이는 빠른 학습을 선호하는 지표이다.
-2. **학습 마지막 100개 episode의 평균 보상**  
+2. **학습 마지막 100개 episode의 평균 보상**
    이는 최종 성능을 선호하는 지표이다.
 
 Table 2는 세 trial에 대해 이 지표를 평균한 뒤, 각 게임에서 어떤 알고리즘이 “이겼는지”를 집계한 결과이다.
 
-#### Table 2. Atari 게임 승수 비교
+> **Table 2 삽입**
 
-> Table 2 삽입
+#### Table 2. Atari 게임 승수 비교
 
 표 2는 두 지표가 서로 다른 측면을 측정한다는 점을 명확히 보여준다. 전체 학습 구간 평균에서는 PPO가 30개 게임에서 승리하여 가장 우수하며, 이는 **sample complexity**, 즉 학습 속도 측면의 이점을 시사한다. 반면 마지막 100개 episode 기준의 최종 성능에서는 ACER가 28개 게임으로 가장 많은 승리를 기록한다. 저자들이 서론에서 “Atari에서는 A2C보다 크게 우수하고 ACER와 유사한 수준이나 더 단순하다”고 말한 대목은 바로 이 표에 대응된다. 즉, PPO는 최종 성능만 놓고 보면 ACER와 비슷한 경쟁력을 보이면서, 학습 속도 및 단순성 측면에서 더 유리한 위치를 점한다.
 
@@ -575,21 +586,21 @@ Table 2는 세 trial에 대해 이 지표를 평균한 뒤, 각 게임에서 어
 
 부록 A는 PPO 실험에 사용한 하이퍼파라미터를 영역별로 정리한다. 본문에서 간략히 언급되었던 수치들이 이 부록에서 명시적으로 고정된다.
 
-### Table 3. MuJoCo 1M timestep benchmark 하이퍼파라미터
+> **Table 3 삽입**
 
-> Table 3 삽입
+### Table 3. MuJoCo 1M timestep benchmark 하이퍼파라미터
 
 Table 3는 6.1절 및 6.2절의 MuJoCo 연속제어 실험에서 사용한 PPO 하이퍼파라미터를 제공한다. Horizon이 2048로 비교적 길고, 각 iteration에서 10 epoch의 최적화가 수행되며, minibatch는 64로 설정된다.
 
-### Table 4. Roboschool humanoid 실험 하이퍼파라미터
+> **Table 4 삽입**
 
-> Table 4 삽입
+### Table 4. Roboschool humanoid 실험 하이퍼파라미터
 
 Table 4의 캡션은 Adam stepsize가 **KL divergence의 target value에 따라 조정되었다**고 명시한다. 즉, 이 실험은 고정 learning rate보다 목표 KL을 기준으로 한 적응적 조절을 사용한다. 또한 locomotion과 flagrun 계열에서 actor 수가 다르며, action distribution의 log standard deviation을 선형적으로 annealing한다는 점도 중요한 설정이다.
 
-### Table 5. Atari 실험 하이퍼파라미터
+> **Table 5 삽입**
 
-> Table 5 삽입
+### Table 5. Atari 실험 하이퍼파라미터
 
 Table 5의 캡션은 \(\alpha\)가 학습 전 구간에 걸쳐 **1에서 0으로 선형 감쇠(linearly annealed)**된다고 밝힌다. 따라서 Atari 실험에서는 learning rate와 clipping parameter가 모두 시간에 따라 함께 줄어든다.
 
@@ -597,15 +608,15 @@ Table 5의 캡션은 \(\alpha\)가 학습 전 구간에 걸쳐 **1에서 0으로
 
 부록 B는 49개 Atari 게임에 대한 상세 결과를 제시한다. 본문은 “PPO against A2C on a larger collection of 49 Atari games”라고 서술하지만, 실제 Figure 6의 범례와 Table 6에는 **A2C, ACER, PPO** 세 알고리즘이 모두 포함되어 있다. Figure 6은 세 random seed 각각의 학습 곡선을, Table 6은 평균 성능을 제공한다.
 
-### Figure 6 해설
+> **Figure 6 삽입**
 
-> Figure 6 삽입
+### Figure 6 해설
 
 Figure 6은 당시 OpenAI Gym에 포함되어 있던 49개 Atari 게임 전부에 대해 학습 곡선을 나열한다. 캡션은 PPO와 A2C의 비교라고 적고 있으나, 그림의 범례에는 ACER도 함께 제시된다. 이 그림은 게임마다 알고리즘 간 우열이 다르다는 점을 보여준다. 일부 게임에서는 PPO가 빠르게 상위 성능에 도달하고, 다른 게임에서는 ACER가 더 높은 최종 점수에 도달한다. 본문의 Table 2가 aggregate win count를 제공했다면, Figure 6은 그러한 집계 뒤에 있는 **게임별 학습 양상**을 시각적으로 드러낸다.
 
-### Table 6. 49개 Atari 게임의 mean final score (last 100 episodes)
+> **Table 6 삽입**
 
-> Table 6 삽입
+### Table 6. 49개 Atari 게임의 mean final score (last 100 episodes)
 
 Table 6의 캡션은 이 표가 **40M game frames(=10M timesteps) 학습 이후 마지막 100개 episode의 평균 점수**를 제시한다고 명시한다.
 

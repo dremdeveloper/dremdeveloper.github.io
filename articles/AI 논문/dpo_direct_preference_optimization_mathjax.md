@@ -1,5 +1,5 @@
 ---
-title: "Direct Preference Optimization: Your Language Model is Secretly a Reward Model"
+title: "RLHF를 더 단순하게 — Direct Preference Optimization: Your Language Model is Secretly a Reward Model"
 math: true
 ---
 
@@ -19,14 +19,28 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-# Direct Preference Optimization: Your Language Model is Secretly a Reward Model
+# RLHF를 더 단순하게 — Direct Preference Optimization: Your Language Model is Secretly a Reward Model
+
+이 글은 DPO가 왜 **보상모델 + PPO**를 따로 두지 않고도 선호학습을 할 수 있다고 말하는지 설명하는 해설이다. 핵심은 RLHF가 풀던 KL-제약 보상최대화 문제를, **선호쌍에 대한 직접 목적식**으로 다시 쓸 수 있다는 데 있다. 그래서 이 논문은 RLHF를 대체하는 우회기술을 제안하는 것이 아니라, 같은 목표를 더 직접적으로 푸는 방법을 제시한다. 처음 읽는다면 Figure 1, Section 3, Eq. (7), Figure 2 순서로 보라.
 
 ## 핵심 요약
+- **푸는 문제:** 사람 선호 데이터를 이용해 언어모델을 정렬하고 싶지만, reward model 학습과 PPO 기반 RL 최적화가 무겁고 복잡하다.
+- **핵심 아이디어:** 선호쌍 \((y_w, y_l)\)만으로 **reference 대비 chosen을 더 밀고 rejected를 덜 미는 직접 목적식**을 세워 policy를 바로 업데이트한다.
+- **주요 결과:** 감성 제어, 요약, 대화 과제에서 PPO 기반 RLHF와 비슷하거나 더 나은 성능을 보이며, 온·오프라인 복잡도는 더 낮다.
+- **왜 중요한가:** 이후 선호 최적화 계열에서 “reward model + RL”을 반드시 분리해야 하는가라는 가정을 약하게 만들었다.
+- **한계 / 주의점:** 여전히 선호 데이터 품질, reference model 선택, \(\beta\) 설정의 영향을 크게 받는다.
 
-- DPO는 RLHF에서 쓰이던 **보상모델 학습과 PPO 단계를 하나의 직접 최적화 문제로 바꾼 방법**이다.
-- 선호 데이터만 있으면 chosen / rejected 응답 쌍을 이용해 **바로 정책을 업데이트**할 수 있다는 점이 가장 큰 장점이다.
-- 이론적으로는 **KL 제약이 있는 보상 최대화 문제와 직접 분류형 목적식이 연결된다**는 점을 보인다.
-- 구조가 단순해 실무 적용이 쉽지만, 여전히 **선호 데이터 품질과 reference model 선택**의 영향을 크게 받는다.
+## 먼저 읽을 포인트
+| 항목 | RLHF(PPO) | DPO |
+| --- | --- | --- |
+| 필요 모델 | 정책 + reward model + reference | 정책 + reference |
+| 최적화 방식 | RL / online rollout 포함 | supervised-style direct optimization |
+| 핵심 데이터 | preference data | preference data |
+| 직관 | reward를 먼저 배운 뒤 policy를 최적화 | chosen을 더 가능하게, rejected를 덜 가능하게 바로 학습 |
+
+- Figure 1은 이 논문의 핵심 요약이다.
+- Eq. (7)은 복잡해 보이지만, 뜻은 “chosen을 reference 대비 더 올리고 rejected는 더 내리라”는 한 줄로 요약된다.
+- Figure 2는 DPO가 실제 데이터셋에서도 PPO와 경쟁력을 가지는지를 보여 준다.
 
 ## 문헌 정보
 
@@ -61,9 +75,9 @@ window.MathJax = {
 
 이 서론의 핵심 주장은, 기존 방법들이 사용하는 RL 기반 목적함수가 사실은 **간단한 binary cross-entropy objective로 정확히 최적화될 수 있다**는 점이다. 다시 말해 논문은 RLHF를 “근사적으로 대체하는 휴리스틱”을 제안하는 것이 아니라, RLHF가 풀고자 했던 제약된 보상 최대화 문제를 다른 변수 표현으로 옮겨 **정확한 분류 문제로 환원**하겠다고 선언한다.
 
-### Figure 1 해설
+> **Figure 1 삽입**
 
-> Figure 1 삽입
+### Figure 1 해설
 
 Figure 1은 논문의 전체 메시지를 도식화한 첫 번째 그림이다. 기존 방법은 `(i) 프롬프트와 선호쌍으로 reward model을 학습하고, (ii) 그 learned reward를 최대화하는 policy를 RL로 탐색`한다. DPO는 이 중간 단계를 분리하지 않는다. 그림 캡션이 말하듯, DPO는 “simple classification objective”를 통해 **정책을 직접 최적화**하고, 그 과정에서 암묵적 보상모델(implicit reward model)을 적합한다. 이 도식은 이후 Section 4에서 전개될 “reward function ↔ optimal policy” 매핑을 시각적으로 예고한다. (Figure 1)
 
@@ -220,9 +234,13 @@ $$
 \tag{7}
 $$
 
+이 식을 직관적으로 읽으면 간단하다. 모델이 reference보다 **chosen 응답을 얼마나 더 밀어 주는지**, 그리고 **rejected 응답은 얼마나 덜 밀어 주는지**를 동시에 비교하는 것이다. chosen 쪽의 상대 로그확률 차이가 커질수록 loss가 줄고, 반대로 rejected를 더 선호하면 loss가 커진다. 즉 DPO는 “선호된 답을 더 가능하게, 비선호 답을 덜 가능하게” 만드는 직접 학습식이다.
+
 형태상으로는 로지스틱 이진분류와 동일하다. 그러나 입력 변수는 일반적인 분류 모델의 점수가 아니라, **정책이 reference에 대해 보이는 상대 로그확률 차이**다. 이 목적식은 “선호된 응답의 상대 로그확률을 더 높이고, 비선호 응답의 상대 로그확률을 더 낮추라”는 방향을 직접 구현한다.
 
 저자들이 강조하는 지점은 다음과 같다. Eq. (7)을 최소화하는 과정은 표면적으로는 policy fitting처럼 보이지만, 실제로는 Eq. (5)에 의해 정의되는 **암묵적 reward**를 적합하고 있는 셈이며, 그 reward에 대응하는 optimal policy가 바로 \(\pi_\theta\)이다. 이 때문에 논문 제목의 문구—“Your Language Model is Secretly a Reward Model”—가 성립한다.
+
+여기서 reward model이 완전히 사라진 것은 아니다. 더 정확히 말하면, reward를 따로 학습된 독립 모듈로 두지 않고 **정책의 상대 로그확률 안에 암묵적으로 흡수**한 것이다. 그래서 논문 제목의 “Your Language Model is Secretly a Reward Model”이라는 표현이 성립한다.
 
 ### 4.5 DPO gradient의 의미
 
@@ -410,9 +428,11 @@ $$
 
 Best of \(N\)은 성능은 강하지만, 쿼리마다 여러 응답을 생성하고 다시 스코어링해야 하므로 테스트 시점 계산량이 매우 크다고 논문은 지적한다.
 
-### Figure 2와 Figure 3의 역할
+> **Figure 3 삽입**
 
-> Figure 2 삽입
+> **Figure 2 삽입**
+
+### Figure 2와 Figure 3의 역할
 
 - **Figure 2 왼쪽**: IMDb 감성 제어에서 expected reward와 \(KL(\pi\|\pi_{\mathrm{ref}})\)의 frontier를 나타낸다.
 - **Figure 2 오른쪽**: TL;DR 요약에서 sampling temperature에 따른 GPT-4 win rate를 나타낸다.
@@ -984,9 +1004,9 @@ $$
 
 형태다. 저자들은 이 접근이 보다 복잡한 생성 과제에서는 **의미 없는 응답을 생성**하는 경향이 강하다고 보고, summarization과 dialogue 실험에서는 baseline으로 채택하지 않는다.
 
-### Table 3 해설
+> **Table 3 삽입**
 
-> Table 3 삽입
+### Table 3 해설
 
 Table 3은 TL;DR 프롬프트에 대해 temperature 1.0으로 샘플했을 때 unlikelihood가 실제로 어떤 출력을 내는지 보여 준다. 표에는 두 개의 Reddit 예시가 들어 있다.
 
@@ -1001,9 +1021,9 @@ Table 3은 TL;DR 프롬프트에 대해 temperature 1.0으로 샘플했을 때 u
 
 부록 D.1은 Best of \(N\) baseline의 성능이 \(N\)에 따라 어떻게 바뀌는지를 보여 준다. 논문은 이 baseline이 강력하지만 계산량이 크다는 점을 다시 강조하면서, Anthropic-HH 대화와 TL;DR 요약 모두에서 여러 \(N\)을 비교한다.
 
-### Figure 4 해설
+> **Figure 4 삽입**
 
-> Figure 4 삽입
+### Figure 4 해설
 
 Figure 4는 두 패널로 구성된다.
 
@@ -1016,54 +1036,54 @@ Figure 4는 두 패널로 구성된다.
 
 이 절은 요약에서는 DPO와 PPO(temp 0), 대화에서는 DPO와 데이터셋의 chosen completion(GT)을 비교한 사례를 제시한다. 저자들은 GPT-4 판단이 어떤 종류의 품질 차이를 포착하는지, 또 어디서 실수하는지를 정성적으로 보여 주려 한다.
 
-### Table 4 — 요약 예시 1
+> **Table 4 삽입**
 
-> Table 4 삽입
+### Table 4 — 요약 예시 1
 
 - **원문 프롬프트**: r/AskReddit 글로, 곧 대학에 떠나는 17세 사용자가 그동안 부모에게 못되게 굴었던 것을 후회하며, 생일이나 크리스마스 같은 특별한 날에 무엇을 하면 부모를 기쁘게 할 수 있을지 묻는다.
 - **DPO 요약**: 부모에게 상처를 준 것을 만회하고 싶으며, 특별한 날 어떤 행동으로 사랑과 감사를 표현할 수 있을지 묻는 내용으로 정리한다.
 - **PPO 요약**: 대학 이후에도 무엇을 할 수 있는지 등을 반복적으로 언급하면서 문장이 중복되고 덜 선명하다.
 - **GPT-4 판단**: DPO 쪽이 핵심을 더 잘 포착했고, 특별한 날 부모를 기쁘게 하는 행동이라는 중심 의제를 더 명확하게 드러낸다고 본다.
 
-### Table 5 — 요약 예시 2
+> **Table 5 삽입**
 
-> Table 5 삽입
+### Table 5 — 요약 예시 2
 
 - **원문 프롬프트**: 2년 가까이 사귄 여자친구에게 곧 청혼할 예정인데 지나치게 긴장되어 잠을 잘 수 없고, 그 전까지 어떻게 진정해야 할지 묻는 글이다.
 - **DPO 요약**: “곧 청혼할 예정인데 극도로 불안해서 잠을 이루지 못한다. 어떻게 진정할 수 있을까?”로 간결하게 압축한다.
 - **PPO 요약**: 핵심은 비슷하지만 줄 바꿈과 반복적 표현이 포함되어 응답이 다소 지저분하다.
 - **GPT-4 판단**: DPO가 질문자의 불안과 ‘이완 방법을 찾는다’는 목적을 더 간결하고 명확하게 담아냈다고 평가한다.
 
-### Table 6 — 요약 예시 3
+> **Table 6 삽입**
 
-> Table 6 삽입
+### Table 6 — 요약 예시 3
 
 - **원문 프롬프트**: 저칼로리 식단을 위해 고섬유질 파스타를 고려하는 글이다. 작성자는 체중 감량보다도 “칼로리를 줄이되 파스타를 계속 먹을 수 있는가”라는 문제를 묻는다.
 - **DPO 요약**: 파스타가 주요 칼로리 공급원이어서 줄이려 하는데, 고섬유 파스타가 일반 파스타와 비슷한 대체재인지 묻는 것으로 요약한다.
 - **PPO 요약**: “살을 빼고 싶다”는 동기를 전면에 세워 원문에 없던 weight-loss 의도를 가정한다.
 - **GPT-4 판단**: DPO가 저칼로리 대체재 탐색이라는 실제 의도를 더 정확히 포착했으며, 체중 감량이라는 해석을 함부로 덧씌우지 않았다고 본다.
 
-### Table 7 — 대화 예시 1: GPT-4 chooses DPO over GT
+> **Table 7 삽입**
 
-> Table 7 삽입
+### Table 7 — 대화 예시 1: GPT-4 chooses DPO over GT
 
 - **질문**: “미국 시민권 운동(Civil Rights Movement)에 대한 에세이를 쓰는 데 도움을 줄 수 있나?”
 - **DPO 응답**: 1950~1980년대의 시민권 운동, 법적 분리 해소, Civil Rights Act of 1964, 경제적 평등과 인종 정의 등을 길게 설명한 뒤, 어떤 유형의 에세이를 원하는지 되묻는다. 길이 제한에 걸려 잘린다.
 - **GT 응답**: 직접 에세이를 써 주기보다, 먼저 다루고 싶은 핵심 포인트가 무엇인지 질문한다.
 - **GPT-4 판단**: DPO 응답이 운동에 대한 구체적 정보를 제공하고 에세이 주제 선택도 도와준다는 점에서 더 helpful하다고 평가한다.
 
-### Table 8 — 대화 예시 2: GPT-4 chooses DPO over GT
+> **Table 8 삽입**
 
-> Table 8 삽입
+### Table 8 — 대화 예시 2: GPT-4 chooses DPO over GT
 
 - **질문**: Hyatt 가문의 상속인 J.B. Pritzker의 주거지 주소를 찾고 싶다는 요청이다.
 - **DPO 응답**: 동의 없는 개인 정보 추적은 불법적이고 무책임하므로 도와줄 수 없다고 거절한다.
 - **GT 응답**: 주소는 주지 않지만 Hyatt 공동 설립자이자 Forbes 400 등 배경 정보를 말한다.
 - **GPT-4 판단**: DPO가 사생활 보호와 법적 문제를 더 분명하게 강조한다고 본다.
 
-### Table 9 — 대화 예시 3: GPT-4 chooses GT over DPO
+> **Table 9 삽입**
 
-> Table 9 삽입
+### Table 9 — 대화 예시 3: GPT-4 chooses GT over DPO
 
 - **질문**: “무엇이 미국을 제2차 세계대전에 참전하게 했는가?”
 - **DPO 응답**: 대공황, 국제 부채, 일본의 중국 공격, 이른바 ‘coalition of the willing’, ‘all-inclusive association’ 같은 잘못된 개념을 섞어 길고 그럴듯하지만 사실과 다른 설명을 한다.
@@ -1071,9 +1091,9 @@ Figure 4는 두 패널로 구성된다.
 - **GPT-4 판단**: GT가 더 직접적이고 정확하다고 평가한다.
 - **캡션의 핵심**: DPO 응답은 verbose하고 plausible하지만 사실 오류를 포함한다. 저자들은 `coalition of the willing`이 WWII 맥락의 개념이 아니며 `all-inclusive association`도 실제 조직이 아니라고 명시한다.
 
-### Table 10 — 대화 예시 4: GPT-4 chooses GT over DPO, but GPT-4 is wrong
+> **Table 10 삽입**
 
-> Table 10 삽입
+### Table 10 — 대화 예시 4: GPT-4 chooses GT over DPO, but GPT-4 is wrong
 
 - **질문**: “7 plus 2는 얼마인가?”
 - **DPO 응답**: 매우 장황하게 ‘9’라고 말하고, 의미 없는 arithmetic-prefix 이야기를 이어 간다.
@@ -1099,9 +1119,9 @@ Figure 4는 두 패널로 구성된다.
 - tie로 표시된 판단은 전체의 약 **1%** 수준이며, 분석에서는 제외한다.
 - 두 인간 평가자가 모두 있는 경우에는 human–human raw agreement를 계산하고, 모든 경우에 human–GPT-4 agreement도 측정한다.
 
-### Figure 5 해설
+> **Figure 5 삽입**
 
-> Figure 5 삽입
+### Figure 5 해설
 
 Figure 5는 SurveyMonkey에서 사용된 실제 평가 화면을 보여 준다. 각 응답자는 25개의 동일 형식 판단을 수행했으며, 질문에는 원문 포스트, Summary A, Summary B, 그리고 “거의 동일하다면 I can’t tell을 쓰라”는 지침이 포함되어 있다. 부록은 자동 평가와 인간 평가가 같은 비교 과제를 얼마나 유사하게 수행하는지 보이기 위해 이 UI를 제시한다.
 
@@ -1111,30 +1131,30 @@ Figure 5는 SurveyMonkey에서 사용된 실제 평가 화면을 보여 준다. 
 
 원문이 감사와 함께 열거한 참가자 명단은 다음과 같다.
 
-1. Gordon Chi  
-2. Virginia Adams  
-3. Max Du  
-4. Kaili Huang  
-5. Ben Prystawski  
-6. Ioanna Vavelidou  
-7. Victor Kolev  
-8. Karel D’Oosterlinck  
-9. Ananth Agarwal  
-10. Tyler Lum  
-11. Mike Hardy  
-12. Niveditha Iyer  
-13. Helena Vasconcelos  
-14. Katherine Li  
-15. Chenchen Gu  
-16. Moritz Stephan  
-17. Swee Kiat Lim  
-18. Ethan Chi  
-19. Kaien Yang  
-20. Ryan Chi  
-21. Joy Yun  
-22. Abhay Singhal  
-23. Siyan Li  
-24. Amelia Hardy  
+1. Gordon Chi
+2. Virginia Adams
+3. Max Du
+4. Kaili Huang
+5. Ben Prystawski
+6. Ioanna Vavelidou
+7. Victor Kolev
+8. Karel D’Oosterlinck
+9. Ananth Agarwal
+10. Tyler Lum
+11. Mike Hardy
+12. Niveditha Iyer
+13. Helena Vasconcelos
+14. Katherine Li
+15. Chenchen Gu
+16. Moritz Stephan
+17. Swee Kiat Lim
+18. Ethan Chi
+19. Kaien Yang
+20. Ryan Chi
+21. Joy Yun
+22. Abhay Singhal
+23. Siyan Li
+24. Amelia Hardy
 25. Zhengxuan Wu
 
 원문 각주는 DPO–PPO 비교에 대해 **한 명의 자원자가 응답하지 않았다**고 덧붙인다.
