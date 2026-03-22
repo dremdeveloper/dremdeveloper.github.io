@@ -1,7 +1,3 @@
----
-title: "Proximal Policy Optimization Algorithms"
-math: true
----
 
 # Proximal Policy Optimization Algorithms
 
