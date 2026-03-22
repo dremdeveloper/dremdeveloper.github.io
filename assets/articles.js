@@ -26,12 +26,15 @@
   const configuredFiles = Array.isArray(config.files) ? config.files : [];
   const configuredCategoryOrder = Array.isArray(config.categoryOrder) ? config.categoryOrder : [];
   const categoryLabelMap = {
+    'AI논문': 'AI 논문',
     'AI 논문': 'AI 논문',
     '생각정리': '생각',
     '생각 정리': '생각',
     '생각': '생각',
+    '지식정리': '지식 정리',
     '유용한 지식 및 팁': '지식 정리',
     '지식 정리': '지식 정리',
+    '트러블슈팅': '트러블 슈팅',
     '트러블 슈팅': '트러블 슈팅'
   };
   const requestedCategory = normalizeCategoryLabel(decodeURIComponent(searchParams.get('category') || ''));
@@ -131,7 +134,9 @@
 
   function updateSidebarCurrentLabel() {
     if (!sidebarCurrentNode) return;
-    sidebarCurrentNode.textContent = SIDEBAR_CURRENT_LABEL;
+    sidebarCurrentNode.textContent = requestedCategory
+      ? `${requestedCategory} 목록`
+      : SIDEBAR_CURRENT_LABEL;
   }
 
   function applyCategoryFilter(files) {
@@ -461,6 +466,16 @@
     listNode.innerHTML = '';
     updateSidebarCurrentLabel();
 
+    if (!articleFiles.length) {
+      const emptyState = document.createElement('div');
+      emptyState.className = 'menu-empty-state';
+      emptyState.textContent = requestedCategory
+        ? `${requestedCategory} 카테고리에 표시할 md 파일이 없습니다.`
+        : '표시할 md 파일이 없습니다.';
+      listNode.appendChild(emptyState);
+      return;
+    }
+
     const groupedFiles = articleFiles.reduce((groups, file) => {
       const key = file.category || '미분류';
       if (!groups.has(key)) groups.set(key, []);
@@ -572,7 +587,11 @@
       );
 
       if (!articleFiles.length) {
-        setStatus('articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.');
+        const emptyMessage = requestedCategory
+          ? `${requestedCategory} 카테고리에는 아직 md 파일이 없습니다.`
+          : 'articles 폴더에 md 파일이 아직 없습니다. 새 파일을 올리면 여기에 자동으로 나타납니다.';
+        setStatus(emptyMessage);
+        viewerNode.hidden = true;
         return;
       }
 
