@@ -12,6 +12,7 @@
   const searchInput = document.getElementById('article-search-input');
   const searchResultsNode = document.getElementById('article-search-results');
   const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
+  const SIDEBAR_CURRENT_LABEL = '아티클 선택';
 
   if (!listNode || !countNode || !statusNode || !viewerNode) return;
 
@@ -114,8 +115,7 @@
 
   function updateSidebarCurrentLabel() {
     if (!sidebarCurrentNode) return;
-    const currentEntry = articleFiles.find((entry) => entry.name === currentFile);
-    sidebarCurrentNode.textContent = currentEntry?.title || '원하는 아티클을 선택하세요';
+    sidebarCurrentNode.textContent = SIDEBAR_CURRENT_LABEL;
   }
 
   function setArticleFiles(files) {
