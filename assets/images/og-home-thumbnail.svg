@@ -1,0 +1,136 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DremDeveloper 블로그 메인 공유 썸네일</title>
+  <desc id="desc">파스텔 배경 위에 웃는 캐릭터 아바타와 DremDeveloper 블로그 소개 문구가 배치된 대표 썸네일 이미지</desc>
+  <defs>
+    <radialGradient id="bgGlowLeft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(190 180) rotate(17) scale(520 360)">
+      <stop stop-color="#FFC6AF"/>
+      <stop offset="1" stop-color="#FFC6AF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgGlowRight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(990 150) rotate(170) scale(460 300)">
+      <stop stop-color="#BFF8E6"/>
+      <stop offset="1" stop-color="#BFF8E6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bgGlowBottom" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(610 540) rotate(-8) scale(700 260)">
+      <stop stop-color="#FFD7BF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFD7BF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bgBase" x1="56" y1="32" x2="1152" y2="598" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF3EE"/>
+      <stop offset="0.38" stop-color="#FFF9F4"/>
+      <stop offset="0.73" stop-color="#F0FFF7"/>
+      <stop offset="1" stop-color="#FFF2E7"/>
+    </linearGradient>
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="cardShadow" x="180" y="70" width="900" height="610" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feOffset dy="26"/>
+      <feGaussianBlur stdDeviation="24"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.247059 0 0 0 0 0.172549 0 0 0 0 0.235294 0 0 0 0.12 0"/>
+    </filter>
+    <linearGradient id="hairGrad" x1="668" y1="148" x2="718" y2="492" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4A4A4D"/>
+      <stop offset="1" stop-color="#56565A"/>
+    </linearGradient>
+    <radialGradient id="faceGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(702 284) rotate(90) scale(208 182)">
+      <stop stop-color="#FFF7F4"/>
+      <stop offset="1" stop-color="#FDE8E0"/>
+    </radialGradient>
+    <radialGradient id="cheekGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) scale(1)">
+      <stop stop-color="#FFA9A0"/>
+      <stop offset="1" stop-color="#FFA9A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shirtGrad" x1="705" y1="468" x2="705" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#252022"/>
+      <stop offset="1" stop-color="#171416"/>
+    </linearGradient>
+    <clipPath id="canvasRound">
+      <rect width="1200" height="630" rx="36"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#canvasRound)">
+    <rect width="1200" height="630" fill="url(#bgBase)"/>
+    <rect width="1200" height="630" fill="url(#bgGlowLeft)"/>
+    <rect width="1200" height="630" fill="url(#bgGlowRight)"/>
+    <rect width="1200" height="630" fill="url(#bgGlowBottom)"/>
+
+    <g opacity="0.2">
+      <path d="M982 42L1101 118L1048 245L915 189L982 42Z" stroke="#B7B9CC" stroke-width="2"/>
+      <path d="M915 189L1048 245L960 361L855 297L915 189Z" stroke="#B7B9CC" stroke-width="2"/>
+      <path d="M1048 245L1140 378L1002 430L960 361L1048 245Z" stroke="#B7B9CC" stroke-width="2"/>
+      <path d="M855 297L960 361L873 503L773 433L855 297Z" stroke="#B7B9CC" stroke-width="2"/>
+      <path d="M86 440L230 462L292 570L145 590L56 526L86 440Z" stroke="#BCC5D3" stroke-width="2"/>
+      <path d="M145 590L292 570L334 653L171 688L98 642L145 590Z" stroke="#BCC5D3" stroke-width="2"/>
+    </g>
+
+    <g opacity="0.45" fill="#FFFFFF">
+      <circle cx="1046" cy="88" r="4"/>
+      <circle cx="1080" cy="88" r="4"/>
+      <circle cx="1114" cy="88" r="4"/>
+      <circle cx="1148" cy="88" r="4"/>
+      <circle cx="1182" cy="88" r="4"/>
+      <circle cx="1046" cy="122" r="4"/>
+      <circle cx="1080" cy="122" r="4"/>
+      <circle cx="1114" cy="122" r="4"/>
+      <circle cx="1148" cy="122" r="4"/>
+      <circle cx="1182" cy="122" r="4"/>
+      <circle cx="1046" cy="156" r="4"/>
+      <circle cx="1080" cy="156" r="4"/>
+      <circle cx="1114" cy="156" r="4"/>
+      <circle cx="1148" cy="156" r="4"/>
+      <circle cx="1182" cy="156" r="4"/>
+      <circle cx="1046" cy="190" r="4"/>
+      <circle cx="1080" cy="190" r="4"/>
+      <circle cx="1114" cy="190" r="4"/>
+      <circle cx="1148" cy="190" r="4"/>
+      <circle cx="1182" cy="190" r="4"/>
+    </g>
+
+    <g filter="url(#softBlur)" opacity="0.45">
+      <ellipse cx="690" cy="508" rx="212" ry="44" fill="#D9C9C5"/>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="222" y="88" width="756" height="468" rx="44" fill="#FFFFFF" fill-opacity="0.52"/>
+    </g>
+    <rect x="222" y="88" width="756" height="468" rx="44" fill="#FFFFFF" fill-opacity="0.36" stroke="#FFFFFF" stroke-opacity="0.55"/>
+
+    <g>
+      <text x="312" y="208" fill="#111111" font-family="Pretendard, Inter, Arial, sans-serif" font-size="54" font-weight="800">DremDeveloper</text>
+      <text x="312" y="270" fill="#3A3740" font-family="Pretendard, Inter, Arial, sans-serif" font-size="28" font-weight="600">머신러닝 SW 개발자 박경록의 블로그</text>
+      <text x="312" y="326" fill="#5B5862" font-family="Pretendard, Inter, Arial, sans-serif" font-size="23" font-weight="500">AI 논문 정리 · 알고리즘 시각화 · 코딩 테스트 학습 자료</text>
+      <rect x="312" y="372" width="290" height="52" rx="26" fill="#1E1B21"/>
+      <text x="457" y="405" text-anchor="middle" fill="#FFFFFF" font-family="Pretendard, Inter, Arial, sans-serif" font-size="20" font-weight="700">dremdeveloper.github.io</text>
+    </g>
+
+    <g transform="translate(0 2)">
+      <path d="M548 524C562 445 625 392 705 392C785 392 848 445 862 524V596H548V524Z" fill="url(#shirtGrad)"/>
+      <ellipse cx="705" cy="462" rx="36" ry="26" fill="#FDE7DE"/>
+      <path d="M577 307C577 225 632 138 705 138C778 138 833 225 833 307V370H577V307Z" fill="url(#hairGrad)" stroke="#2A2527" stroke-width="8"/>
+      <path d="M605 282C614 239 629 188 648 160" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M627 285C632 246 642 208 655 182" stroke="#2A2527" stroke-width="6" stroke-linecap="round"/>
+      <path d="M651 285C654 235 662 190 670 146" stroke="#2A2527" stroke-width="6" stroke-linecap="round"/>
+      <path d="M676 286C679 231 684 193 690 138" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M703 286C703 240 705 190 707 156" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M730 286C732 233 737 193 743 165" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M756 286C754 238 750 192 744 150" stroke="#2A2527" stroke-width="6" stroke-linecap="round"/>
+      <path d="M782 286C776 240 768 202 758 176" stroke="#2A2527" stroke-width="6" stroke-linecap="round"/>
+      <path d="M807 285C800 236 789 194 775 163" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M592 359C602 412 646 458 705 458C764 458 808 412 818 359C814 336 792 301 755 286H655C618 301 596 336 592 359Z" fill="url(#faceGrad)" stroke="#2A2527" stroke-width="8"/>
+      <path d="M577 334C557 334 541 352 541 377C541 402 556 421 577 421C590 421 601 412 609 398V356C601 343 590 334 577 334Z" fill="#FFF4EE" stroke="#2A2527" stroke-width="8"/>
+      <path d="M833 334C853 334 869 352 869 377C869 402 854 421 833 421C820 421 809 412 801 398V356C809 343 820 334 833 334Z" fill="#FFF4EE" stroke="#2A2527" stroke-width="8"/>
+      <path d="M566 367C576 371 583 381 585 394" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <path d="M844 367C834 371 827 381 825 394" stroke="#2A2527" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="650" cy="377" rx="10" ry="17" fill="#181418"/>
+      <ellipse cx="760" cy="377" rx="10" ry="17" fill="#181418"/>
+      <ellipse cx="603" cy="430" rx="32" ry="24" fill="#FFA9A0" fill-opacity="0.8"/>
+      <ellipse cx="807" cy="430" rx="32" ry="24" fill="#FFA9A0" fill-opacity="0.8"/>
+      <path d="M677 454C691 466 720 466 734 454" stroke="#181418" stroke-width="8" stroke-linecap="round"/>
+    </g>
+
+    <g opacity="0.9">
+      <path d="M1120 545L1138 581L1176 588L1148 616L1154 655L1120 636L1086 655L1092 616L1064 588L1102 581L1120 545Z" fill="#FFFFFF" fill-opacity="0.72"/>
+    </g>
+  </g>
+</svg>
