@@ -399,66 +399,63 @@
 
     const REPO_BASE = 'https://github.com/dremdeveloper/programmers_python_algorithm';
     const repoFolderLinks = new Map([
-      ['reference/', `${REPO_BASE}/tree/main/reference`],
-      ['performance/', `${REPO_BASE}/tree/main/performance`],
-      ['errorcode/', `${REPO_BASE}/tree/main/errorcode`],
-      ['mistake/', `${REPO_BASE}/tree/main/mistake`],
-      ['solution/', `${REPO_BASE}/tree/main/solution`],
-      ['Algorithm_with_DataStructure/', `${REPO_BASE}/tree/main/Algorithm_with_DataStructure`],
+      ['reference/', `${REPO_BASE}/tree/main/DataStructure`],
+      ['performance/', `${REPO_BASE}/tree/main/Week1`],
+      ['errorcode/', `${REPO_BASE}/tree/main/common_mistakes`],
+      ['mistake/', `${REPO_BASE}/tree/main/common_mistakes`],
+      ['solution/', `${REPO_BASE}`],
+      ['Algorithm_with_DataStructure/', `${REPO_BASE}/tree/main/DataStructure`],
     ]);
     const repoDirectFileLinks = new Map([
-      ['reference/deque.py', `${REPO_BASE}/blob/main/reference/deque.py`],
-    ]);
-    const repoBareSearchTokens = new Set([
-      'Coding_Test_Success_Guide.md',
-      'counter.py',
-      'deque.py',
-      'dictionary.py',
-      'lambda.py',
-      'list_comprehension.py',
-      'zip.py',
-      'try_except.py',
-      'range.py',
-      'combination_direct.py',
-      'permutation_direct.py',
-      'countsort.py',
-      'mergesort_recursive.py',
-      'append_vs_plus_performance.py',
-      'list_vs_deque_pop_performance.py',
-      'list_vs_set_in.py',
-      'list_vs_heapq.py',
-      'string_concatenation_performance.py',
-      'index_out_of_range.py',
-      'key_error.py',
-      'name_error.py',
-      'recursion_limit_exceed.py',
-      'pop-from_empty_list.py',
-      'range_function_usage.py',
-      'indexing_convention_tutorial.py',
-      'list_in_del_usage.py',
-      'operation_precedence_examples.py',
-      'sorting_methods_comparison.py',
-      'binary_search_mistake.py',
-      'union_find.py',
-      'queue.py',
-      'stack.py',
-      'set.py',
-      'bfs.py',
-      'dfs_recursion.py',
-      'dfs_stack.py',
-      'dijkstra.py',
-      'bellmanford.py',
-      'LCS_DP.py',
-      'LIS_DP.py',
-      'fibonacci_recursion_memoization.py',
-      'priority_queue.py',
-      'binary_search.py',
-      'heapq.py',
+      ['reference/deque.py', `${REPO_BASE}/blob/main/DataStructure/collections_deque.py`],
+      ['Coding_Test_Success_Guide.md', `${REPO_BASE}/blob/main/study_guide.md`],
+      ['counter.py', `${REPO_BASE}/blob/main/DataStructure/collections_counter.py`],
+      ['deque.py', `${REPO_BASE}/blob/main/DataStructure/collections_deque.py`],
+      ['dictionary.py', `${REPO_BASE}/blob/main/DataStructure/dict_basics.py`],
+      ['lambda.py', `${REPO_BASE}/blob/main/programmers_lv2/custom_sort_with_lambda.py`],
+      ['list_comprehension.py', `${REPO_BASE}/blob/main/DataStructure/list_comprehension.py`],
+      ['zip.py', `${REPO_BASE}/blob/main/programmers_lv1/zip_for_parallel_iteration.py`],
+      ['try_except.py', `${REPO_BASE}/blob/main/common_mistakes/broad_except_clause.py`],
+      ['range.py', `${REPO_BASE}/blob/main/common_mistakes/off_by_one_error.py`],
+      ['combination_direct.py', `${REPO_BASE}/blob/main/Week4/combinations.py`],
+      ['permutation_direct.py', `${REPO_BASE}/blob/main/Week4/permutations.py`],
+      ['countsort.py', `${REPO_BASE}/blob/main/programmers_lv1/basic_sorting_methods.py`],
+      ['mergesort_recursive.py', `${REPO_BASE}/blob/main/DataStructure/list_sorting.py`],
+      ['append_vs_plus_performance.py', `${REPO_BASE}/blob/main/Week1/string_concatenation.py`],
+      ['list_vs_deque_pop_performance.py', `${REPO_BASE}/blob/main/Week1/pop_performance.py`],
+      ['list_vs_set_in.py', `${REPO_BASE}/blob/main/Week1/search_comparison.py`],
+      ['list_vs_heapq.py', `${REPO_BASE}/blob/main/programmers_lv2/heapq_priority_queue.py`],
+      ['string_concatenation_performance.py', `${REPO_BASE}/blob/main/Week1/string_concatenation.py`],
+      ['index_out_of_range.py', `${REPO_BASE}/blob/main/common_mistakes/index_error_example.py`],
+      ['key_error.py', `${REPO_BASE}/blob/main/common_mistakes/key_error_example.py`],
+      ['name_error.py', `${REPO_BASE}/blob/main/common_mistakes/global_keyword_mistake.py`],
+      ['recursion_limit_exceed.py', `${REPO_BASE}/blob/main/common_mistakes/missing_recursion_base_case.py`],
+      ['pop-from_empty_list.py', `${REPO_BASE}/blob/main/common_mistakes/index_error_example.py`],
+      ['range_function_usage.py', `${REPO_BASE}/blob/main/common_mistakes/off_by_one_error.py`],
+      ['indexing_convention_tutorial.py', `${REPO_BASE}/blob/main/common_mistakes/off_by_one_error.py`],
+      ['list_in_del_usage.py', `${REPO_BASE}/blob/main/common_mistakes/modifying_list_in_loop.py`],
+      ['operation_precedence_examples.py', `${REPO_BASE}/blob/main/common_mistakes/short_circuit_mistake.py`],
+      ['sorting_methods_comparison.py', `${REPO_BASE}/blob/main/programmers_lv1/basic_sorting_methods.py`],
+      ['binary_search_mistake.py', `${REPO_BASE}/blob/main/programmers_lv2/binary_search_template.py`],
+      ['union_find.py', `${REPO_BASE}/tree/main/DataStructure`],
+      ['queue.py', `${REPO_BASE}/blob/main/Week2/queue_with_deque.py`],
+      ['stack.py', `${REPO_BASE}/blob/main/Week2/stack_with_list.py`],
+      ['set.py', `${REPO_BASE}/blob/main/DataStructure/set_basics.py`],
+      ['bfs.py', `${REPO_BASE}/blob/main/Week3/bfs_iterative.py`],
+      ['dfs_recursion.py', `${REPO_BASE}/blob/main/Week3/dfs_recursive.py`],
+      ['dfs_stack.py', `${REPO_BASE}/blob/main/Week3/dfs_iterative.py`],
+      ['dijkstra.py', `${REPO_BASE}/blob/main/programmers_lv2/heapq_priority_queue.py`],
+      ['bellmanford.py', `${REPO_BASE}/blob/main/Week3/bfs_shortest_path.py`],
+      ['LCS_DP.py', `${REPO_BASE}/blob/main/study_guide.md`],
+      ['LIS_DP.py', `${REPO_BASE}/blob/main/study_guide.md`],
+      ['fibonacci_recursion_memoization.py', `${REPO_BASE}/blob/main/Week2/recursive_factorial.py`],
+      ['priority_queue.py', `${REPO_BASE}/blob/main/programmers_lv2/heapq_priority_queue.py`],
+      ['binary_search.py', `${REPO_BASE}/blob/main/programmers_lv2/binary_search_template.py`],
+      ['heapq.py', `${REPO_BASE}/blob/main/programmers_lv2/heapq_priority_queue.py`],
     ]);
     const repoLinkTokens = [
       ...repoDirectFileLinks.keys(),
       ...repoFolderLinks.keys(),
-      ...repoBareSearchTokens,
     ].sort((a, b) => b.length - a.length);
     const repoLinkPattern = new RegExp(
       repoLinkTokens.map((token) => token.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')).join('|'),
@@ -523,14 +520,9 @@
       'g',
     );
 
-    function buildRepoSearchUrl(token) {
-      return `${REPO_BASE}/search?q=${encodeURIComponent(token)}&type=code`;
-    }
-
     function resolveRepoUrl(token) {
       if (repoDirectFileLinks.has(token)) return repoDirectFileLinks.get(token);
       if (repoFolderLinks.has(token)) return repoFolderLinks.get(token);
-      if (repoBareSearchTokens.has(token)) return buildRepoSearchUrl(token);
       return '';
     }
 
