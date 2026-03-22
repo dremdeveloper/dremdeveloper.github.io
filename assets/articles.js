@@ -24,6 +24,11 @@
   const articlesPath = config.articlesPath || 'articles';
   const defaultFile = config.defaultFile || '';
   const configuredFiles = Array.isArray(config.files) ? config.files : [];
+  const ignoredFiles = new Set(
+    (Array.isArray(config.ignoredFiles) ? config.ignoredFiles : [])
+      .map((item) => normalizeFileKey(item))
+      .filter(Boolean)
+  );
   const configuredCategoryOrder = Array.isArray(config.categoryOrder) ? config.categoryOrder : [];
   const categoryLabelMap = {
     'AI논문': 'AI 논문',
@@ -151,7 +156,10 @@
 
   function setArticleFiles(files) {
     allArticleFiles = files
-      .filter((item) => normalizeFileKey(item?.path || item?.name))
+      .filter((item) => {
+        const fileKey = normalizeFileKey(item?.path || item?.name);
+        return fileKey && !ignoredFiles.has(fileKey);
+      })
       .map(buildArticleEntry)
       .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
 
