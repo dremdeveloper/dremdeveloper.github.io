@@ -608,21 +608,42 @@
     }
   }
 
-  function syncFrameHeight() {
+  function getEmbeddedFrameContentHeight(targetFrame) {
+    if (!targetFrame) return 0;
+
     try {
-      const doc = frame.contentDocument || frame.contentWindow?.document;
-      if (!doc) return;
-      const nextHeight = Math.max(
-        doc.body ? doc.body.scrollHeight : 0,
-        doc.documentElement ? doc.documentElement.scrollHeight : 0,
-      );
-      if (nextHeight) {
-        frame.style.height = `${nextHeight + 12}px`;
-        restoreScrollAnchor();
+      const doc = targetFrame.contentDocument || targetFrame.contentWindow?.document;
+      if (!doc) return 0;
+
+      const appShell = doc.querySelector('.app-shell');
+      if (appShell) {
+        return Math.ceil(appShell.getBoundingClientRect().height);
       }
+
+      return Math.ceil(Math.max(
+        doc.body ? doc.body.offsetHeight : 0,
+        doc.documentElement ? doc.documentElement.offsetHeight : 0,
+      ));
     } catch (error) {
-      // same-origin access only
+      return 0;
     }
+  }
+
+  function setFrameHeight(targetFrame, nextHeight, restoreAnchor) {
+    if (!targetFrame || !nextHeight) return;
+
+    const roundedHeight = Math.ceil(nextHeight);
+    if (targetFrame.style.height === `${roundedHeight}px`) return;
+
+    targetFrame.style.height = `${roundedHeight}px`;
+    restoreAnchor?.();
+  }
+
+  function syncFrameHeight() {
+    const nextHeight = getEmbeddedFrameContentHeight(frame);
+    if (!nextHeight) return;
+
+    setFrameHeight(frame, nextHeight, restoreScrollAnchor);
   }
 
   function captureScrollAnchor() {
@@ -730,20 +751,10 @@
   function syncPlanFrameHeight() {
     if (!planFrame) return;
 
-    try {
-      const doc = planFrame.contentDocument || planFrame.contentWindow?.document;
-      if (!doc) return;
-      const nextHeight = Math.max(
-        doc.body ? doc.body.scrollHeight : 0,
-        doc.documentElement ? doc.documentElement.scrollHeight : 0,
-      );
-      if (nextHeight) {
-        planFrame.style.height = `${nextHeight + 12}px`;
-        restorePlanScrollAnchor();
-      }
-    } catch (error) {
-      // same-origin access only
-    }
+    const nextHeight = getEmbeddedFrameContentHeight(planFrame);
+    if (!nextHeight) return;
+
+    setFrameHeight(planFrame, nextHeight, restorePlanScrollAnchor);
   }
 
   function toggleSubmenu(forceOpen) {
@@ -870,14 +881,12 @@
     if (!data || typeof data !== 'object') return;
 
     if (data.type === 'kp-visualizer-height' && frame && typeof data.height === 'number' && data.height > 0) {
-      frame.style.height = `${Math.round(data.height + 12)}px`;
-      restoreScrollAnchor();
+      setFrameHeight(frame, data.height, restoreScrollAnchor);
       return;
     }
 
     if (data.type === 'kp-study-docs-height' && planFrame && typeof data.height === 'number' && data.height > 0) {
-      planFrame.style.height = `${Math.round(data.height + 12)}px`;
-      restorePlanScrollAnchor();
+      setFrameHeight(planFrame, data.height, restorePlanScrollAnchor);
       return;
     }
 
