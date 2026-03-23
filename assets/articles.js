@@ -48,6 +48,8 @@
   const contentsApiBaseUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
   const rawBaseUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}`;
   const mathJaxSrc = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  const articleIndexCacheKey = `article-index-cache:${owner}/${repo}/${branch}/${articlesPath}`;
+  const articleIndexCacheTtlMs = 1000 * 60 * 60 * 6;
   let articleFiles = [];
   let allArticleFiles = [];
   let currentFile = '';
@@ -202,6 +204,55 @@
     });
 
     return Array.from(merged.values());
+  }
+
+  function loadCachedArticleFiles() {
+    try {
+      const cachedValue = window.localStorage?.getItem(articleIndexCacheKey);
+      if (!cachedValue) return [];
+
+      const parsed = JSON.parse(cachedValue);
+      const cachedAt = Number(parsed?.cachedAt || 0);
+      const files = Array.isArray(parsed?.files) ? parsed.files : [];
+      if (!cachedAt || Date.now() - cachedAt > articleIndexCacheTtlMs) {
+        window.localStorage?.removeItem(articleIndexCacheKey);
+        return [];
+      }
+
+      return files;
+    } catch (error) {
+      console.warn('Unable to read cached article index.', error);
+      return [];
+    }
+  }
+
+  function saveCachedArticleFiles(files) {
+    try {
+      if (!Array.isArray(files) || !files.length) return;
+      window.localStorage?.setItem(
+        articleIndexCacheKey,
+        JSON.stringify({
+          cachedAt: Date.now(),
+          files
+        })
+      );
+    } catch (error) {
+      console.warn('Unable to cache article index.', error);
+    }
+  }
+
+  function areSameFileSets(leftFiles, rightFiles) {
+    const leftKeys = leftFiles
+      .map((item) => normalizeFileKey(item?.path || item?.name))
+      .filter(Boolean)
+      .sort();
+    const rightKeys = rightFiles
+      .map((item) => normalizeFileKey(item?.path || item?.name))
+      .filter(Boolean)
+      .sort();
+
+    if (leftKeys.length !== rightKeys.length) return false;
+    return leftKeys.every((value, index) => value === rightKeys[index]);
   }
 
   async function fetchDirectoryEntries(path = articlesPath) {
@@ -723,16 +774,39 @@
   }
 
   async function loadArticleIndex() {
-    setStatus('GitHub 저장소에서 article 목록을 불러오는 중입니다.');
+    const cachedFiles = loadCachedArticleFiles();
+    const bootstrapFiles = mergeArticleFiles(configuredFiles, cachedFiles);
+    const hasBootstrapFiles = bootstrapFiles.length > 0;
+
+    if (hasBootstrapFiles) {
+      setArticleFiles(bootstrapFiles);
+
+      if (!articleFiles.length) {
+        const emptyMessage = requestedCategory
+          ? `${requestedCategory} 카테고리에는 아직 md 파일이 없습니다.`
+          : 'articles 폴더에 아직 표시할 md 파일이 없습니다.';
+        setStatus(emptyMessage);
+        viewerNode.hidden = true;
+      } else {
+        setStatus('아티클 목록을 먼저 표시했습니다. 최신 목록을 백그라운드에서 확인하는 중입니다.');
+        const initialFile = resolveInitialFileName();
+        if (initialFile) {
+          loadArticle(initialFile);
+        }
+      }
+    } else {
+      setStatus('GitHub 저장소에서 article 목록을 불러오는 중입니다.');
+    }
 
     try {
       const items = await fetchDirectoryEntries();
-      setArticleFiles(
-        mergeArticleFiles(
-          configuredFiles,
-          items
-        )
-      );
+      const mergedFiles = mergeArticleFiles(configuredFiles, items);
+      saveCachedArticleFiles(mergedFiles);
+
+      const shouldRefreshList = !hasBootstrapFiles || !areSameFileSets(bootstrapFiles, mergedFiles);
+      if (shouldRefreshList) {
+        setArticleFiles(mergedFiles);
+      }
 
       if (!articleFiles.length) {
         const emptyMessage = requestedCategory
@@ -745,8 +819,19 @@
 
       const initialFile = resolveInitialFileName();
 
-      loadArticle(initialFile);
+      if (!currentFile || !allArticleFiles.some((file) => file.name === currentFile)) {
+        loadArticle(initialFile);
+      }
     } catch (error) {
+      if (hasBootstrapFiles) {
+        setStatus('최신 목록 확인에 실패해 미리 준비된 article 목록을 계속 표시합니다.', true);
+        if (!currentFile) {
+          const initialFile = resolveInitialFileName();
+          if (initialFile) loadArticle(initialFile);
+        }
+        return;
+      }
+
       if (configuredFiles.length) {
         setArticleFiles(configuredFiles);
         setStatus('GitHub 목록을 불러오지 못해 assets/data.js에 등록된 article 목록만 표시합니다.', true);
