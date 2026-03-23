@@ -3143,3 +3143,58 @@ select optgroup {
     padding-right: 18px;
   }
 }
+
+
+@media (max-width: 980px) {
+  .browser-layout,
+  .lecture-layout,
+  .article-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-sidebar,
+  .lecture-sidebar,
+  .article-sidebar {
+    position: static;
+    top: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .browser-layout,
+  .lecture-layout,
+  .article-layout {
+    gap: 14px;
+  }
+
+  .browser-sidebar,
+  .lecture-sidebar,
+  .article-sidebar {
+    order: -1;
+    width: 100%;
+    padding: 14px;
+  }
+
+  .track-switch {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-topline {
+    align-items: stretch;
+  }
+
+  .video-controls {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+
+  .video-control-button,
+  .video-time {
+    width: 100%;
+  }
+
+  .video-time {
+    justify-content: space-between;
+  }
+}
