@@ -1767,18 +1767,26 @@ p {
     gap: 14px;
   }
 
+  .browser-main {
+    order: 1;
+  }
+
   .browser-sidebar {
     top: auto;
-    order: -1;
+    order: 0;
     padding: 14px;
+    border-radius: 14px;
   }
 
   .mobile-sidebar-toggle {
     display: flex;
+    min-height: 56px;
+    padding: 14px 16px;
   }
 
   .mobile-sidebar-body {
     display: none;
+    gap: 12px;
     margin-top: 14px;
   }
 
@@ -1786,14 +1794,97 @@ p {
     display: grid;
   }
 
+  .track-switch {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .sidebar-meta {
+    padding-bottom: 12px;
+  }
+
+  .menu-list {
+    gap: 8px;
+    margin-top: 12px;
+    padding-right: 0;
+  }
+
+  .menu-item {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+    min-height: 54px;
+    padding: 12px 14px;
+  }
+
+  .menu-item-index {
+    width: 38px;
+    min-height: 28px;
+  }
+
+  .lecture-sidebar .menu-item {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+    min-height: 62px;
+    padding: 14px;
+  }
+
+  .lecture-sidebar .menu-item-index {
+    width: 40px;
+    min-height: 32px;
+  }
+
+  .summary-topline {
+    gap: 10px;
+  }
+
+  .video-card,
+  .article-viewer-card,
+  .lecture-summary,
+  .article-viewer,
+  .article-status {
+    border-radius: 14px;
+  }
+
+  .video-controls {
+    gap: 12px;
+    padding: 14px;
+  }
+
   .browser-sidebar .menu-list {
-    max-height: min(52vh, 420px);
+    max-height: min(48vh, 360px);
   }
 
   .article-sidebar {
     position: static;
   }
 
+  .article-container {
+    padding: 24px 20px;
+  }
+
+  .article-viewer h1 {
+    font-size: clamp(1.9rem, 5vw, 2.2rem);
+  }
+
+  .article-viewer h2 {
+    font-size: clamp(1.35rem, 4.4vw, 1.7rem);
+  }
+
+  .article-viewer h3 {
+    font-size: clamp(1.08rem, 3.8vw, 1.28rem);
+  }
+
+  .article-viewer p,
+  .article-viewer li,
+  .article-viewer blockquote {
+    font-size: 0.98rem;
+    line-height: 1.78;
+  }
+
+  .article-viewer ul,
+  .article-viewer ol {
+    padding-left: 1.2rem;
+  }
 }
 
 
@@ -2099,6 +2190,100 @@ select {
   .article-viewer p,
   .article-viewer li {
     font-size: 16px;
+  }
+}
+
+
+@media (max-width: 640px) {
+  .topbar,
+  .page-shell,
+  .site-footer {
+    width: min(calc(100% - 20px), var(--container));
+  }
+
+  .page-shell {
+    padding: 20px 0 48px;
+  }
+
+  .panel-pad-lg {
+    padding: 18px;
+  }
+
+  .panel-pad-md {
+    padding: 14px;
+  }
+
+  .browser-layout {
+    gap: 12px;
+  }
+
+  .browser-sidebar {
+    padding: 12px;
+  }
+
+  .mobile-sidebar-body {
+    margin-top: 12px;
+  }
+
+  .summary-topline {
+    align-items: stretch;
+  }
+
+  .summary-topline .button,
+  .summary-topline .button-secondary,
+  .summary-topline .compact-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .video-frame-wrap {
+    aspect-ratio: auto;
+    min-height: 220px;
+  }
+
+  .video-frame-wrap iframe,
+  #lecture-player {
+    min-height: 220px;
+  }
+
+  .video-control-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .article-search-input {
+    padding: 12px 14px;
+  }
+
+  .search-results {
+    position: static;
+    margin-top: 8px;
+    max-height: 260px;
+    overflow: auto;
+  }
+
+  .article-category-title {
+    width: 100%;
+    padding: 4px 0 6px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-sidebar-toggle-copy strong,
+  .lecture-sidebar .menu-item-copy strong,
+  .menu-item-copy strong {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .article-container {
+    padding: 20px 16px;
+  }
+
+  .article-viewer pre,
+  .article-viewer blockquote {
+    margin-inline: -2px;
   }
 }
 
