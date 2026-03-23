@@ -1519,7 +1519,7 @@ p {
   .site-nav-study {
     width: 100%;
     align-items: stretch;
-    padding: 9px 12px;
+    padding: 0;
   }
 
   .panel-pad-lg { padding: 20px; }
@@ -1571,8 +1571,8 @@ p {
   }
   .site-submenu-root,
 .study-submenu-root {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    text-align: left;
     min-height: 40px;
     padding: 10px 12px;
   }

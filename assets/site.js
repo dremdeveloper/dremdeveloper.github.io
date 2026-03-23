@@ -142,7 +142,13 @@
       setDropdownOpen(item, nextOpen);
     });
 
-    item.addEventListener('focusin', () => openDropdown(item));
+    item.addEventListener('focusin', (event) => {
+      if (event.target === toggle) {
+        return;
+      }
+
+      openDropdown(item);
+    });
     item.addEventListener('focusout', () => {
       window.setTimeout(() => {
         if (!item.contains(document.activeElement)) {
