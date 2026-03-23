@@ -16,6 +16,7 @@
   const sidebarNode = document.querySelector('.lecture-sidebar');
   const sidebarToggle = document.getElementById('lecture-sidebar-toggle');
   const sidebarCurrentNode = document.getElementById('lecture-sidebar-current');
+  const mainContentNode = document.querySelector('.browser-main');
   const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
 
   let currentTrack = 'python';
@@ -89,6 +90,14 @@
     if (!sidebarCurrentNode) return;
     const selection = getCurrentSelection();
     sidebarCurrentNode.textContent = `${selection.track.label} · ${selection.item.title}`;
+  };
+
+  const focusMainContentOnMobile = () => {
+    if (!mobileMediaQuery.matches || !mainContentNode) return;
+
+    const topbarHeight = document.querySelector('.topbar')?.offsetHeight || 0;
+    const targetTop = window.scrollY + mainContentNode.getBoundingClientRect().top - topbarHeight - 16;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
   };
 
   const updateProgress = () => {
@@ -219,14 +228,14 @@
       button.addEventListener('click', () => {
         currentValue = item.value;
         renderList();
-        renderPlayer();
+        renderPlayer({ focusContent: true });
         closeSidebarOnMobile();
       });
       listNode.appendChild(button);
     });
   };
 
-  const renderPlayer = () => {
+  const renderPlayer = ({ focusContent = false } = {}) => {
     const { track, item, index } = getCurrentSelection();
 
     courseLabel.textContent = track.label;
@@ -243,6 +252,10 @@
 
     setControlState({ ready: playerReady, playing: false, currentTime: 0, duration: 0 });
     mountPlayer({ track, item, index });
+
+    if (focusContent) {
+      focusMainContentOnMobile();
+    }
   };
 
   const switchTrack = (trackKey) => {

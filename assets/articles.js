@@ -11,6 +11,7 @@
   const sidebarCurrentNode = document.getElementById('article-sidebar-current');
   const searchInput = document.getElementById('article-search-input');
   const searchResultsNode = document.getElementById('article-search-results');
+  const viewerCardNode = document.querySelector('.article-viewer-card');
   const mobileMediaQuery = window.matchMedia('(max-width: 860px)');
   const SIDEBAR_CURRENT_LABEL = '아티클 선택';
 
@@ -52,6 +53,7 @@
   let currentFile = '';
   let mathJaxLoader = null;
   let searchMatches = [];
+  let currentArticleTitle = '';
 
   window.MathJax = window.MathJax || {
     tex: {
@@ -139,9 +141,16 @@
 
   function updateSidebarCurrentLabel() {
     if (!sidebarCurrentNode) return;
-    sidebarCurrentNode.textContent = requestedCategory
-      ? `${requestedCategory} 목록`
-      : SIDEBAR_CURRENT_LABEL;
+    sidebarCurrentNode.textContent = currentArticleTitle
+      || (requestedCategory ? `${requestedCategory} 목록` : SIDEBAR_CURRENT_LABEL);
+  }
+
+  function focusViewerOnMobile() {
+    if (!mobileMediaQuery.matches || !viewerCardNode) return;
+
+    const topbarHeight = document.querySelector('.topbar')?.offsetHeight || 0;
+    const targetTop = window.scrollY + viewerCardNode.getBoundingClientRect().top - topbarHeight - 16;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
   }
 
   function applyCategoryFilter(files) {
@@ -563,7 +572,7 @@
         <span>${escapeHtml(file.category)}</span>
       `;
       button.addEventListener('click', () => {
-        loadArticle(file.name);
+        loadArticle(file.name, { focusContent: true });
         if (searchInput) {
           searchInput.value = '';
         }
@@ -644,7 +653,7 @@
           </span>
         `;
         button.addEventListener('click', () => {
-          loadArticle(file.name);
+          loadArticle(file.name, { focusContent: true });
         });
         groupList.appendChild(button);
       });
@@ -671,13 +680,15 @@
     throw lastError || new Error('Unable to fetch markdown');
   }
 
-  async function loadArticle(fileName) {
+  async function loadArticle(fileName, { focusContent = false } = {}) {
     const file = allArticleFiles.find((entry) => entry.name === fileName);
     if (!file) return;
 
     currentFile = file.name;
+    currentArticleTitle = file.title || '';
     renderList();
     updateSearchResults();
+    updateSidebarCurrentLabel();
     setStatus('아티클 내용을 불러오는 중입니다.');
     updateQuery(file.name);
 
@@ -687,6 +698,7 @@
       const renderedTitle = extractTitle(sanitizedMarkdown, file.fileName || file.name);
       const { html, placeholders } = renderMarkdown(sanitizedMarkdown);
       file.title = renderedTitle;
+      currentArticleTitle = renderedTitle;
       renderList();
       updateSearchResults();
       updateSidebarCurrentLabel();
@@ -697,8 +709,13 @@
       const title = document.querySelector('#article-viewer h1')?.innerText || renderedTitle || 'Article';
       updateArticleSeo(title);
       closeSidebarOnMobile();
+      if (focusContent) {
+        focusViewerOnMobile();
+      }
       await typesetMath();
     } catch (error) {
+      currentArticleTitle = requestedCategory ? `${requestedCategory} 목록` : '';
+      updateSidebarCurrentLabel();
       setStatus('md 파일을 불러오지 못했습니다. 배포된 articles 경로와 파일명을 확인해 주세요.', true);
       viewerNode.hidden = true;
       console.error(error);
