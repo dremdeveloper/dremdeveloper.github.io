@@ -2032,7 +2032,7 @@ select {
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background var(--ease), border-color var(--ease), color var(--ease), transform var(--ease);
 }
 
 .search-item:last-child {
@@ -3381,5 +3381,32 @@ select optgroup {
 
   .video-time {
     justify-content: space-between;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  button:hover,
+  .menu-item:hover,
+  .search-item:hover,
+  .search-item.is-active,
+  .site-submenu-root:hover,
+  .study-submenu-root:hover,
+  .syntax-card:hover {
+    transform: none !important;
   }
 }

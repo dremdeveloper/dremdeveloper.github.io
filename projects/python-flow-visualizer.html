@@ -397,7 +397,7 @@ button, input, select {
   color: var(--text);
   padding: 9px 14px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .algorithm-tab.active {
@@ -426,7 +426,7 @@ button, input, select {
   color: var(--text);
   padding: 10px 15px;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .control-btn-primary {
@@ -620,7 +620,7 @@ label {
   line-height: 1.65;
   white-space: pre-wrap;
   word-break: break-word;
-  transition: all 0.16s ease;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
 }
 
 .code-line.active {
@@ -927,7 +927,7 @@ svg {
   fill: rgba(14, 24, 46, 0.94);
   stroke: rgba(170, 182, 211, 0.5);
   stroke-width: 3;
-  transition: all 0.16s ease;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
 }
 
 .graph-node text,
@@ -2877,6 +2877,14 @@ body {
   .factorial-card.current,
   .factorial-card.waiting {
     animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
   }
 }
 
