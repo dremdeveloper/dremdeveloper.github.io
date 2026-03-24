@@ -31,6 +31,12 @@
       .filter(Boolean)
   );
   const configuredCategoryOrder = Array.isArray(config.categoryOrder) ? config.categoryOrder : [];
+  const pinnedFirstFiles = Array.isArray(config.pinnedFirstFiles)
+    ? config.pinnedFirstFiles.map((item) => normalizeFileKey(item)).filter(Boolean)
+    : [];
+  const pinnedFirstFileOrder = new Map(
+    pinnedFirstFiles.map((file, index) => [file, index])
+  );
   const categoryLabelMap = {
     'AI논문': 'AI 논문',
     'AI 논문': 'AI 논문',
@@ -172,7 +178,17 @@
         return fileKey && !ignoredFiles.has(fileKey);
       })
       .map(buildArticleEntry)
-      .sort((a, b) => b.name.localeCompare(a.name, 'ko'));
+      .sort((a, b) => {
+        const aPinnedOrder = pinnedFirstFileOrder.get(normalizeFileKey(a.name));
+        const bPinnedOrder = pinnedFirstFileOrder.get(normalizeFileKey(b.name));
+        const aPinned = Number.isInteger(aPinnedOrder);
+        const bPinned = Number.isInteger(bPinnedOrder);
+
+        if (aPinned && bPinned) return aPinnedOrder - bPinnedOrder;
+        if (aPinned) return -1;
+        if (bPinned) return 1;
+        return b.name.localeCompare(a.name, 'ko');
+      });
 
     articleFiles = applyCategoryFilter(allArticleFiles);
     updateCountLabel();

@@ -5,11 +5,19 @@ window.siteData = {
     branch: 'main',
     articlesPath: 'articles',
     categoryOrder: ['AI 논문', '생각', '지식 정리', '트러블 슈팅'],
+    pinnedFirstFiles: [
+      'articles/AI 논문/AI_논문_용어집.md'
+    ],
     defaultFile: 'articles/AI 논문/attention_is_all_you_need.md',
     ignoredFiles: [
       'articles/AI 논문/sample.md'
     ],
     files: [
+      {
+        name: 'articles/AI 논문/AI_논문_용어집.md',
+        category: 'AI 논문',
+        title: '용어집'
+      },
       {
         name: 'articles/AI 논문/attention_is_all_you_need.md',
         category: 'AI 논문',
