@@ -3,7 +3,6 @@ title: "Transformer의 시작 — Attention Is All You Need"
 math: true
 ---
 
-적절한 출처 표기 하에 이 논문의 표와 그림을 저널리즘 또는 학술 목적에 재현할 수 있다는 허가 문구가 논문 맨 앞에 실려 있다.
 
 # Attention Is All You Need
 
