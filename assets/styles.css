@@ -1590,6 +1590,16 @@ p {
   .study-frame-wrap-embedded,
   .study-frame-wrap-embedded iframe,
   .study-frame-wrap-expanded { min-height: clamp(380px, 54vh, 640px); }
+
+  .study-solutions-frame-wrap iframe {
+    min-height: clamp(520px, 72vh, 920px);
+  }
+}
+
+@media (max-width: 480px) {
+  .study-solutions-frame-wrap iframe {
+    min-height: clamp(480px, 78vh, 860px);
+  }
 }
 
 .study-plan-viewer,
