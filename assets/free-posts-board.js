@@ -20,7 +20,6 @@
     detail: document.getElementById('study-detail')
   };
   const submitButton = document.getElementById('study-submit-button');
-  const cancelEditButton = document.getElementById('study-cancel-edit');
   const editIdField = document.getElementById('study-edit-id');
   const choiceButtons = Array.from(document.querySelectorAll('[data-choice-target][data-choice-value]'));
   const filters = {
@@ -42,8 +41,18 @@
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
   }
 
+  function getScheduleDeadlineTime(post) {
+    const parsedDate = parseScheduleDate(post.scheduleDate || '');
+    if (parsedDate) {
+      return parsedDate.getTime();
+    }
+
+    const legacyScheduleTime = new Date(post.schedule).getTime();
+    return Number.isNaN(legacyScheduleTime) ? Number.NaN : legacyScheduleTime;
+  }
+
   function isExpired(post) {
-    const scheduleTime = new Date(post.schedule).getTime();
+    const scheduleTime = getScheduleDeadlineTime(post);
     return Number.isNaN(scheduleTime) || scheduleTime < Date.now();
   }
 
@@ -133,8 +142,9 @@
       .replaceAll("'", '&#39;');
   }
 
-  function formatSchedule(value) {
-    const date = new Date(value);
+  function formatSchedule(value, scheduleDate = '') {
+    const parsedDate = parseScheduleDate(scheduleDate);
+    const date = parsedDate || new Date(value);
     if (Number.isNaN(date.getTime())) {
       return '일정 미정';
     }
@@ -198,11 +208,11 @@
           <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
             <div class="study-board-item-head">
               <strong>${escapeHtml(post.title)}</strong>
-              <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
+              <span class="study-board-item-date">${formatSchedule(post.schedule, post.scheduleDate)}</span>
             </div>
             <div class="study-board-item-meta">
               <p><b>분야</b> <span class="${escapeHtml(getTagClass('field', post.field))}">${escapeHtml(post.field || '-')}</span></p>
-              <p><b>모집 마감</b> ${formatSchedule(post.schedule)}</p>
+              <p><b>모집 마감</b> ${formatSchedule(post.schedule, post.scheduleDate)}</p>
               <p><b>진행</b> <span class="${escapeHtml(getTagClass('mode', post.mode))}">${escapeHtml(getModeLabel(post.mode))}</span></p>
               <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
@@ -247,17 +257,16 @@
     if (submitButton) {
       submitButton.textContent = '등록하기';
     }
-    if (cancelEditButton) {
-      cancelEditButton.hidden = true;
-    }
     initScheduleFields();
     fields.title?.focus();
   }
 
   function updateChoiceSelection(targetId, value) {
     choiceButtons.forEach((button) => {
-      const isTarget = button.dataset.choiceTarget === targetId;
-      const isActive = isTarget && button.dataset.choiceValue === value;
+      if (button.dataset.choiceTarget !== targetId) {
+        return;
+      }
+      const isActive = button.dataset.choiceValue === value;
       button.classList.toggle('is-active', isActive);
       button.setAttribute('aria-pressed', String(isActive));
     });
@@ -273,7 +282,7 @@
 
     fields.title.value = post.title || '';
     if (fields.scheduleDate) {
-      fields.scheduleDate.value = new Date(post.schedule).toISOString().slice(0, 10);
+      fields.scheduleDate.value = post.scheduleDate || new Date(post.schedule).toISOString().slice(0, 10);
     }
     fields.capacity.value = post.capacity || '';
     fields.apply.value = post.apply || '';
@@ -289,9 +298,6 @@
     if (submitButton) {
       submitButton.textContent = '수정 저장';
     }
-    if (cancelEditButton) {
-      cancelEditButton.hidden = false;
-    }
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     fields.title?.focus();
   }
@@ -304,6 +310,7 @@
       createdAt: new Date().toISOString(),
       title: fields.title?.value.trim() || '',
       schedule: '',
+      scheduleDate: fields.scheduleDate?.value || '',
       capacity: fields.capacity?.value || '',
       field: fields.field?.value || '',
       mode: fields.mode?.value || '',
@@ -319,6 +326,7 @@
       return;
     }
     nextPost.schedule = parsedSchedule.toISOString();
+    nextPost.scheduleDate = fields.scheduleDate?.value || '';
 
     const passwordConfirm = fields.passwordConfirm?.value || '';
     if (nextPost.password !== passwordConfirm) {
@@ -365,10 +373,6 @@
       if (!targetId || !selectedValue) return;
       updateChoiceSelection(targetId, selectedValue);
     });
-  });
-
-  cancelEditButton?.addEventListener('click', () => {
-    resetForm();
   });
 
   listNode.addEventListener('click', async (event) => {

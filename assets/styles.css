@@ -3507,6 +3507,41 @@ select optgroup {
   font-weight: 700;
 }
 
+.study-field-algorithm {
+  border-color: rgba(99, 102, 241, 0.44);
+  background: rgba(79, 70, 229, 0.2);
+}
+
+.study-field-backend {
+  border-color: rgba(14, 165, 233, 0.44);
+  background: rgba(14, 165, 233, 0.18);
+}
+
+.study-field-frontend {
+  border-color: rgba(168, 85, 247, 0.44);
+  background: rgba(168, 85, 247, 0.16);
+}
+
+.study-field-ai {
+  border-color: rgba(20, 184, 166, 0.44);
+  background: rgba(20, 184, 166, 0.14);
+}
+
+.study-field-cs {
+  border-color: rgba(100, 116, 139, 0.48);
+  background: rgba(100, 116, 139, 0.2);
+}
+
+.study-field-data-structure {
+  border-color: rgba(236, 72, 153, 0.42);
+  background: rgba(236, 72, 153, 0.16);
+}
+
+.study-field-coding-test {
+  border-color: rgba(245, 158, 11, 0.44);
+  background: rgba(245, 158, 11, 0.14);
+}
+
 .study-field-algorithm.is-active {
   background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
