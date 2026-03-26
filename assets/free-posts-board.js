@@ -81,7 +81,12 @@
   }
 
   function renderPosts() {
-    const posts = pruneExpiredPosts().sort((a, b) => new Date(a.schedule).getTime() - new Date(b.schedule).getTime());
+    const posts = pruneExpiredPosts().sort((a, b) => {
+      const scheduleDiff = new Date(a.schedule).getTime() - new Date(b.schedule).getTime();
+      if (scheduleDiff !== 0) return scheduleDiff;
+
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    });
 
     listNode.innerHTML = posts
       .map((post) => {
@@ -89,10 +94,12 @@
           <li class="study-board-item">
             <div class="study-board-item-head">
               <strong>${escapeHtml(post.title)}</strong>
-              <span>${formatSchedule(post.schedule)}</span>
+              <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
             </div>
-            <p><b>모집인원:</b> ${escapeHtml(post.capacity)}명</p>
-            <p><b>신청방법:</b> ${normalizeApplyText(post.apply)}</p>
+            <div class="study-board-item-meta">
+              <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
+              <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
+            </div>
             <p class="study-board-item-detail">${escapeHtml(post.detail)}</p>
           </li>
         `;
@@ -112,6 +119,7 @@
 
     const nextPost = {
       id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
       title: fields.title?.value.trim() || '',
       schedule: fields.schedule?.value || '',
       capacity: fields.capacity?.value || '',
