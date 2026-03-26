@@ -3429,6 +3429,19 @@ select optgroup {
   font-size: 0.92rem;
 }
 
+.study-board-field-title,
+.study-board-field-apply {
+  grid-column: 1 / -1;
+}
+
+.study-board-field-schedule {
+  width: min(100%, 280px);
+}
+
+.study-board-field-capacity {
+  width: min(100%, 180px);
+}
+
 .study-board-form input,
 .study-board-form textarea {
   width: 100%;
