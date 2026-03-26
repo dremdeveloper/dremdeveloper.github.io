@@ -3928,22 +3928,70 @@ select optgroup {
 
 @media (max-width: 860px) {
   .study-board-list-wrap {
-    min-height: 360px;
+    min-height: 0;
   }
 
   .study-board-list {
-    max-height: 420px;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .study-board-form {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .study-choice-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .study-choice-group-mode {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .study-choice-button {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    padding: 0 10px;
+    font-size: 0.9rem;
   }
 
   .study-board-filters {
     grid-template-columns: 1fr;
   }
 
+  .study-board-form-actions {
+    width: 100%;
+  }
+
+  .study-board-submit {
+    width: 100%;
+  }
+
+  .study-board-item {
+    padding: 12px 11px;
+  }
+
+  .study-board-item-head {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .study-board-item-date {
+    white-space: normal;
+    font-size: 0.8rem;
+  }
+
   .study-board-item-meta {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .study-board-item-meta b {
+    min-width: 60px;
   }
 }
