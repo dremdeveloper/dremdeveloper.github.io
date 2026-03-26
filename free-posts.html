@@ -179,6 +179,10 @@
             <span>신청방법 혹은 링크</span>
             <input id="study-apply" name="apply" type="text" required placeholder="오픈채팅 링크 또는 연락 방법" />
           </label>
+          <label>
+            <span>삭제 비밀번호</span>
+            <input id="study-password" name="password" type="password" required minlength="4" maxlength="30" placeholder="글 삭제 시 사용할 비밀번호" />
+          </label>
           <label class="study-board-full">
             <span>상세내용</span>
             <textarea id="study-detail" name="detail" rows="4" required placeholder="진행 방식, 대상, 준비물 등을 작성하세요."></textarea>
@@ -208,7 +212,6 @@
           <ul id="study-board-list" class="study-board-list"></ul>
           <p id="study-board-empty" class="study-board-empty">등록된 모집글이 없습니다.</p>
         </div>
-        <article id="study-post-detail" class="study-post-detail" hidden></article>
       </section>
     </main>
 

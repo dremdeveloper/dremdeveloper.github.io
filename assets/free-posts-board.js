@@ -3,7 +3,6 @@
   const form = document.getElementById('study-board-form');
   const listNode = document.getElementById('study-board-list');
   const emptyNode = document.getElementById('study-board-empty');
-  const detailNode = document.getElementById('study-post-detail');
 
   if (!form || !listNode || !emptyNode) {
     return;
@@ -17,6 +16,7 @@
     field: document.getElementById('study-field'),
     mode: document.getElementById('study-mode'),
     apply: document.getElementById('study-apply'),
+    password: document.getElementById('study-password'),
     detail: document.getElementById('study-detail')
   };
   const filters = {
@@ -97,6 +97,26 @@
     return url.toString();
   }
 
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = text;
+    tempTextArea.setAttribute('readonly', '');
+    tempTextArea.style.position = 'absolute';
+    tempTextArea.style.left = '-9999px';
+    document.body.append(tempTextArea);
+    tempTextArea.select();
+    const success = document.execCommand('copy');
+    tempTextArea.remove();
+    if (!success) {
+      throw new Error('copy-failed');
+    }
+  }
+
   function pruneExpiredPosts() {
     const storedPosts = readPosts().filter((post) => post && post.id);
     const posts = storedPosts.filter((post) => !isExpired(post));
@@ -153,36 +173,6 @@
     });
   }
 
-  function renderPostDetail(post) {
-    if (!detailNode) return;
-
-    if (!post) {
-      detailNode.hidden = true;
-      detailNode.innerHTML = '';
-      return;
-    }
-
-    detailNode.hidden = false;
-    detailNode.innerHTML = `
-      <h3>게시글 상세</h3>
-      <div class="study-post-detail-head">
-        <strong>${escapeHtml(post.title)}</strong>
-      </div>
-      <div class="study-post-detail-meta">
-        <p><b>모집 마감</b> ${formatSchedule(post.schedule)}</p>
-        <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
-        <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
-        <p><b>진행 방식</b> ${escapeHtml(post.mode || '-')}</p>
-        <p><b>신청방법</b> ${normalizeApplyText(post.apply || '')}</p>
-      </div>
-      <p class="study-post-detail-content">${escapeHtml(post.detail)}</p>
-      <div class="study-post-detail-share">
-        <a class="text-link" href="free-posts.html">목록으로</a>
-        <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">상세 링크</a>
-      </div>
-    `;
-  }
-
   function renderPosts() {
     const posts = pruneExpiredPosts().sort((a, b) => {
       const scheduleDiff = new Date(a.schedule).getTime() - new Date(b.schedule).getTime();
@@ -197,7 +187,7 @@
         return `
           <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
             <div class="study-board-item-head">
-              <strong><a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">${escapeHtml(post.title)}</a></strong>
+              <strong>${escapeHtml(post.title)}</strong>
               <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
             </div>
             <div class="study-board-item-meta">
@@ -208,7 +198,9 @@
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
             </div>
             <div class="study-board-item-share">
-              <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">게시글 보기</a>
+              <button class="button ghost-button study-copy-link-btn" type="button" data-copy-link="${escapeHtml(getPostPermalink(post.id))}">링크 복사</button>
+              <input class="study-delete-password" type="password" placeholder="비밀번호 입력" aria-label="삭제 비밀번호 입력" data-delete-password="${escapeHtml(post.id)}" />
+              <button class="button ghost-button study-delete-button" type="button" data-delete-post="${escapeHtml(post.id)}">글 삭제</button>
             </div>
             <p class="study-board-item-detail">${escapeHtml(String(post.detail).slice(0, 120))}${String(post.detail).length > 120 ? '...' : ''}</p>
           </li>
@@ -219,13 +211,7 @@
     emptyNode.hidden = filteredPosts.length > 0;
 
     const selectedPostId = new URLSearchParams(window.location.search).get('post');
-    if (!selectedPostId) {
-      renderPostDetail(null);
-      return;
-    }
-
-    const selectedPost = posts.find((post) => post.id === selectedPostId) || null;
-    renderPostDetail(selectedPost);
+    if (!selectedPostId) return;
     const target = document.getElementById(`study-post-${selectedPostId}`);
     if (!target) {
       return;
@@ -253,6 +239,7 @@
       field: fields.field?.value || '',
       mode: fields.mode?.value || '',
       apply: fields.apply?.value.trim() || '',
+      password: fields.password?.value || '',
       detail: fields.detail?.value.trim() || ''
     };
 
@@ -264,7 +251,7 @@
     }
     nextPost.schedule = parsedSchedule.toISOString();
 
-    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail) {
+    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.password || !nextPost.detail) {
       return;
     }
 
@@ -279,6 +266,53 @@
   Object.values(filters).forEach((node) => {
     node?.addEventListener('input', renderPosts);
     node?.addEventListener('change', renderPosts);
+  });
+
+  listNode.addEventListener('click', async (event) => {
+    const copyButton = event.target.closest('[data-copy-link]');
+    if (copyButton) {
+      const link = copyButton.getAttribute('data-copy-link');
+      if (!link) return;
+      try {
+        await copyText(link);
+        window.alert('링크를 복사했어요.');
+      } catch {
+        window.alert('링크 복사에 실패했어요. 직접 복사해주세요.');
+      }
+      return;
+    }
+
+    const deleteButton = event.target.closest('[data-delete-post]');
+    if (!deleteButton) return;
+
+    const postId = deleteButton.getAttribute('data-delete-post');
+    if (!postId) return;
+
+    const passwordInput = listNode.querySelector(`[data-delete-password="${postId}"]`);
+    const passwordValue = passwordInput instanceof HTMLInputElement ? passwordInput.value : '';
+    if (!passwordValue) {
+      window.alert('비밀번호를 입력해주세요.');
+      passwordInput?.focus();
+      return;
+    }
+
+    const posts = pruneExpiredPosts();
+    const targetPost = posts.find((post) => post.id === postId);
+    if (!targetPost) {
+      window.alert('이미 삭제되었거나 존재하지 않는 글입니다.');
+      renderPosts();
+      return;
+    }
+
+    if (targetPost.password !== passwordValue) {
+      window.alert('비밀번호가 일치하지 않습니다.');
+      passwordInput?.focus();
+      return;
+    }
+
+    const nextPosts = posts.filter((post) => post.id !== postId);
+    savePosts(nextPosts);
+    renderPosts();
   });
 
   initScheduleFields();
