@@ -26,7 +26,7 @@
 
 ## 2. 추천 작업 흐름
 
-![생성형 AI로 UML 만드는 흐름](images/workflow_ai_to_uml.png)
+![생성형 AI로 UML 만드는 흐름](/assets/images/생성형%20AI로%20UML%20작성하는%20방법/workflow_ai_to_uml.png)
 
 ### 작업 순서
 
@@ -112,7 +112,7 @@
 
 유스케이스 다이어그램은 **누가 어떤 기능을 쓰는지** 보여줄 때 가장 편하다. 서비스 초반에 기능 범위를 잡을 때 특히 잘 맞는다.
 
-![유스케이스 다이어그램 예시](images/usecase_online_reservation.png)
+![유스케이스 다이어그램 예시](/assets/images/생성형%20AI로%20UML%20작성하는%20방법/usecase_online_reservation.png)
 
 ### 프롬프트 예시
 
@@ -169,7 +169,7 @@ UC4 .> UC2 : <<include>>
 
 시퀀스 다이어그램은 **요청과 응답의 순서**, **시스템 간 호출 흐름**, **성공/실패 분기**를 보여줄 때 가장 좋다. 로그인, 결제, 주문 생성 같은 흐름에 자주 쓴다.
 
-![시퀀스 다이어그램 예시](images/sequence_login_flow.png)
+![시퀀스 다이어그램 예시](/assets/images/생성형%20AI로%20UML%20작성하는%20방법/sequence_login_flow.png)
 
 ### 프롬프트 예시
 
@@ -221,7 +221,7 @@ sequenceDiagram
 
 클래스 다이어그램은 **도메인 구조**, **객체 간 관계**, **속성**, **다중성**을 표현할 때 가장 유용하다. 백엔드 설계나 엔티티 관계 설명에서 자주 쓴다.
 
-![클래스 다이어그램 예시](images/class_ecommerce_domain.png)
+![클래스 다이어그램 예시](/assets/images/생성형%20AI로%20UML%20작성하는%20방법/class_ecommerce_domain.png)
 
 ### 프롬프트 예시
 
