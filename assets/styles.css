@@ -298,14 +298,15 @@ p {
 
 .social-logo {
   display: block;
+  width: auto;
   height: auto;
+  max-width: 100%;
 }
 
 .social-logo-inline {
-  width: 148px;
-}
-.social-logo-gmail {
-  width: 96px;
+  height: 42px;
+  width: auto;
+  object-fit: contain;
 }
 
 .hero-links {
@@ -320,7 +321,6 @@ p {
 }
 
 .social-logo-kakao {
-  width: 132px;
   border-radius: 12px;
 }
 
@@ -1528,13 +1528,7 @@ p {
     gap: 14px;
   }
   .social-logo-inline {
-    width: 126px;
-  }
-  .social-logo-gmail {
-    width: 84px;
-  }
-  .social-logo-kakao {
-    width: 118px;
+    height: 36px;
   }
   .summary-topline,
   .timeline-head,
