@@ -3514,6 +3514,9 @@ select optgroup {
 .study-board-list-wrap {
   border-top: 1px solid var(--line);
   padding-top: 16px;
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
 }
 
 .study-board-hint {
@@ -3544,6 +3547,11 @@ select optgroup {
   padding: 0;
   display: grid;
   gap: 12px;
+  flex: 1;
+  min-height: 0;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .study-board-item {
@@ -3631,9 +3639,18 @@ select optgroup {
 .study-board-empty {
   margin: 0;
   color: var(--muted);
+  min-height: 32px;
 }
 
 @media (max-width: 860px) {
+  .study-board-list-wrap {
+    min-height: 360px;
+  }
+
+  .study-board-list {
+    max-height: 420px;
+  }
+
   .study-board-form {
     grid-template-columns: 1fr;
   }
