@@ -155,6 +155,22 @@
     return escapeHtml(trimmed);
   }
 
+  function getModeLabel(value) {
+    if (value === '혼합') {
+      return '온라인/오프라인';
+    }
+    return value || '-';
+  }
+
+  function getTagClass(type, value) {
+    const normalized = String(value || '')
+      .trim()
+      .toLowerCase()
+      .replaceAll('/', '-')
+      .replaceAll(' ', '-');
+    return `study-tag study-tag-${type} study-tag-${type}-${normalized}`;
+  }
+
   function getFilteredPosts(posts) {
     return posts.filter((post) => {
       const fieldValue = filters.field?.value || 'all';
@@ -185,9 +201,9 @@
               <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
             </div>
             <div class="study-board-item-meta">
-              <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
+              <p><b>분야</b> <span class="${escapeHtml(getTagClass('field', post.field))}">${escapeHtml(post.field || '-')}</span></p>
               <p><b>모집 마감</b> ${formatSchedule(post.schedule)}</p>
-              <p><b>진행</b> ${escapeHtml(post.mode || '-')}</p>
+              <p><b>진행</b> <span class="${escapeHtml(getTagClass('mode', post.mode))}">${escapeHtml(getModeLabel(post.mode))}</span></p>
               <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
             </div>
