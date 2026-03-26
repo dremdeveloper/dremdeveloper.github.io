@@ -179,13 +179,6 @@
       <div class="study-post-detail-share">
         <a class="text-link" href="free-posts.html">목록으로</a>
         <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">상세 링크</a>
-        <button
-          class="button button-secondary compact-button study-board-copy"
-          type="button"
-          data-post-id="${escapeHtml(post.id)}"
-        >
-          링크 복사
-        </button>
       </div>
     `;
   }
@@ -216,13 +209,6 @@
             </div>
             <div class="study-board-item-share">
               <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">게시글 보기</a>
-              <button
-                class="button button-secondary compact-button study-board-copy"
-                type="button"
-                data-post-id="${escapeHtml(post.id)}"
-              >
-                링크 복사
-              </button>
             </div>
             <p class="study-board-item-detail">${escapeHtml(String(post.detail).slice(0, 120))}${String(post.detail).length > 120 ? '...' : ''}</p>
           </li>
@@ -288,52 +274,6 @@
 
     renderPosts();
     resetForm();
-  });
-
-  listNode.addEventListener('click', async (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement) || !target.classList.contains('study-board-copy')) {
-      return;
-    }
-
-    const postId = target.dataset.postId;
-    if (!postId) {
-      return;
-    }
-
-    const permalink = getPostPermalink(postId);
-    try {
-      await window.navigator.clipboard.writeText(permalink);
-      target.textContent = '복사 완료';
-      window.setTimeout(() => {
-        target.textContent = '링크 복사';
-      }, 1200);
-    } catch {
-      window.prompt('아래 링크를 복사해주세요.', permalink);
-    }
-  });
-
-  detailNode?.addEventListener('click', async (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement) || !target.classList.contains('study-board-copy')) {
-      return;
-    }
-
-    const postId = target.dataset.postId;
-    if (!postId) {
-      return;
-    }
-
-    const permalink = getPostPermalink(postId);
-    try {
-      await window.navigator.clipboard.writeText(permalink);
-      target.textContent = '복사 완료';
-      window.setTimeout(() => {
-        target.textContent = '링크 복사';
-      }, 1200);
-    } catch {
-      window.prompt('아래 링크를 복사해주세요.', permalink);
-    }
   });
 
   Object.values(filters).forEach((node) => {
