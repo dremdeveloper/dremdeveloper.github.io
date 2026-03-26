@@ -314,8 +314,8 @@ p {
 }
 
 .social-logo-inline {
-  height: 42px;
-  width: auto;
+  height: 63px;
+  width: 63px;
   object-fit: contain;
 }
 
@@ -1540,7 +1540,8 @@ p {
     gap: 14px;
   }
   .social-logo-inline {
-    height: 36px;
+    height: 54px;
+    width: 54px;
   }
   .summary-topline,
   .timeline-head,
