@@ -1854,6 +1854,68 @@ body {
 }
 
 @media (max-width: 760px) {
+  .visual-toolbar-top {
+    align-items: stretch;
+  }
+
+  .visual-toolbar-top .algorithm-tabs {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .visual-toolbar-top .algorithm-tabs::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .visual-toolbar-top .algorithm-tabs::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.5);
+    border-radius: 999px;
+  }
+
+  .algorithm-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .toolbar-actions .control-btn {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+
+  .panel-head-main {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .meta-line {
+    font-size: 12px;
+  }
+
+  .description-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .queue-box {
     grid-template-columns: 1fr;
   }
