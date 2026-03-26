@@ -142,11 +142,13 @@
           <label class="study-board-field-topic">
             <span>분야</span>
             <div class="study-choice-group" role="radiogroup" aria-label="분야 선택">
-              <button class="study-choice-button is-active" type="button" data-choice-target="study-field" data-choice-value="알고리즘">알고리즘</button>
-              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="백엔드">백엔드</button>
-              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="프론트엔드">프론트엔드</button>
-              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="AI">AI</button>
-              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="CS">CS</button>
+              <button class="study-choice-button study-field-algorithm is-active" type="button" data-choice-target="study-field" data-choice-value="알고리즘">알고리즘</button>
+              <button class="study-choice-button study-field-backend" type="button" data-choice-target="study-field" data-choice-value="백엔드">백엔드</button>
+              <button class="study-choice-button study-field-frontend" type="button" data-choice-target="study-field" data-choice-value="프론트엔드">프론트엔드</button>
+              <button class="study-choice-button study-field-ai" type="button" data-choice-target="study-field" data-choice-value="AI">AI</button>
+              <button class="study-choice-button study-field-cs" type="button" data-choice-target="study-field" data-choice-value="CS">CS</button>
+              <button class="study-choice-button study-field-data-structure" type="button" data-choice-target="study-field" data-choice-value="자료구조">자료구조</button>
+              <button class="study-choice-button study-field-coding-test" type="button" data-choice-target="study-field" data-choice-value="코딩테스트">코딩테스트</button>
             </div>
             <input id="study-field" name="field" type="hidden" value="알고리즘" required />
           </label>
@@ -193,6 +195,8 @@
               <option value="프론트엔드">프론트엔드</option>
               <option value="AI">AI</option>
               <option value="CS">CS</option>
+              <option value="자료구조">자료구조</option>
+              <option value="코딩테스트">코딩테스트</option>
             </select>
             <select id="filter-mode" aria-label="진행 방식 필터">
               <option value="all" selected>진행 방식 전체</option>
