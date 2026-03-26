@@ -16,8 +16,13 @@
     mode: document.getElementById('study-mode'),
     apply: document.getElementById('study-apply'),
     password: document.getElementById('study-password'),
+    passwordConfirm: document.getElementById('study-password-confirm'),
     detail: document.getElementById('study-detail')
   };
+  const submitButton = document.getElementById('study-submit-button');
+  const cancelEditButton = document.getElementById('study-cancel-edit');
+  const editIdField = document.getElementById('study-edit-id');
+  const choiceButtons = Array.from(document.querySelectorAll('[data-choice-target][data-choice-value]'));
   const filters = {
     field: document.getElementById('filter-field'),
     mode: document.getElementById('filter-mode')
@@ -188,8 +193,14 @@
             </div>
             <div class="study-board-item-share">
               <button class="button ghost-button study-copy-link-btn" type="button" data-copy-link="${escapeHtml(getPostPermalink(post.id))}">링크 복사</button>
-              <input class="study-delete-password" type="password" placeholder="비밀번호 입력" aria-label="삭제 비밀번호 입력" data-delete-password="${escapeHtml(post.id)}" />
+              <button class="button ghost-button" type="button" data-edit-post="${escapeHtml(post.id)}">글 수정</button>
               <button class="button ghost-button study-delete-button" type="button" data-delete-post="${escapeHtml(post.id)}">글 삭제</button>
+            </div>
+            <div class="study-board-item-auth">
+              <label class="study-delete-password-wrap">
+                <span>수정/삭제 비밀번호</span>
+                <input class="study-delete-password" type="password" placeholder="비밀번호 입력" aria-label="수정 또는 삭제 비밀번호 입력" data-post-password="${escapeHtml(post.id)}" />
+              </label>
             </div>
             <p class="study-board-item-detail">${escapeHtml(String(post.detail).slice(0, 120))}${String(post.detail).length > 120 ? '...' : ''}</p>
           </li>
@@ -212,7 +223,60 @@
 
   function resetForm() {
     form.reset();
+    updateChoiceSelection('study-field', '알고리즘');
+    updateChoiceSelection('study-mode', '온라인');
+    if (editIdField) {
+      editIdField.value = '';
+    }
+    if (submitButton) {
+      submitButton.textContent = '등록하기';
+    }
+    if (cancelEditButton) {
+      cancelEditButton.hidden = true;
+    }
     initScheduleFields();
+    fields.title?.focus();
+  }
+
+  function updateChoiceSelection(targetId, value) {
+    choiceButtons.forEach((button) => {
+      const isTarget = button.dataset.choiceTarget === targetId;
+      const isActive = isTarget && button.dataset.choiceValue === value;
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+
+    const hiddenInput = document.getElementById(targetId);
+    if (hiddenInput instanceof HTMLInputElement) {
+      hiddenInput.value = value;
+    }
+  }
+
+  function startEditMode(post) {
+    if (!post) return;
+
+    fields.title.value = post.title || '';
+    if (fields.scheduleDate) {
+      fields.scheduleDate.value = new Date(post.schedule).toISOString().slice(0, 10);
+    }
+    fields.capacity.value = post.capacity || '';
+    fields.apply.value = post.apply || '';
+    fields.detail.value = post.detail || '';
+    fields.password.value = post.password || '';
+    fields.passwordConfirm.value = post.password || '';
+    updateChoiceSelection('study-field', post.field || '알고리즘');
+    updateChoiceSelection('study-mode', post.mode || '온라인');
+
+    if (editIdField) {
+      editIdField.value = post.id;
+    }
+    if (submitButton) {
+      submitButton.textContent = '수정 저장';
+    }
+    if (cancelEditButton) {
+      cancelEditButton.hidden = false;
+    }
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     fields.title?.focus();
   }
 
@@ -240,12 +304,33 @@
     }
     nextPost.schedule = parsedSchedule.toISOString();
 
-    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.password || !nextPost.detail) {
+    const passwordConfirm = fields.passwordConfirm?.value || '';
+    if (nextPost.password !== passwordConfirm) {
+      window.alert('비밀번호와 비밀번호 확인 값이 일치하지 않습니다.');
+      fields.passwordConfirm?.focus();
+      return;
+    }
+
+    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.password || !nextPost.detail || !nextPost.field || !nextPost.mode) {
       return;
     }
 
     const posts = pruneExpiredPosts();
-    posts.push(nextPost);
+    const editId = editIdField?.value || '';
+    if (editId) {
+      const editIndex = posts.findIndex((post) => post.id === editId);
+      if (editIndex < 0) {
+        window.alert('수정할 게시글을 찾을 수 없습니다. 다시 시도해주세요.');
+        resetForm();
+        renderPosts();
+        return;
+      }
+      nextPost.id = editId;
+      nextPost.createdAt = posts[editIndex].createdAt || nextPost.createdAt;
+      posts[editIndex] = nextPost;
+    } else {
+      posts.push(nextPost);
+    }
     savePosts(posts);
 
     renderPosts();
@@ -255,6 +340,19 @@
   Object.values(filters).forEach((node) => {
     node?.addEventListener('input', renderPosts);
     node?.addEventListener('change', renderPosts);
+  });
+
+  choiceButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetId = button.dataset.choiceTarget;
+      const selectedValue = button.dataset.choiceValue;
+      if (!targetId || !selectedValue) return;
+      updateChoiceSelection(targetId, selectedValue);
+    });
+  });
+
+  cancelEditButton?.addEventListener('click', () => {
+    resetForm();
   });
 
   listNode.addEventListener('click', async (event) => {
@@ -271,13 +369,43 @@
       return;
     }
 
+    const editButton = event.target.closest('[data-edit-post]');
+    if (editButton) {
+      const postId = editButton.getAttribute('data-edit-post');
+      if (!postId) return;
+
+      const passwordInput = listNode.querySelector(`[data-post-password="${postId}"]`);
+      const passwordValue = passwordInput instanceof HTMLInputElement ? passwordInput.value : '';
+      if (!passwordValue) {
+        window.alert('수정 비밀번호를 입력해주세요.');
+        passwordInput?.focus();
+        return;
+      }
+
+      const posts = pruneExpiredPosts();
+      const targetPost = posts.find((post) => post.id === postId);
+      if (!targetPost) {
+        window.alert('존재하지 않는 글입니다.');
+        renderPosts();
+        return;
+      }
+      if (targetPost.password !== passwordValue) {
+        window.alert('비밀번호가 일치하지 않습니다.');
+        passwordInput?.focus();
+        return;
+      }
+
+      startEditMode(targetPost);
+      return;
+    }
+
     const deleteButton = event.target.closest('[data-delete-post]');
     if (!deleteButton) return;
 
     const postId = deleteButton.getAttribute('data-delete-post');
     if (!postId) return;
 
-    const passwordInput = listNode.querySelector(`[data-delete-password="${postId}"]`);
+    const passwordInput = listNode.querySelector(`[data-post-password="${postId}"]`);
     const passwordValue = passwordInput instanceof HTMLInputElement ? passwordInput.value : '';
     if (!passwordValue) {
       window.alert('비밀번호를 입력해주세요.');
