@@ -134,10 +134,16 @@
 
       <section class="card panel-pad-lg search-filter-card" aria-label="백준 검색 필터">
         <div class="search-filter-header">
-          <h2>백준 검색 필터</h2>
+          <div class="search-filter-title-row">
+            <h2>백준 검색 필터</h2>
+            <div class="search-filter-actions">
+              <button id="filterToggleBtn" class="search-filter-action-btn" type="button" aria-expanded="true" aria-controls="filterFields">필터 접기</button>
+              <button id="resetFiltersBtn" class="search-filter-action-btn is-secondary" type="button">초기화</button>
+            </div>
+          </div>
           <p>번호, 제목, 티어, 알고리즘, 컬렉션 주제로 원하는 문제만 빠르게 좁혀 보세요.</p>
         </div>
-        <div class="search-filter-grid">
+        <div id="filterFields" class="search-filter-grid">
           <div class="search-field search-field-wide">
             <label class="search-field-label" for="searchInput">통합 검색</label>
             <input id="searchInput" class="search-input" type="search" placeholder="문제 번호, 제목, 알고리즘, 컬렉션명" />
@@ -213,6 +219,9 @@
         topicOptions: document.getElementById('topicOptions'),
         algoOptions: document.getElementById('algoOptions'),
         resultCount: document.getElementById('resultCount'),
+        filterCard: document.querySelector('.search-filter-card'),
+        filterToggleBtn: document.getElementById('filterToggleBtn'),
+        resetFiltersBtn: document.getElementById('resetFiltersBtn'),
         results: document.getElementById('results'),
         emptyState: document.getElementById('emptyState'),
         loadMoreWrap: document.getElementById('loadMoreWrap'),
@@ -408,10 +417,38 @@
         renderResults();
       }
 
+      function setFilterCollapsed(collapsed) {
+        elements.filterCard.classList.toggle('is-collapsed', collapsed);
+        elements.filterToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        elements.filterToggleBtn.textContent = collapsed ? '필터 펼치기' : '필터 접기';
+      }
+
+      function applyMobileFilterLayout() {
+        const isMobile = window.matchMedia('(max-width: 860px)').matches;
+        if (!isMobile) {
+          setFilterCollapsed(false);
+          return;
+        }
+        if (!elements.filterCard.classList.contains('is-collapsed')) {
+          setFilterCollapsed(true);
+        }
+      }
+
       elements.searchInput.addEventListener('input', () => runSearch(true));
       elements.tierSelect.addEventListener('change', () => runSearch(true));
       elements.topicInput.addEventListener('input', () => runSearch(true));
       elements.algoInput.addEventListener('input', () => runSearch(true));
+      elements.filterToggleBtn.addEventListener('click', () => {
+        const collapsed = elements.filterCard.classList.contains('is-collapsed');
+        setFilterCollapsed(!collapsed);
+      });
+      elements.resetFiltersBtn.addEventListener('click', () => {
+        elements.searchInput.value = '';
+        elements.tierSelect.value = '';
+        elements.topicInput.value = '';
+        elements.algoInput.value = '';
+        runSearch(true);
+      });
       elements.loadMoreBtn.addEventListener('click', () => {
         visibleCount += pageSize;
         updateSummary();
@@ -419,6 +456,8 @@
       });
 
       readStateFromUrl();
+      applyMobileFilterLayout();
+      window.addEventListener('resize', applyMobileFilterLayout);
       runSearch(true);
     })();
   </script>
