@@ -475,12 +475,68 @@
     }
 
     @media (max-width: 760px) {
-      .page-shell { padding-inline: 14px; }
+      .page-shell { padding: 14px 12px 18px; }
       .detail-card, .sidebar-panel { padding: 18px 16px; }
       .detail-title { font-size: clamp(1.75rem, 8vw, 2.4rem); }
       .code-head { flex-direction: column; }
-      .language-toggle { align-self: flex-start; }
-      .code-block { height: 58vh; }
+      .language-toggle {
+        align-self: stretch;
+        width: 100%;
+      }
+      .lang-button {
+        flex: 1;
+        min-width: 0;
+      }
+      .problem-list {
+        max-height: 320px;
+      }
+      .problem-item {
+        padding: 11px 12px;
+      }
+      .problem-item-number,
+      .problem-item-meta {
+        font-size: 0.82rem;
+      }
+      .detail-header {
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+      }
+      .detail-kicker {
+        font-size: 0.88rem;
+      }
+      .info-card {
+        padding: 14px;
+      }
+      .tag {
+        font-size: 0.82rem;
+        padding: 6px 10px;
+      }
+      details.info-card summary {
+        padding: 14px;
+      }
+      .notes-body {
+        padding: 13px 14px 14px;
+      }
+      .code-block {
+        height: 52vh;
+        padding: 14px;
+      }
+      .code-block code {
+        font-size: 0.84rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sidebar-panel,
+      .detail-card {
+        border-radius: 16px;
+      }
+      .detail-title {
+        font-size: clamp(1.5rem, 9vw, 2rem);
+      }
+      .code-block {
+        height: 48vh;
+      }
     }
   </style>
 </head>
