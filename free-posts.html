@@ -141,21 +141,23 @@
           </label>
           <label class="study-board-field-topic">
             <span>분야</span>
-            <select id="study-field" name="field" required>
-              <option value="알고리즘" selected>알고리즘</option>
-              <option value="백엔드">백엔드</option>
-              <option value="프론트엔드">프론트엔드</option>
-              <option value="AI">AI</option>
-              <option value="CS">CS</option>
-            </select>
+            <div class="study-choice-group" role="radiogroup" aria-label="분야 선택">
+              <button class="study-choice-button is-active" type="button" data-choice-target="study-field" data-choice-value="알고리즘">알고리즘</button>
+              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="백엔드">백엔드</button>
+              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="프론트엔드">프론트엔드</button>
+              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="AI">AI</button>
+              <button class="study-choice-button" type="button" data-choice-target="study-field" data-choice-value="CS">CS</button>
+            </div>
+            <input id="study-field" name="field" type="hidden" value="알고리즘" required />
           </label>
           <label class="study-board-field-mode">
             <span>온라인/오프라인</span>
-            <select id="study-mode" name="mode" required>
-              <option value="온라인" selected>온라인</option>
-              <option value="오프라인">오프라인</option>
-              <option value="혼합">혼합</option>
-            </select>
+            <div class="study-choice-group study-choice-group-mode" role="radiogroup" aria-label="진행 방식 선택">
+              <button class="study-choice-button is-active study-mode-online" type="button" data-choice-target="study-mode" data-choice-value="온라인">온라인</button>
+              <button class="study-choice-button study-mode-offline" type="button" data-choice-target="study-mode" data-choice-value="오프라인">오프라인</button>
+              <button class="study-choice-button study-mode-hybrid" type="button" data-choice-target="study-mode" data-choice-value="혼합">혼합</button>
+            </div>
+            <input id="study-mode" name="mode" type="hidden" value="온라인" required />
           </label>
           <label class="study-board-field-apply">
             <span>신청방법 혹은 링크</span>
@@ -165,11 +167,19 @@
             <span>삭제 비밀번호</span>
             <input id="study-password" name="password" type="password" required minlength="4" maxlength="30" placeholder="글 삭제 시 사용할 비밀번호" />
           </label>
+          <label>
+            <span>비밀번호 확인</span>
+            <input id="study-password-confirm" name="passwordConfirm" type="password" required minlength="4" maxlength="30" placeholder="비밀번호를 다시 입력하세요" />
+          </label>
           <label class="study-board-full">
             <span>상세내용</span>
             <textarea id="study-detail" name="detail" rows="4" required placeholder="진행 방식, 대상, 준비물 등을 작성하세요."></textarea>
           </label>
-          <button class="button button-primary study-board-submit" type="submit">확인</button>
+          <input id="study-edit-id" name="editId" type="hidden" value="" />
+          <div class="study-board-form-actions">
+            <button class="button button-primary study-board-submit" type="submit" id="study-submit-button">등록하기</button>
+            <button class="button button-secondary" type="button" id="study-cancel-edit" hidden>수정 취소</button>
+          </div>
         </form>
 
         <div class="study-board-list-wrap">

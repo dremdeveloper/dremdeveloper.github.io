@@ -3478,6 +3478,44 @@ select optgroup {
   width: 100%;
 }
 
+.study-choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.study-choice-button {
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 999px;
+  background: rgba(17, 18, 23, 0.72);
+  color: #cdd6e3;
+  min-height: 40px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.study-choice-button.is-active {
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(79, 70, 229, 0.28);
+}
+
+.study-choice-group:not(.study-choice-group-mode) .study-choice-button.is-active {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+}
+
+.study-mode-online.is-active {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.study-mode-offline.is-active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.study-mode-hybrid.is-active {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
 .study-board-form input,
 .study-board-form select,
 .study-board-form textarea {
@@ -3509,6 +3547,13 @@ select optgroup {
 .study-board-submit {
   width: fit-content;
   padding: 0 18px;
+}
+
+.study-board-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .study-board-list-wrap {
@@ -3555,11 +3600,10 @@ select optgroup {
 }
 
 .study-board-item {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   background: rgba(20, 24, 38, 0.62);
-  padding: 13px 10px;
+  padding: 14px 12px;
 }
 
 .study-board-item p {
@@ -3619,11 +3663,22 @@ select optgroup {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 10px;
+}
+
+.study-board-item-auth {
   margin-bottom: 9px;
 }
 
+.study-delete-password-wrap {
+  display: inline-grid;
+  gap: 6px;
+  color: #93a6c5;
+  font-size: 0.82rem;
+}
+
 .study-delete-password {
-  width: min(180px, 100%);
+  width: min(260px, 100%);
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(17, 18, 23, 0.92);
