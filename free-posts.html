@@ -133,6 +133,44 @@
         </div>
       </section>
 
+      <section class="card panel-pad-lg study-board-card">
+        <div class="section-header">
+          <h2>스터디 모집 게시판</h2>
+          <p>아래 항목을 입력하고 확인을 누르면 모집 리스트가 바로 갱신됩니다.</p>
+        </div>
+
+        <form id="study-board-form" class="study-board-form">
+          <label>
+            <span>제목</span>
+            <input id="study-title" name="title" type="text" required placeholder="예: 알고리즘 스터디 4기" />
+          </label>
+          <label>
+            <span>일정</span>
+            <input id="study-schedule" name="schedule" type="datetime-local" required />
+          </label>
+          <label>
+            <span>모집인원</span>
+            <input id="study-capacity" name="capacity" type="number" min="1" required placeholder="예: 6" />
+          </label>
+          <label>
+            <span>신청방법 혹은 링크</span>
+            <input id="study-apply" name="apply" type="text" required placeholder="오픈채팅 링크 또는 연락 방법" />
+          </label>
+          <label class="study-board-full">
+            <span>상세내용</span>
+            <textarea id="study-detail" name="detail" rows="4" required placeholder="진행 방식, 대상, 준비물 등을 작성하세요."></textarea>
+          </label>
+          <button class="button button-primary study-board-submit" type="submit">확인</button>
+        </form>
+
+        <div class="study-board-list-wrap">
+          <h3>모집 리스트</h3>
+          <p class="study-board-hint">일정이 지난 모집글은 자동으로 삭제됩니다.</p>
+          <ul id="study-board-list" class="study-board-list"></ul>
+          <p id="study-board-empty" class="study-board-empty">등록된 모집글이 없습니다.</p>
+        </div>
+      </section>
+
       <section class="free-post-layout">
         <article class="card panel-pad-lg free-post-card">
           <div class="section-header">
@@ -189,5 +227,6 @@
   </div>
 
   <script src="assets/site.js"></script>
+  <script src="assets/free-posts-board.js"></script>
 </body>
 </html>
