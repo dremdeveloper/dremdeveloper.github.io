@@ -133,31 +133,13 @@
           </label>
           <label class="study-board-field-schedule">
             <span>모집 마감</span>
-            <div class="study-board-schedule-controls">
-              <input id="study-schedule-date" name="scheduleDate" type="date" required />
-              <select id="study-schedule-time" name="scheduleTime" required>
-                <option value="09:00">09:00</option>
-                <option value="10:00">10:00</option>
-                <option value="11:00">11:00</option>
-                <option value="12:00">12:00</option>
-                <option value="13:00">13:00</option>
-                <option value="14:00">14:00</option>
-                <option value="15:00">15:00</option>
-                <option value="16:00">16:00</option>
-                <option value="17:00">17:00</option>
-                <option value="18:00">18:00</option>
-                <option value="19:00" selected>19:00</option>
-                <option value="20:00">20:00</option>
-                <option value="21:00">21:00</option>
-                <option value="22:00">22:00</option>
-              </select>
-            </div>
+            <input id="study-schedule-date" name="scheduleDate" type="date" required />
           </label>
           <label class="study-board-field-capacity">
             <span>모집인원</span>
             <input id="study-capacity" name="capacity" type="number" min="1" required placeholder="예: 6" />
           </label>
-          <label>
+          <label class="study-board-field-topic">
             <span>분야</span>
             <select id="study-field" name="field" required>
               <option value="알고리즘" selected>알고리즘</option>
@@ -167,7 +149,7 @@
               <option value="CS">CS</option>
             </select>
           </label>
-          <label>
+          <label class="study-board-field-mode">
             <span>온라인/오프라인</span>
             <select id="study-mode" name="mode" required>
               <option value="온라인" selected>온라인</option>

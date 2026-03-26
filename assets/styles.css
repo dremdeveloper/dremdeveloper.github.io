@@ -3466,10 +3466,9 @@ select optgroup {
   width: min(100%, 120px);
 }
 
-.study-board-schedule-controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px;
-  gap: 8px;
+.study-board-field-topic,
+.study-board-field-mode {
+  width: min(100%, 220px);
 }
 
 .study-board-form input,

@@ -12,7 +12,6 @@
   const fields = {
     title: document.getElementById('study-title'),
     scheduleDate: document.getElementById('study-schedule-date'),
-    scheduleTime: document.getElementById('study-schedule-time'),
     capacity: document.getElementById('study-capacity'),
     field: document.getElementById('study-field'),
     mode: document.getElementById('study-mode'),
@@ -43,13 +42,8 @@
     return Number.isNaN(scheduleTime) || scheduleTime < Date.now();
   }
 
-  function parseScheduleFields(dateValue, timeValue) {
-    if (!dateValue || !timeValue) {
-      return null;
-    }
-
-    const timeMatch = String(timeValue).trim().match(/^(\d{2}):(\d{2})$/);
-    if (!timeMatch) {
+  function parseScheduleDate(dateValue) {
+    if (!dateValue) {
       return null;
     }
 
@@ -57,14 +51,12 @@
     const year = Number(yearRaw);
     const month = Number(monthRaw);
     const day = Number(dayRaw);
-    const hour = Number(timeMatch[1]);
-    const minute = Number(timeMatch[2]);
 
     if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
       return null;
     }
 
-    const date = new Date(year, month - 1, day, hour, minute);
+    const date = new Date(year, month - 1, day, 23, 59, 59, 999);
     if (
       Number.isNaN(date.getTime()) ||
       date.getFullYear() !== year ||
@@ -125,10 +117,7 @@
     return new Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
+      day: '2-digit'
     }).format(date);
   }
 
@@ -256,9 +245,9 @@
       detail: fields.detail?.value.trim() || ''
     };
 
-    const parsedSchedule = parseScheduleFields(fields.scheduleDate?.value || '', fields.scheduleTime?.value || '');
+    const parsedSchedule = parseScheduleDate(fields.scheduleDate?.value || '');
     if (!parsedSchedule) {
-      window.alert('일정을 날짜와 시간으로 선택해주세요.');
+      window.alert('모집 마감 날짜를 선택해주세요.');
       fields.scheduleDate?.focus();
       return;
     }
