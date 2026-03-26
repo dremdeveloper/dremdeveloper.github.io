@@ -14,20 +14,14 @@
     scheduleDate: document.getElementById('study-schedule-date'),
     scheduleTime: document.getElementById('study-schedule-time'),
     capacity: document.getElementById('study-capacity'),
-    status: document.getElementById('study-status'),
     field: document.getElementById('study-field'),
-    day: document.getElementById('study-day'),
     mode: document.getElementById('study-mode'),
-    region: document.getElementById('study-region'),
     apply: document.getElementById('study-apply'),
     detail: document.getElementById('study-detail')
   };
   const filters = {
-    status: document.getElementById('filter-status'),
     field: document.getElementById('filter-field'),
-    day: document.getElementById('filter-day'),
-    mode: document.getElementById('filter-mode'),
-    region: document.getElementById('filter-region')
+    mode: document.getElementById('filter-mode')
   };
 
   function readPosts() {
@@ -104,23 +98,13 @@
   }
 
   function pruneExpiredPosts() {
-    const posts = readPosts().filter((post) => post && post.id);
-    const activePosts = posts.map((post) => {
-      const resolvedStatus = isExpired(post) ? 'closed' : post.status || 'open';
-      return { ...post, status: resolvedStatus };
-    });
-
-    if (activePosts.length !== posts.length) {
-      savePosts(activePosts);
-      return activePosts;
+    const storedPosts = readPosts().filter((post) => post && post.id);
+    const posts = storedPosts.filter((post) => !isExpired(post));
+    const shouldSave = posts.length !== storedPosts.length;
+    if (shouldSave) {
+      savePosts(posts);
     }
-
-    const hasStatusChange = activePosts.some((post, index) => post.status !== posts[index].status);
-    if (hasStatusChange) {
-      savePosts(activePosts);
-    }
-
-    return activePosts;
+    return posts;
   }
 
   function escapeHtml(value) {
@@ -157,23 +141,13 @@
     return escapeHtml(trimmed);
   }
 
-  function formatStatus(status) {
-    return status === 'closed' ? '마감' : '모집중';
-  }
-
   function getFilteredPosts(posts) {
     return posts.filter((post) => {
-      const statusValue = filters.status?.value || 'all';
       const fieldValue = filters.field?.value || 'all';
-      const dayValue = filters.day?.value || 'all';
       const modeValue = filters.mode?.value || 'all';
-      const regionValue = (filters.region?.value || '').trim().toLowerCase();
 
-      if (statusValue !== 'all' && post.status !== statusValue) return false;
       if (fieldValue !== 'all' && post.field !== fieldValue) return false;
-      if (dayValue !== 'all' && post.day !== dayValue) return false;
       if (modeValue !== 'all' && post.mode !== modeValue) return false;
-      if (regionValue && !String(post.region || '').toLowerCase().includes(regionValue)) return false;
 
       return true;
     });
@@ -193,20 +167,25 @@
       <h3>게시글 상세</h3>
       <div class="study-post-detail-head">
         <strong>${escapeHtml(post.title)}</strong>
-        <span class="study-post-detail-status is-${escapeHtml(post.status)}">${formatStatus(post.status)}</span>
       </div>
       <div class="study-post-detail-meta">
-        <p><b>일정</b> ${formatSchedule(post.schedule)} (${escapeHtml(post.day || '-')})</p>
+        <p><b>모집 마감</b> ${formatSchedule(post.schedule)}</p>
         <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
         <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
         <p><b>진행 방식</b> ${escapeHtml(post.mode || '-')}</p>
-        <p><b>지역</b> ${escapeHtml(post.region || '-')}</p>
         <p><b>신청방법</b> ${normalizeApplyText(post.apply || '')}</p>
       </div>
       <p class="study-post-detail-content">${escapeHtml(post.detail)}</p>
       <div class="study-post-detail-share">
         <a class="text-link" href="free-posts.html">목록으로</a>
         <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">상세 링크</a>
+        <button
+          class="button button-secondary compact-button study-board-copy"
+          type="button"
+          data-post-id="${escapeHtml(post.id)}"
+        >
+          링크 복사
+        </button>
       </div>
     `;
   }
@@ -229,10 +208,9 @@
               <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
             </div>
             <div class="study-board-item-meta">
-              <p><b>상태</b> <span class="study-board-status is-${escapeHtml(post.status)}">${formatStatus(post.status)}</span></p>
               <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
-              <p><b>요일</b> ${escapeHtml(post.day || '-')}</p>
-              <p><b>진행</b> ${escapeHtml(post.mode || '-')} · ${escapeHtml(post.region || '-')}</p>
+              <p><b>모집 마감</b> ${formatSchedule(post.schedule)}</p>
+              <p><b>진행</b> ${escapeHtml(post.mode || '-')}</p>
               <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
             </div>
@@ -286,11 +264,8 @@
       title: fields.title?.value.trim() || '',
       schedule: '',
       capacity: fields.capacity?.value || '',
-      status: fields.status?.value || 'open',
       field: fields.field?.value || '',
-      day: fields.day?.value || '',
       mode: fields.mode?.value || '',
-      region: fields.region?.value.trim() || '',
       apply: fields.apply?.value.trim() || '',
       detail: fields.detail?.value.trim() || ''
     };
@@ -303,10 +278,9 @@
     }
     nextPost.schedule = parsedSchedule.toISOString();
 
-    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail || !nextPost.region) {
+    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail) {
       return;
     }
-    if (isExpired(nextPost)) nextPost.status = 'closed';
 
     const posts = pruneExpiredPosts();
     posts.push(nextPost);
@@ -317,6 +291,29 @@
   });
 
   listNode.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.classList.contains('study-board-copy')) {
+      return;
+    }
+
+    const postId = target.dataset.postId;
+    if (!postId) {
+      return;
+    }
+
+    const permalink = getPostPermalink(postId);
+    try {
+      await window.navigator.clipboard.writeText(permalink);
+      target.textContent = '복사 완료';
+      window.setTimeout(() => {
+        target.textContent = '링크 복사';
+      }, 1200);
+    } catch {
+      window.prompt('아래 링크를 복사해주세요.', permalink);
+    }
+  });
+
+  detailNode?.addEventListener('click', async (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement) || !target.classList.contains('study-board-copy')) {
       return;
