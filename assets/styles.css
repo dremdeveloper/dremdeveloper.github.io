@@ -1787,6 +1787,11 @@ p {
 
 
 @media (max-width: 860px) {
+  .browser-layout,
+  .lecture-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .browser-layout {
     gap: 14px;
   }
@@ -2249,6 +2254,14 @@ select {
     margin-top: 12px;
   }
 
+  .mobile-sidebar-toggle-copy strong {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .summary-topline {
     align-items: stretch;
   }
@@ -2273,6 +2286,29 @@ select {
   .video-control-button {
     width: 100%;
     min-width: 0;
+  }
+
+  .video-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "button time"
+      "progress progress";
+    gap: 10px 12px;
+    align-items: center;
+  }
+
+  .video-control-button {
+    grid-area: button;
+    justify-self: start;
+  }
+
+  .video-progress {
+    grid-area: progress;
+  }
+
+  .video-time {
+    grid-area: time;
+    justify-self: end;
   }
 
   .article-search-input {
