@@ -249,11 +249,11 @@ p {
 .profile-header-image {
   width: 100%;
   max-width: 220px;
+  height: auto;
   display: block;
   margin: 0 auto 14px;
   border-radius: 12px;
   background: transparent;
-  object-fit: cover;
 }
 .profile-card h2 { margin-bottom: 16px; }
 .profile-card dt { color: var(--muted); font-size: 0.9rem; }
