@@ -10,7 +10,8 @@
 
   const fields = {
     title: document.getElementById('study-title'),
-    schedule: document.getElementById('study-schedule'),
+    scheduleDate: document.getElementById('study-schedule-date'),
+    scheduleTime: document.getElementById('study-schedule-time'),
     capacity: document.getElementById('study-capacity'),
     apply: document.getElementById('study-apply'),
     detail: document.getElementById('study-detail')
@@ -33,6 +34,60 @@
   function isExpired(post) {
     const scheduleTime = new Date(post.schedule).getTime();
     return Number.isNaN(scheduleTime) || scheduleTime <= Date.now();
+  }
+
+  function parseScheduleFields(dateValue, timeValue) {
+    if (!dateValue || !timeValue) {
+      return null;
+    }
+
+    const timeMatch = String(timeValue).trim().match(/^(\d{2}):(\d{2})$/);
+    if (!timeMatch) {
+      return null;
+    }
+
+    const [yearRaw, monthRaw, dayRaw] = String(dateValue).split('-');
+    const year = Number(yearRaw);
+    const month = Number(monthRaw);
+    const day = Number(dayRaw);
+    const hour = Number(timeMatch[1]);
+    const minute = Number(timeMatch[2]);
+
+    if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+      return null;
+    }
+
+    const date = new Date(year, month - 1, day, hour, minute);
+    if (
+      Number.isNaN(date.getTime()) ||
+      date.getFullYear() !== year ||
+      date.getMonth() !== month - 1 ||
+      date.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return date;
+  }
+
+  function initScheduleFields() {
+    if (!fields.scheduleDate) return;
+
+    const today = new Date();
+    const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    fields.scheduleDate.min = minDate;
+
+    if (!fields.scheduleDate.value) {
+      const nextDay = new Date(today);
+      nextDay.setDate(today.getDate() + 1);
+      fields.scheduleDate.value = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')}`;
+    }
+  }
+
+  function getPostPermalink(postId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('post', postId);
+    return url.toString();
   }
 
   function pruneExpiredPosts() {
@@ -91,7 +146,7 @@
     listNode.innerHTML = posts
       .map((post) => {
         return `
-          <li class="study-board-item">
+          <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
             <div class="study-board-item-head">
               <strong>${escapeHtml(post.title)}</strong>
               <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
@@ -100,6 +155,16 @@
               <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
             </div>
+            <div class="study-board-item-share">
+              <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">공유 링크</a>
+              <button
+                class="button button-secondary compact-button study-board-copy"
+                type="button"
+                data-post-id="${escapeHtml(post.id)}"
+              >
+                링크 복사
+              </button>
+            </div>
             <p class="study-board-item-detail">${escapeHtml(post.detail)}</p>
           </li>
         `;
@@ -107,10 +172,24 @@
       .join('');
 
     emptyNode.hidden = posts.length > 0;
+
+    const selectedPostId = new URLSearchParams(window.location.search).get('post');
+    if (!selectedPostId) {
+      return;
+    }
+
+    const target = document.getElementById(`study-post-${selectedPostId}`);
+    if (!target) {
+      return;
+    }
+
+    target.classList.add('is-focused');
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function resetForm() {
     form.reset();
+    initScheduleFields();
     fields.title?.focus();
   }
 
@@ -121,13 +200,21 @@
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       title: fields.title?.value.trim() || '',
-      schedule: fields.schedule?.value || '',
+      schedule: '',
       capacity: fields.capacity?.value || '',
       apply: fields.apply?.value.trim() || '',
       detail: fields.detail?.value.trim() || ''
     };
 
-    if (!nextPost.title || !nextPost.schedule || !nextPost.capacity || !nextPost.apply || !nextPost.detail) {
+    const parsedSchedule = parseScheduleFields(fields.scheduleDate?.value || '', fields.scheduleTime?.value || '');
+    if (!parsedSchedule) {
+      window.alert('일정을 날짜와 시간으로 선택해주세요.');
+      fields.scheduleDate?.focus();
+      return;
+    }
+    nextPost.schedule = parsedSchedule.toISOString();
+
+    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail) {
       return;
     }
 
@@ -144,6 +231,30 @@
     resetForm();
   });
 
+  listNode.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.classList.contains('study-board-copy')) {
+      return;
+    }
+
+    const postId = target.dataset.postId;
+    if (!postId) {
+      return;
+    }
+
+    const permalink = getPostPermalink(postId);
+    try {
+      await window.navigator.clipboard.writeText(permalink);
+      target.textContent = '복사 완료';
+      window.setTimeout(() => {
+        target.textContent = '링크 복사';
+      }, 1200);
+    } catch {
+      window.prompt('아래 링크를 복사해주세요.', permalink);
+    }
+  });
+
+  initScheduleFields();
   renderPosts();
   window.setInterval(renderPosts, 60 * 1000);
 })();
