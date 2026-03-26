@@ -3509,6 +3509,23 @@ select optgroup {
   color: var(--muted);
 }
 
+.study-board-filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.study-board-filters select,
+.study-board-filters input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(17, 18, 23, 0.92);
+  color: var(--text);
+  padding: 10px 11px;
+}
+
 .study-board-list {
   list-style: none;
   margin: 0;
@@ -3583,6 +3600,28 @@ select optgroup {
   margin-bottom: 9px;
 }
 
+.study-board-status,
+.study-post-detail-status {
+  font-size: 0.86rem;
+  border-radius: 999px;
+  padding: 2px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.study-board-status.is-open,
+.study-post-detail-status.is-open {
+  color: #6ee7b7;
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.study-board-status.is-closed,
+.study-post-detail-status.is-closed {
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.48);
+  background: rgba(239, 68, 68, 0.12);
+}
+
 .study-board-item.is-focused {
   border-color: rgba(129, 140, 248, 0.85);
   box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.75), 0 18px 34px rgba(79, 70, 229, 0.22);
@@ -3593,8 +3632,53 @@ select optgroup {
   color: var(--muted);
 }
 
+.study-post-detail {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.study-post-detail-head {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.study-post-detail-head strong {
+  font-size: 1.12rem;
+}
+
+.study-post-detail-meta {
+  display: grid;
+  gap: 6px;
+}
+
+.study-post-detail-meta p {
+  margin: 0;
+}
+
+.study-post-detail-content {
+  margin: 0;
+  white-space: pre-wrap;
+  color: #dbe4f4;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  padding-top: 10px;
+}
+
+.study-post-detail-share {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 860px) {
   .study-board-form {
     grid-template-columns: 1fr;
+  }
+
+  .study-board-filters {
+    grid-template-columns: 1fr 1fr;
   }
 }

@@ -123,23 +123,82 @@
       <section class="card panel-pad-lg study-board-card">
         <div class="section-header">
           <h2>스터디모집</h2>
-          <p>아래 항목을 입력하고 확인을 누르면 모집 리스트가 바로 갱신됩니다.</p>
+          <p>모집 글을 게시글 형태로 등록하고, 목록/상세 링크로 공유하세요.</p>
         </div>
 
         <form id="study-board-form" class="study-board-form">
-          <label>
+          <label class="study-board-field-title">
             <span>제목</span>
             <input id="study-title" name="title" type="text" required placeholder="예: 알고리즘 스터디 4기" />
           </label>
-          <label>
+          <label class="study-board-field-schedule">
             <span>일정</span>
-            <input id="study-schedule" name="schedule" type="datetime-local" required />
+            <div class="study-board-schedule-controls">
+              <input id="study-schedule-date" name="scheduleDate" type="date" required />
+              <select id="study-schedule-time" name="scheduleTime" required>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="12:00">12:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+                <option value="17:00">17:00</option>
+                <option value="18:00">18:00</option>
+                <option value="19:00" selected>19:00</option>
+                <option value="20:00">20:00</option>
+                <option value="21:00">21:00</option>
+                <option value="22:00">22:00</option>
+              </select>
+            </div>
           </label>
-          <label>
+          <label class="study-board-field-capacity">
             <span>모집인원</span>
             <input id="study-capacity" name="capacity" type="number" min="1" required placeholder="예: 6" />
           </label>
           <label>
+            <span>모집상태</span>
+            <select id="study-status" name="status" required>
+              <option value="open" selected>모집중</option>
+              <option value="closed">마감</option>
+            </select>
+          </label>
+          <label>
+            <span>분야</span>
+            <select id="study-field" name="field" required>
+              <option value="알고리즘" selected>알고리즘</option>
+              <option value="백엔드">백엔드</option>
+              <option value="프론트엔드">프론트엔드</option>
+              <option value="AI">AI</option>
+              <option value="CS">CS</option>
+            </select>
+          </label>
+          <label>
+            <span>요일</span>
+            <select id="study-day" name="day" required>
+              <option value="월">월</option>
+              <option value="화">화</option>
+              <option value="수">수</option>
+              <option value="목">목</option>
+              <option value="금">금</option>
+              <option value="토" selected>토</option>
+              <option value="일">일</option>
+            </select>
+          </label>
+          <label>
+            <span>온라인/오프라인</span>
+            <select id="study-mode" name="mode" required>
+              <option value="온라인" selected>온라인</option>
+              <option value="오프라인">오프라인</option>
+              <option value="혼합">혼합</option>
+            </select>
+          </label>
+          <label>
+            <span>지역</span>
+            <input id="study-region" name="region" type="text" required placeholder="예: 서울 강남 / 온라인" />
+          </label>
+          <label class="study-board-field-apply">
             <span>신청방법 혹은 링크</span>
             <input id="study-apply" name="apply" type="text" required placeholder="오픈채팅 링크 또는 연락 방법" />
           </label>
@@ -152,10 +211,43 @@
 
         <div class="study-board-list-wrap">
           <h3>모집 리스트</h3>
-          <p class="study-board-hint">일정이 지난 모집글은 자동으로 삭제됩니다.</p>
+          <p class="study-board-hint">필터를 적용해 원하는 모집글만 확인하고, 게시글 링크를 공유할 수 있습니다.</p>
+          <div class="study-board-filters">
+            <select id="filter-status" aria-label="상태 필터">
+              <option value="all" selected>상태 전체</option>
+              <option value="open">모집중</option>
+              <option value="closed">마감</option>
+            </select>
+            <select id="filter-field" aria-label="분야 필터">
+              <option value="all" selected>분야 전체</option>
+              <option value="알고리즘">알고리즘</option>
+              <option value="백엔드">백엔드</option>
+              <option value="프론트엔드">프론트엔드</option>
+              <option value="AI">AI</option>
+              <option value="CS">CS</option>
+            </select>
+            <select id="filter-day" aria-label="요일 필터">
+              <option value="all" selected>요일 전체</option>
+              <option value="월">월</option>
+              <option value="화">화</option>
+              <option value="수">수</option>
+              <option value="목">목</option>
+              <option value="금">금</option>
+              <option value="토">토</option>
+              <option value="일">일</option>
+            </select>
+            <select id="filter-mode" aria-label="진행 방식 필터">
+              <option value="all" selected>진행 방식 전체</option>
+              <option value="온라인">온라인</option>
+              <option value="오프라인">오프라인</option>
+              <option value="혼합">혼합</option>
+            </select>
+            <input id="filter-region" type="search" placeholder="지역 검색" aria-label="지역 검색" />
+          </div>
           <ul id="study-board-list" class="study-board-list"></ul>
           <p id="study-board-empty" class="study-board-empty">등록된 모집글이 없습니다.</p>
         </div>
+        <article id="study-post-detail" class="study-post-detail" hidden></article>
       </section>
     </main>
 
