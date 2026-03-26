@@ -3442,8 +3442,9 @@ select optgroup {
 
 .study-board-form {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 14px 18px;
+  align-items: start;
 }
 
 .study-board-form label {
@@ -3453,22 +3454,27 @@ select optgroup {
   font-size: 0.92rem;
 }
 
+.study-board-form label > span {
+  color: #9ab0d2;
+  font-weight: 600;
+}
+
 .study-board-field-title,
 .study-board-field-apply {
   grid-column: 1 / -1;
 }
 
 .study-board-field-schedule {
-  width: min(100%, 320px);
+  width: 100%;
 }
 
 .study-board-field-capacity {
-  width: min(100%, 120px);
+  width: 100%;
 }
 
 .study-board-field-topic,
 .study-board-field-mode {
-  width: min(100%, 220px);
+  width: 100%;
 }
 
 .study-board-form input,
@@ -3480,10 +3486,12 @@ select optgroup {
   background: rgba(17, 18, 23, 0.92);
   color: var(--text);
   padding: 11px 12px;
+  min-height: 46px;
 }
 
 .study-board-form textarea {
   resize: none;
+  min-height: 92px;
 }
 
 .study-board-form input:focus,
