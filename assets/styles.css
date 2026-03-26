@@ -3449,14 +3449,21 @@ select optgroup {
 }
 
 .study-board-field-schedule {
-  width: min(100%, 280px);
+  width: min(100%, 320px);
 }
 
 .study-board-field-capacity {
-  width: min(100%, 180px);
+  width: min(100%, 120px);
+}
+
+.study-board-schedule-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 8px;
 }
 
 .study-board-form input,
+.study-board-form select,
 .study-board-form textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -3467,6 +3474,7 @@ select optgroup {
 }
 
 .study-board-form input:focus,
+.study-board-form select:focus,
 .study-board-form textarea:focus {
   outline: 2px solid rgba(99, 102, 241, 0.45);
   outline-offset: 1px;
@@ -3555,6 +3563,19 @@ select optgroup {
   border-top: 1px solid rgba(148, 163, 184, 0.2);
   padding-top: 9px;
   white-space: pre-wrap;
+}
+
+.study-board-item-share {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.study-board-item.is-focused {
+  border-color: rgba(129, 140, 248, 0.85);
+  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.75), 0 18px 34px rgba(79, 70, 229, 0.22);
 }
 
 .study-board-empty {
