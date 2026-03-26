@@ -3778,9 +3778,41 @@ select optgroup {
   gap: 12px;
   flex: 1;
   min-height: 0;
-  max-height: 520px;
-  overflow-y: auto;
-  padding-right: 4px;
+}
+
+.study-board-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+}
+
+.study-page-button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(17, 18, 23, 0.92);
+  color: #dbe4f4;
+  min-width: 38px;
+  min-height: 34px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.study-page-button:hover:not(:disabled) {
+  border-color: rgba(129, 140, 248, 0.75);
+}
+
+.study-page-button.is-active {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border-color: rgba(165, 180, 252, 0.9);
+  color: #fff;
+  font-weight: 700;
+}
+
+.study-page-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .study-board-item {
@@ -3947,7 +3979,6 @@ select optgroup {
   .study-board-list {
     max-height: none;
     overflow: visible;
-    padding-right: 0;
   }
 
   .study-board-form {

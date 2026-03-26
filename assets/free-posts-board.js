@@ -6,6 +6,9 @@
   const listNode = document.getElementById('study-board-list');
   const emptyNode = document.getElementById('study-board-empty');
   const countNode = document.getElementById('study-board-count');
+  const paginationNode = document.getElementById('study-board-pagination');
+  const PAGE_SIZE = 10;
+  let currentPage = 1;
 
   if (!form || !listNode || !emptyNode) {
     return;
@@ -256,11 +259,15 @@
   function renderPosts() {
     const posts = pruneExpiredPosts();
     const filteredPosts = sortPosts(getFilteredPosts(posts));
+    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const pagedPosts = filteredPosts.slice(startIndex, startIndex + PAGE_SIZE);
     if (countNode) {
       countNode.textContent = `전체 ${posts.length}개 · 검색 결과 ${filteredPosts.length}개`;
     }
 
-    listNode.innerHTML = filteredPosts
+    listNode.innerHTML = pagedPosts
       .map((post) => {
         return `
           <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
@@ -298,6 +305,25 @@
         emptyNode.textContent = '조건에 맞는 모집글이 없습니다. 검색어나 필터를 조정해보세요.';
       } else {
         emptyNode.textContent = '등록된 모집글이 없습니다.';
+      }
+    }
+
+    if (paginationNode) {
+      if (filteredPosts.length <= PAGE_SIZE) {
+        paginationNode.hidden = true;
+        paginationNode.innerHTML = '';
+      } else {
+        const pageButtons = Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
+          const activeClass = page === currentPage ? 'is-active' : '';
+          return `<button class="study-page-button ${activeClass}" type="button" data-page-index="${page}" aria-label="${page}페이지로 이동">${page}</button>`;
+        }).join('');
+        paginationNode.innerHTML = `
+          <button class="study-page-button" type="button" data-page-nav="prev" ${currentPage === 1 ? 'disabled' : ''}>이전</button>
+          ${pageButtons}
+          <button class="study-page-button" type="button" data-page-nav="next" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>
+        `;
+        paginationNode.hidden = false;
       }
     }
 
@@ -427,8 +453,14 @@
   });
 
   Object.values(filters).forEach((node) => {
-    node?.addEventListener('input', renderPosts);
-    node?.addEventListener('change', renderPosts);
+    node?.addEventListener('input', () => {
+      currentPage = 1;
+      renderPosts();
+    });
+    node?.addEventListener('change', () => {
+      currentPage = 1;
+      renderPosts();
+    });
   });
 
   choiceButtons.forEach((button) => {
@@ -515,6 +547,31 @@
     const nextPosts = posts.filter((post) => post.id !== postId);
     savePosts(nextPosts);
     renderPosts();
+  });
+
+  paginationNode?.addEventListener('click', (event) => {
+    const pageButton = event.target.closest('[data-page-index]');
+    if (pageButton) {
+      const nextPage = Number(pageButton.getAttribute('data-page-index'));
+      if (Number.isFinite(nextPage) && nextPage > 0) {
+        currentPage = nextPage;
+        renderPosts();
+      }
+      return;
+    }
+
+    const navButton = event.target.closest('[data-page-nav]');
+    if (!navButton) return;
+    const direction = navButton.getAttribute('data-page-nav');
+    if (direction === 'prev') {
+      currentPage = Math.max(1, currentPage - 1);
+      renderPosts();
+      return;
+    }
+    if (direction === 'next') {
+      currentPage += 1;
+      renderPosts();
+    }
   });
 
   applyStorageResetIfNeeded();
