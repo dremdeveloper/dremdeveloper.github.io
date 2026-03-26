@@ -3,6 +3,7 @@
   const form = document.getElementById('study-board-form');
   const listNode = document.getElementById('study-board-list');
   const emptyNode = document.getElementById('study-board-empty');
+  const detailNode = document.getElementById('study-post-detail');
 
   if (!form || !listNode || !emptyNode) {
     return;
@@ -13,8 +14,20 @@
     scheduleDate: document.getElementById('study-schedule-date'),
     scheduleTime: document.getElementById('study-schedule-time'),
     capacity: document.getElementById('study-capacity'),
+    status: document.getElementById('study-status'),
+    field: document.getElementById('study-field'),
+    day: document.getElementById('study-day'),
+    mode: document.getElementById('study-mode'),
+    region: document.getElementById('study-region'),
     apply: document.getElementById('study-apply'),
     detail: document.getElementById('study-detail')
+  };
+  const filters = {
+    status: document.getElementById('filter-status'),
+    field: document.getElementById('filter-field'),
+    day: document.getElementById('filter-day'),
+    mode: document.getElementById('filter-mode'),
+    region: document.getElementById('filter-region')
   };
 
   function readPosts() {
@@ -33,7 +46,7 @@
 
   function isExpired(post) {
     const scheduleTime = new Date(post.schedule).getTime();
-    return Number.isNaN(scheduleTime) || scheduleTime <= Date.now();
+    return Number.isNaN(scheduleTime) || scheduleTime < Date.now();
   }
 
   function parseScheduleFields(dateValue, timeValue) {
@@ -91,10 +104,19 @@
   }
 
   function pruneExpiredPosts() {
-    const posts = readPosts();
-    const activePosts = posts.filter((post) => !isExpired(post));
+    const posts = readPosts().filter((post) => post && post.id);
+    const activePosts = posts.map((post) => {
+      const resolvedStatus = isExpired(post) ? 'closed' : post.status || 'open';
+      return { ...post, status: resolvedStatus };
+    });
 
     if (activePosts.length !== posts.length) {
+      savePosts(activePosts);
+      return activePosts;
+    }
+
+    const hasStatusChange = activePosts.some((post, index) => post.status !== posts[index].status);
+    if (hasStatusChange) {
       savePosts(activePosts);
     }
 
@@ -135,6 +157,60 @@
     return escapeHtml(trimmed);
   }
 
+  function formatStatus(status) {
+    return status === 'closed' ? '마감' : '모집중';
+  }
+
+  function getFilteredPosts(posts) {
+    return posts.filter((post) => {
+      const statusValue = filters.status?.value || 'all';
+      const fieldValue = filters.field?.value || 'all';
+      const dayValue = filters.day?.value || 'all';
+      const modeValue = filters.mode?.value || 'all';
+      const regionValue = (filters.region?.value || '').trim().toLowerCase();
+
+      if (statusValue !== 'all' && post.status !== statusValue) return false;
+      if (fieldValue !== 'all' && post.field !== fieldValue) return false;
+      if (dayValue !== 'all' && post.day !== dayValue) return false;
+      if (modeValue !== 'all' && post.mode !== modeValue) return false;
+      if (regionValue && !String(post.region || '').toLowerCase().includes(regionValue)) return false;
+
+      return true;
+    });
+  }
+
+  function renderPostDetail(post) {
+    if (!detailNode) return;
+
+    if (!post) {
+      detailNode.hidden = true;
+      detailNode.innerHTML = '';
+      return;
+    }
+
+    detailNode.hidden = false;
+    detailNode.innerHTML = `
+      <h3>게시글 상세</h3>
+      <div class="study-post-detail-head">
+        <strong>${escapeHtml(post.title)}</strong>
+        <span class="study-post-detail-status is-${escapeHtml(post.status)}">${formatStatus(post.status)}</span>
+      </div>
+      <div class="study-post-detail-meta">
+        <p><b>일정</b> ${formatSchedule(post.schedule)} (${escapeHtml(post.day || '-')})</p>
+        <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
+        <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
+        <p><b>진행 방식</b> ${escapeHtml(post.mode || '-')}</p>
+        <p><b>지역</b> ${escapeHtml(post.region || '-')}</p>
+        <p><b>신청방법</b> ${normalizeApplyText(post.apply || '')}</p>
+      </div>
+      <p class="study-post-detail-content">${escapeHtml(post.detail)}</p>
+      <div class="study-post-detail-share">
+        <a class="text-link" href="free-posts.html">목록으로</a>
+        <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">상세 링크</a>
+      </div>
+    `;
+  }
+
   function renderPosts() {
     const posts = pruneExpiredPosts().sort((a, b) => {
       const scheduleDiff = new Date(a.schedule).getTime() - new Date(b.schedule).getTime();
@@ -142,21 +218,26 @@
 
       return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
     });
+    const filteredPosts = getFilteredPosts(posts);
 
-    listNode.innerHTML = posts
+    listNode.innerHTML = filteredPosts
       .map((post) => {
         return `
           <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
             <div class="study-board-item-head">
-              <strong>${escapeHtml(post.title)}</strong>
+              <strong><a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">${escapeHtml(post.title)}</a></strong>
               <span class="study-board-item-date">${formatSchedule(post.schedule)}</span>
             </div>
             <div class="study-board-item-meta">
+              <p><b>상태</b> <span class="study-board-status is-${escapeHtml(post.status)}">${formatStatus(post.status)}</span></p>
+              <p><b>분야</b> ${escapeHtml(post.field || '-')}</p>
+              <p><b>요일</b> ${escapeHtml(post.day || '-')}</p>
+              <p><b>진행</b> ${escapeHtml(post.mode || '-')} · ${escapeHtml(post.region || '-')}</p>
               <p><b>모집인원</b> ${escapeHtml(post.capacity)}명</p>
               <p><b>신청방법</b> ${normalizeApplyText(post.apply)}</p>
             </div>
             <div class="study-board-item-share">
-              <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">공유 링크</a>
+              <a class="text-link" href="${escapeHtml(getPostPermalink(post.id))}">게시글 보기</a>
               <button
                 class="button button-secondary compact-button study-board-copy"
                 type="button"
@@ -165,19 +246,22 @@
                 링크 복사
               </button>
             </div>
-            <p class="study-board-item-detail">${escapeHtml(post.detail)}</p>
+            <p class="study-board-item-detail">${escapeHtml(String(post.detail).slice(0, 120))}${String(post.detail).length > 120 ? '...' : ''}</p>
           </li>
         `;
       })
       .join('');
 
-    emptyNode.hidden = posts.length > 0;
+    emptyNode.hidden = filteredPosts.length > 0;
 
     const selectedPostId = new URLSearchParams(window.location.search).get('post');
     if (!selectedPostId) {
+      renderPostDetail(null);
       return;
     }
 
+    const selectedPost = posts.find((post) => post.id === selectedPostId) || null;
+    renderPostDetail(selectedPost);
     const target = document.getElementById(`study-post-${selectedPostId}`);
     if (!target) {
       return;
@@ -202,6 +286,11 @@
       title: fields.title?.value.trim() || '',
       schedule: '',
       capacity: fields.capacity?.value || '',
+      status: fields.status?.value || 'open',
+      field: fields.field?.value || '',
+      day: fields.day?.value || '',
+      mode: fields.mode?.value || '',
+      region: fields.region?.value.trim() || '',
       apply: fields.apply?.value.trim() || '',
       detail: fields.detail?.value.trim() || ''
     };
@@ -214,14 +303,10 @@
     }
     nextPost.schedule = parsedSchedule.toISOString();
 
-    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail) {
+    if (!nextPost.title || !nextPost.capacity || !nextPost.apply || !nextPost.detail || !nextPost.region) {
       return;
     }
-
-    if (isExpired(nextPost)) {
-      window.alert('지난 일정은 등록할 수 없습니다. 미래 일정을 입력해주세요.');
-      return;
-    }
+    if (isExpired(nextPost)) nextPost.status = 'closed';
 
     const posts = pruneExpiredPosts();
     posts.push(nextPost);
@@ -252,6 +337,11 @@
     } catch {
       window.prompt('아래 링크를 복사해주세요.', permalink);
     }
+  });
+
+  Object.values(filters).forEach((node) => {
+    node?.addEventListener('input', renderPosts);
+    node?.addEventListener('change', renderPosts);
   });
 
   initScheduleFields();
