@@ -1,8 +1,11 @@
 (() => {
   const STORAGE_KEY = 'studyBoardPosts';
+  const STORAGE_RESET_VERSION_KEY = 'studyBoardPostsResetVersion';
+  const STORAGE_RESET_VERSION = '2026-03-26-clear-all';
   const form = document.getElementById('study-board-form');
   const listNode = document.getElementById('study-board-list');
   const emptyNode = document.getElementById('study-board-empty');
+  const countNode = document.getElementById('study-board-count');
 
   if (!form || !listNode || !emptyNode) {
     return;
@@ -23,6 +26,8 @@
   const editIdField = document.getElementById('study-edit-id');
   const choiceButtons = Array.from(document.querySelectorAll('[data-choice-target][data-choice-value]'));
   const filters = {
+    keyword: document.getElementById('filter-keyword'),
+    sort: document.getElementById('filter-sort'),
     field: document.getElementById('filter-field'),
     mode: document.getElementById('filter-mode')
   };
@@ -34,6 +39,20 @@
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
+    }
+  }
+
+  function applyStorageResetIfNeeded() {
+    try {
+      const appliedVersion = window.localStorage.getItem(STORAGE_RESET_VERSION_KEY);
+      if (appliedVersion === STORAGE_RESET_VERSION) {
+        return;
+      }
+
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      window.localStorage.setItem(STORAGE_RESET_VERSION_KEY, STORAGE_RESET_VERSION);
+    } catch {
+      // ignore storage access errors
     }
   }
 
@@ -182,25 +201,64 @@
   }
 
   function getFilteredPosts(posts) {
+    const keyword = String(filters.keyword?.value || '').trim().toLowerCase();
     return posts.filter((post) => {
       const fieldValue = filters.field?.value || 'all';
       const modeValue = filters.mode?.value || 'all';
+      const keywordTargets = [post.title, post.detail, post.apply].map((value) => String(value || '').toLowerCase()).join(' ');
 
       if (fieldValue !== 'all' && post.field !== fieldValue) return false;
       if (modeValue !== 'all' && post.mode !== modeValue) return false;
+      if (keyword && !keywordTargets.includes(keyword)) return false;
 
       return true;
     });
   }
 
-  function renderPosts() {
-    const posts = pruneExpiredPosts().sort((a, b) => {
-      const scheduleDiff = new Date(a.schedule).getTime() - new Date(b.schedule).getTime();
-      if (scheduleDiff !== 0) return scheduleDiff;
+  function getDaysLeftText(post) {
+    const scheduleTime = getScheduleDeadlineTime(post);
+    if (Number.isNaN(scheduleTime)) {
+      return '마감일 미정';
+    }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadline = new Date(scheduleTime);
+    deadline.setHours(0, 0, 0, 0);
+    const daysLeft = Math.ceil((deadline.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+
+    if (daysLeft <= 0) {
+      return 'D-day';
+    }
+    return `D-${daysLeft}`;
+  }
+
+  function sortPosts(posts) {
+    const sortValue = filters.sort?.value || 'deadline-asc';
+    const sorted = [...posts];
+
+    if (sortValue === 'created-desc') {
+      return sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    }
+
+    if (sortValue === 'capacity-desc') {
+      return sorted.sort((a, b) => Number(b.capacity || 0) - Number(a.capacity || 0));
+    }
+
+    return sorted.sort((a, b) => {
+      const aTime = getScheduleDeadlineTime(a);
+      const bTime = getScheduleDeadlineTime(b);
+      if (aTime !== bTime) return aTime - bTime;
       return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
     });
-    const filteredPosts = getFilteredPosts(posts);
+  }
+
+  function renderPosts() {
+    const posts = pruneExpiredPosts();
+    const filteredPosts = sortPosts(getFilteredPosts(posts));
+    if (countNode) {
+      countNode.textContent = `전체 ${posts.length}개 · 검색 결과 ${filteredPosts.length}개`;
+    }
 
     listNode.innerHTML = filteredPosts
       .map((post) => {
@@ -208,7 +266,7 @@
           <li class="study-board-item" id="study-post-${escapeHtml(post.id)}">
             <div class="study-board-item-head">
               <strong>${escapeHtml(post.title)}</strong>
-              <span class="study-board-item-date">${formatSchedule(post.schedule, post.scheduleDate)}</span>
+              <span class="study-board-item-date">${formatSchedule(post.schedule, post.scheduleDate)} · ${escapeHtml(getDaysLeftText(post))}</span>
             </div>
             <div class="study-board-item-meta">
               <p><b>분야</b> <span class="${escapeHtml(getTagClass('field', post.field))}">${escapeHtml(post.field || '-')}</span></p>
@@ -235,6 +293,13 @@
       .join('');
 
     emptyNode.hidden = filteredPosts.length > 0;
+    if (!emptyNode.hidden) {
+      if (posts.length > 0) {
+        emptyNode.textContent = '조건에 맞는 모집글이 없습니다. 검색어나 필터를 조정해보세요.';
+      } else {
+        emptyNode.textContent = '등록된 모집글이 없습니다.';
+      }
+    }
 
     const selectedPostId = new URLSearchParams(window.location.search).get('post');
     if (!selectedPostId) return;
@@ -452,6 +517,7 @@
     renderPosts();
   });
 
+  applyStorageResetIfNeeded();
   initScheduleFields();
   renderPosts();
   window.setInterval(renderPosts, 60 * 1000);
