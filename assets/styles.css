@@ -1277,8 +1277,10 @@ p {
 }
 
 .lecture-sidebar .menu-item-copy strong {
-  font-size: 0.98rem;
-  line-height: 1.55;
+  font-size: 0.92rem;
+  line-height: 1.42;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .summary-topline {
@@ -2272,8 +2274,8 @@ select {
   .mobile-sidebar-toggle-copy strong,
   .lecture-sidebar .menu-item-copy strong,
   .menu-item-copy strong {
-    font-size: 0.92rem;
-    line-height: 1.45;
+    font-size: 0.88rem;
+    line-height: 1.38;
   }
 
   .article-container {
