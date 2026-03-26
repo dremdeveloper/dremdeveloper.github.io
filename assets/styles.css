@@ -1601,6 +1601,10 @@ p {
 .article-sidebar {
   position: sticky;
   top: 96px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 124px);
+  overflow: auto;
 }
 
 .article-sidebar-meta {
@@ -1614,6 +1618,14 @@ p {
 
 .article-sidebar .menu-list {
   gap: 10px;
+  max-height: none;
+  min-height: 0;
+}
+
+.article-sidebar .mobile-sidebar-body {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .article-category-group {
