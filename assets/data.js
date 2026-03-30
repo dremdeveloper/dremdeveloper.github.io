@@ -59,6 +59,11 @@ window.siteData = {
         title: 'Markdown Guide KO'
       },
       {
+        name: 'articles/유용한 지식 및 팁/유용한_지식_용어집.md',
+        category: '지식 정리',
+        title: '용어집'
+      },
+      {
         name: 'articles/트러블 슈팅/2026-03-21-temp-troubleshooting-note.md',
         category: '트러블 슈팅',
         title: 'temp troubleshooting note'
